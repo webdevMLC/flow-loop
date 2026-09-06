@@ -79,8 +79,10 @@ nothing until there is a bug.
 **Parallel by default, in two tiers.** Independent operations are batched into one message -
 free, no agents, and most of the wall-clock win in a normal phase. Beyond that, tasks with
 disjoint file sets can run as concurrent background agents, which buys wall-clock and costs
-tokens, so it is opt-in and gated: three or more substantial tasks, no shared files, and any
-shared contract (schema, types, barrels) committed first as its own wave. Agents never
+tokens, so it is opt-in and gated: three or more ready tasks, delegation that is
+context-positive (self-contained against a frozen contract, and it moves reading off your
+plate rather than duplicating what you already hold), no shared files, and any shared
+contract - schema, types, barrels - committed first as its own wave. Agents never
 commit - the orchestrator does, one commit per task, so history stays serial while work is
 parallel. Two tasks that would need to renegotiate mid-flight are one task.
 

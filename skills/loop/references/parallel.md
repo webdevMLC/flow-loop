@@ -10,10 +10,13 @@ overwriting each other, and agents building against a contract that is still mov
 reads, greps, test runs, edits to different files. No extra context, no agents, no
 coordination. Most of the wall-clock win in a normal phase is here, and it costs nothing.
 
-**Tier 2 — concurrent agents. Opt-in, costs tokens.** One background agent per task, running
-at the same time. Each carries its own context, prompt and report, so a wave of three agents
-costs roughly three times the context of doing the work inline. It buys wall-clock. Use it
-when the tasks are big enough that the wait is real.
+**Tier 2 — concurrent agents. Opt-in, and the cost depends on what you delegate.** One
+background agent per task, running at the same time, each carrying its own context, prompt
+and report. Delegate work whose context you are already holding and you pay for the same
+reading twice, plus the brief and the report. Delegate self-contained work against a frozen
+contract and the agent absorbs reading you never have to do at all. It buys wall-clock
+either way. Use it when the wait is real and the reading genuinely moves off your plate —
+see the test below.
 
 Do not reach for tier 2 to avoid a wait that tier 1 already removes.
 
@@ -22,8 +25,26 @@ Do not reach for tier 2 to avoid a wait that tier 1 already removes.
 All four must be true. Any one false → do it inline.
 
 1. **Three or more tasks** are ready at once.
-2. **Each clears guard 5** on its own — more than 3 files or more than ~200 lines. Three
-   one-file tasks are cheaper done inline than briefed out.
+2. **Delegating is context-positive.** Two questions, both must be yes:
+
+   - **Can the task be briefed in a short paragraph**, against a contract that is already
+     committed? If explaining it means walking the agent through half the module, the brief
+     is expensive *and* the agent still has to read everything itself.
+   - **Would doing it inline force you to load context you do not already hold, and will not
+     reuse?** If yes, delegating moves that reading out of your window for good — the agent
+     absorbs it and returns a summary you can act on.
+
+   The common mistake is the inverse: delegating work whose context you are **already
+   holding**. The agent re-reads what you have, you pay for the same bytes twice, and you
+   pay for the brief and the report on top.
+
+   Line and file counts are a bad proxy for this. A self-contained 150-line task against a
+   frozen interface is worth delegating; a 400-line task that needs an understanding of how
+   the rest of the module fits together is not — that understanding is the expensive part,
+   and it does not transfer in a brief.
+
+   Guard 5 still applies as a floor: never spawn for work you could do in a couple of edits,
+   however self-contained it looks.
 3. **File sets are disjoint.** No two concurrent tasks may write the same file. Check this
    against the plans, not from memory.
 4. **The contract is frozen.** See below.
