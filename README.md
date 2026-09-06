@@ -69,12 +69,19 @@ nothing until there is a bug.
 |-----------|-------|
 | FRAME / BUILD / SHIP | `references/gates.md` |
 | CHECK | `references/review.md` |
+| the goal is not clear yet | `references/brainstorm.md` |
 | a bug or test failure | `references/debug.md` |
 | resuming, or about to compact | `references/resume.md` |
 | state format, milestones | `references/state.md` |
 
 **Parallel by default.** Tasks touching disjoint files run in waves, not in sequence, and
 the wave order comes from real dependencies rather than task numbering.
+
+**Does not assume you know what you are building.** When the goal cannot be stated in one
+checkable sentence, Flow brainstorms before it frames: problem before solution, two or three
+genuinely different approaches, explicit exclusions, converging in at most three rounds. A
+request that sounds specific - "add a dashboard", "make onboarding better" - is not a goal,
+and framing it anyway produces a confident plan for the wrong problem.
 
 **Match before you write.** FRAME names the closest existing analog for every new file, so
 new code looks like the code around it and is not rewritten later.

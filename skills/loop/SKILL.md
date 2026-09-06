@@ -1,6 +1,6 @@
 ---
 name: loop
-description: The single development loop — FRAME then BUILD then CHECK then SHIP — replacing separate memory, planning, context, TDD, debugging and review frameworks with one protocol. Use for any real feature, fix, refactor, migration, debugging session, or milestone in a project codebase. It sizes the task before starting, fixes the phase order, routes each kind of work to the cheapest model tier that can do it, enforces hard loop guards against repeated research and re-verification, and keeps one state file per project. Not needed for one-off questions or throwaway scratch scripts.
+description: The single development loop — brainstorm when the goal is unclear, then FRAME, BUILD, CHECK, SHIP — replacing separate memory, planning, context, TDD, debugging and review frameworks with one protocol. Use for any real feature, fix, refactor, migration, debugging session, or milestone in a project codebase, and equally when the request is still vague and needs shaping before anything gets built. It sizes the task first, fixes the phase order, routes each kind of work to the cheapest model tier that can do it, enforces hard loop guards against repeated research and re-verification, and keeps one state file per project. Not needed for one-off questions or throwaway scratch scripts.
 ---
 
 # Flow
@@ -24,6 +24,10 @@ Not every task deserves four gates. Size the work before starting:
 Running the Full loop on Direct work is the most expensive mistake available here, and the
 easiest to make. When torn between two sizes, pick the smaller and escalate if it turns out
 you were wrong — escalating costs one gate, over-ceremony costs the whole loop.
+
+Size is not clarity. If you cannot state what "done" looks like in one checkable
+sentence, the goal is not ready to build against **at any size** — read
+`references/brainstorm.md` before FRAME, however small the task looks.
 
 ## The loop
 
@@ -58,7 +62,9 @@ Repeated work, not model choice, is what actually burns the budget.
 5. **No subagent below the spawn cost.** Work touching ≤3 files or ≤200 lines is done inline.
    A subagent must save more context than its prompt and report consume.
 6. **Never re-read what is already in context.** Read a file only when about to edit it.
-7. **One question batch per gate.** Collect every open question, ask once.
+7. **One question batch per gate.** Collect every open question, ask once. The one
+   exception is brainstorming, where the dialogue *is* the work and the user is present
+   for it — see `references/brainstorm.md`. The exception ends when FRAME begins.
 8. **No unrequested extras.** No docs, changelogs, formatting passes, coverage reports, or
    refactors the task did not ask for.
 
@@ -89,6 +95,7 @@ Repeated work, not model choice, is what actually burns the budget.
 
 | Situation | Read |
 |-----------|------|
+| The goal is not clear enough to state | `references/brainstorm.md` |
 | Entering FRAME / BUILD / SHIP | `references/gates.md` |
 | Entering CHECK | `references/review.md` |
 | A bug, test failure, or unexpected behavior | `references/debug.md` |

@@ -4,6 +4,12 @@
 
 Goal: know what "done" means and what the tasks are. **No code.**
 
+**0. Is the goal even clear?** Before step 1, check: can you state in one sentence what
+done looks like, in a form someone else could verify? If not, stop and read
+`references/brainstorm.md`. A request that *sounds* specific — "add a dashboard", "make
+onboarding better" — is not a goal, and framing it anyway produces a confident plan for the
+wrong problem.
+
 1. **Recall once.** One memory query (see SKILL.md → Memory). Do not query twice.
 2. **Survey once.** One batched pass to establish the ground truth you need:
    existing patterns, the files in play, the test command, the run command.

@@ -20,6 +20,9 @@ Updated: <YYYY-MM-DD>
 - [ ] <testable statement>
 - [ ] <testable statement>
 
+### Not building
+- <explicit exclusion agreed during brainstorming>
+
 ### Tasks
 - [x] <task> — <commit sha>
 - [ ] <task>
