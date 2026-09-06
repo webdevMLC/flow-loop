@@ -51,6 +51,36 @@ run fails open: writes succeed and nothing announces that the gate is inactive. 
 safe failure mode - a broken install never bricks your editing - but it means you should
 confirm `node --version` reports 16 or higher rather than assuming you are protected.
 
+### Platform support
+
+| | Skill | TDD gate hook |
+|---|---|---|
+| **Windows** | tested | tested (with Git Bash present) |
+| **macOS** | expected | expected - untested |
+| **Linux** | expected | expected - untested |
+
+Being straight about that table: this was built and exercised on Windows. Nothing in it is
+platform-specific, but "expected" means reasoned, not run.
+
+- The skill is plain markdown. It has no platform surface at all.
+- The hook uses only `node:fs` and `node:path`. It normalises Windows backslashes to forward
+  slashes before any comparison and lowercases every name it matches, so it behaves the same
+  on case-insensitive (Windows, default macOS) and case-sensitive (Linux) filesystems -
+  though on Linux that makes it marginally more lenient than the filesystem itself.
+- On Windows **without** Git Bash, Claude Code runs hook commands through PowerShell. The
+  invocation is `node "<absolute path>"`, which is valid there, but that path is untested.
+
+Suspending the gate for a single command differs by shell:
+
+| Shell | Command |
+|---|---|
+| bash / zsh | `FLOW_TDD_OFF=1 <command>` |
+| PowerShell | `$env:FLOW_TDD_OFF = "1"` |
+
+The other two escape hatches - a `.flow/tdd-off` file and the `EXEMPT_DIR` list - are
+identical on every platform.
+
+
 ## What you get
 
 | Gate | Produces | Model tier | Budget |
