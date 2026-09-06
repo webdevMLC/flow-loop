@@ -100,6 +100,7 @@ nothing until there is a bug.
 | Situation | Loads |
 |-----------|-------|
 | FRAME / BUILD / SHIP | `references/gates.md` |
+| money, auth, PII, or outside input | `references/threat.md` |
 | CHECK | `references/review.md` |
 | the goal is not clear yet | `references/brainstorm.md` |
 | a bug or test failure | `references/debug.md` |
@@ -107,6 +108,13 @@ nothing until there is a bug.
 | running tasks concurrently | `references/parallel.md` |
 | running unattended | `references/autonomous.md` |
 | state format, milestones | `references/state.md` |
+
+**Threat modelling where it is warranted.** Phases touching money, identity, other
+people's data, or input from outside the trust boundary get a threat register before BUILD -
+trust boundaries drawn, STRIDE applied rather than recited, every mitigation turned into a
+task rather than a wishlist item. CHECK then closes each row against real code and a test
+that fails without the mitigation; a row with neither is a blocker. A threat model nobody
+verifies is theatre, and the verification is the point.
 
 **Parallel by default, in two tiers.** Independent operations are batched into one message -
 free, no agents, and most of the wall-clock win in a normal phase. Beyond that, tasks with

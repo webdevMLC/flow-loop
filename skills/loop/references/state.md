@@ -34,6 +34,10 @@ Updated: <YYYY-MM-DD>
 ### Assumptions
 - <fact assumed, because research was capped at one pass>
 
+### Threat register
+- **T1 — <what an attacker does>** — impact / mitigation / lives in / proven by
+- **Accepted:** <risk not mitigated, and why>
+
 ### Debugging
 - **Symptom:** <what fails, and the exact command that reproduces it>
 - **Ruled out:** <hypothesis — how it was falsified>

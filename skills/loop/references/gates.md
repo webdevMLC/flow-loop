@@ -29,6 +29,11 @@ wrong problem.
    work, batch every open question into a single AskUserQuestion. Otherwise decide
    like a careful colleague, record the call as an assumption, and continue.
 
+5. **Threat model, if the phase warrants it.** If it touches money, identity, other
+   people’s data, or input from outside the trust boundary, read `references/threat.md` and
+   write the threat register before BUILD. Every mitigation becomes a task in the list, not
+   a wishlist item.
+
 Exit FRAME when acceptance criteria are written and testable. If you cannot state
 how the work will be verified, the frame is not finished.
 

@@ -11,7 +11,7 @@ from STATE.md, and returns findings only.
 | Checker | Looks for |
 |---------|-----------|
 | **Logic** | Does the code meet the acceptance criteria? Wrong results, off-by-one, unhandled null/empty/error paths, broken invariants, state transitions that can't happen or can't be undone. |
-| **Security** | Injection, missing authz on new endpoints, tenancy leaks, secrets in code or logs, unvalidated input crossing a trust boundary, unsafe defaults. |
+| **Security** | Injection, missing authz on new endpoints, tenancy leaks, secrets in code or logs, unvalidated input crossing a trust boundary, unsafe defaults. **And: if `.flow/STATE.md` holds a threat register, verify every row** — see below. |
 | **Performance** | N+1 queries, unbounded loops or fetches, missing indexes on new query paths, work repeated per-request that could be hoisted, blocking calls on hot paths. |
 
 Skip a checker whose domain the diff does not touch. A CSS change needs no
@@ -19,6 +19,19 @@ performance oracle; a pure-frontend diff needs no tenancy audit.
 
 If the diff is <=3 files or <=200 lines, **do not spawn** (guard 4) — run all three
 lenses inline yourself.
+
+## Verifying a threat register
+
+If FRAME produced one (`references/threat.md`), the security lens closes each row or fails
+it. For every threat:
+
+- Name the **code** implementing the mitigation — file and line, not a claim that it exists.
+- Name the **test that fails without it**. If deleting the mitigation leaves the suite green,
+  the mitigation is unproven and the row stays open.
+- A row with no code and no test is a **BLOCKER**, not a note.
+
+A threat model nobody verifies is theatre, and the verification is the whole reason to write
+one.
 
 ## Falsification
 
