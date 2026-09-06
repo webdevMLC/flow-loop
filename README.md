@@ -172,7 +172,10 @@ not required for config, glue, scaffolding or markup.
 
 A test counts as covering a source file by either of two passes:
 
-1. **Name** (no file reads). The test filename starts with the source name, or shares a token
+1. **Name or location** (no file reads). A file counts as a test if its name says so
+   (`.test.`, `.spec.`, `test_`) **or if it lives in a `test/`, `tests/`, `__tests__/` or
+   `spec/` directory** - Node's own runner, tape and ava all use `test/<name>.mjs` with no
+   marker in the filename. From there the test filename must start with the source name, or share a token
    with it. Tokens are split on `-`, `_` and camelCase, singularised, and generic ones
    (`index`, `types`, `utils`, `data`, `config`...) are ignored. So
    `booking-events-idempotency.test.ts` covers `booking-events.ts`, and

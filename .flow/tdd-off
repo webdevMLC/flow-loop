@@ -1,0 +1,7 @@
+The TDD gate is suspended for this repository.
+
+flow-loop ships the gate but has no test suite of its own, so the gate blocks edits to
+its own source. That is the gate working correctly, and it is also a real gap: the hook
+that enforces testing is itself untested.
+
+Remove this file once hooks/ has a test suite.

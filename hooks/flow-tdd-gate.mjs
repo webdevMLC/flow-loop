@@ -89,14 +89,22 @@ const tokenize = (s) => s
 const GENERIC = /^(route|middleware|handler|controller|service|resolver)$/;
 const tokens = tokenize(GENERIC.test(stem) ? basename(dirname(p)) : stemRaw);
 
-const isTestName = (n) => /(\.|_)(test|spec)\./.test(n) || /^test_/.test(n);
+// A file is a test if its NAME says so, or if it LIVES in a test directory. The second
+// clause is not optional: plenty of projects (Node's own runner, tape, ava) use
+// test/<name>.mjs with no marker in the filename at all.
+const TEST_DIR = /(^|\/)(test|tests|__tests__|spec|specs)\//i;
+const isTestFile = (full) => {
+  const n = basename(full).toLowerCase();
+  if (/(\.|_)(test|spec)\./.test(n) || /^test_/.test(n)) return true;
+  return TEST_DIR.test(full.split(BACKSLASH).join('/').toLowerCase());
+};
 
 // Pass 1 (free): the test's NAME is anchored on this file's name or one of its tokens.
-// Covers booking-events-idempotency.test.ts -> booking-events.ts
-// and lead-claim-rejection.test.ts -> claims.ts (shared token "claim").
+// Covers booking-events-idempotency.test.ts -> booking-events.ts,
+// lead-claim-rejection.test.ts -> claims.ts (shared token "claim"),
+// and test/activity.mjs -> src/activity.mjs (marker in the path, not the name).
 const nameCovers = (raw) => {
   const n = raw.toLowerCase();
-  if (!isTestName(n)) return false;
   if (n.startsWith(stem) || n.startsWith('test_' + stem)) return true;
   return tokens.some((t) => n.includes(t));
 };
@@ -128,8 +136,9 @@ const walk = (dir, depth) => {
     if (matched) return;
     if (e.isDirectory()) {
       if (!SKIP.has(e.name)) walk(join(dir, e.name), depth + 1);
-    } else if (isTestName(e.name.toLowerCase())) {
+    } else {
       const full = join(dir, e.name);
+      if (!isTestFile(full)) continue;
       if (nameCovers(e.name)) {
         if (isRealTest(full)) { matched = true; return; }
         if (stubs.length < 10 && !stubs.includes(e.name)) stubs.push(e.name);
