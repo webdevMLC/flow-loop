@@ -172,7 +172,7 @@ deny(
   'Expected ' + stem + '.test' + ext + ' / ' + stem + '.spec' + ext + ' / test_' + stem + ext +
   ' somewhere under ' + root + '\n\n' +
   'If this file is config, glue, scaffolding, or markup it is outside the TDD scope: ' +
-  'add its directory to EXEMPT_DIR in the flow plugin hooks/flow-tdd-gate.mjs\n' +
+  'add its directory to EXEMPT_DIR in flow-tdd-gate.mjs\n' +
   'Suspend for this project: create ' + root + '/.flow/tdd-off\n' +
   'Suspend for one command: FLOW_TDD_OFF=1'
 );
