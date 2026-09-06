@@ -1,0 +1,24 @@
+# Line endings are LF in the repository and in every checkout.
+#
+# Declared explicitly so behaviour does not depend on each contributor's
+# core.autocrlf setting. Without this, a Windows contributor with autocrlf=false
+# commits CRLF and the repository ends up mixed.
+#
+# hooks/flow-tdd-gate.mjs carries a shebang, so LF matters there if anyone marks
+# it executable and runs it directly rather than through `node`.
+
+* text=auto eol=lf
+
+# The file types this repository actually contains.
+*.md    text eol=lf
+*.mjs   text eol=lf
+*.json  text eol=lf
+LICENSE text eol=lf
+
+# Binaries, should any be added later.
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.gif  binary
+*.ico  binary
+*.zip  binary
