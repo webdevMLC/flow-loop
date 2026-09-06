@@ -1,7 +1,8 @@
 {
-  "name": "claude-flow",
+  "name": "flow-loop",
   "owner": {
-    "name": "Micho Calma"
+    "name": "Micho Calma",
+    "url": "https://github.com/webdevMLC"
   },
   "metadata": {
     "description": "Claude Code plugins by Micho Calma",

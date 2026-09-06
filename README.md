@@ -30,8 +30,8 @@ make. Frameworks that offer only one path make it constantly.
 ## Install
 
 ```
-/plugin marketplace add OWNER/claude-flow
-/plugin install flow@claude-flow
+/plugin marketplace add webdevMLC/flow-loop
+/plugin install flow@flow-loop
 ```
 
 Restart the session so the hook loads.
