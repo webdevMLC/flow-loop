@@ -60,7 +60,7 @@ fail for a reason a reviewer would care about. If yes, test it first.
 
 ### This rule is enforced, not advisory
 
-A PreToolUse hook (`~/.claude/hooks/flow-tdd-gate.mjs`) denies Write/Edit on a guarded
+A PreToolUse hook (`hooks/flow-tdd-gate.mjs`, shipped with this plugin) denies Write/Edit on a guarded
 source file when no test anchored on its name exists anywhere in the project. Guarded
 extensions: ts tsx js jsx mjs cjs py go rb php java cs. Test files, config, generated code,
 migrations, scripts, markup entry points (page/layout/index) and vendored trees are exempt.

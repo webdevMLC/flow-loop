@@ -1,5 +1,5 @@
 ---
-name: flow
+name: loop
 description: The single development loop — FRAME then BUILD then CHECK then SHIP — replacing separate memory, planning, context, TDD, debugging and review frameworks with one protocol. Use for any real feature, fix, refactor, migration, debugging session, or milestone in a project codebase. It sizes the task before starting, fixes the phase order, routes each kind of work to the cheapest model tier that can do it, enforces hard loop guards against repeated research and re-verification, and keeps one state file per project. Not needed for one-off questions or throwaway scratch scripts.
 ---
 

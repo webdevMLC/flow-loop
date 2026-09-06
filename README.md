@@ -34,7 +34,22 @@ make. Frameworks that offer only one path make it constantly.
 /plugin install flow@flow-loop
 ```
 
-Restart the session so the hook loads.
+Restart the session so the hook loads. The skill is then `flow:loop`.
+
+## Requirements
+
+| Needs | For | Without it |
+|---|---|---|
+| Claude Code | everything | - |
+| **Node 16+** | the TDD gate hook | **the gate fails open** - see below |
+| git | the SHIP gate, and resume's state-vs-repo check | those steps do not apply |
+
+Nothing else. The hook uses only Node built-ins - no npm packages, no `node_modules`.
+
+**If Node is missing, the TDD gate silently stops enforcing.** A hook whose command cannot
+run fails open: writes succeed and nothing announces that the gate is inactive. That is the
+safe failure mode - a broken install never bricks your editing - but it means you should
+confirm `node --version` reports 16 or higher rather than assuming you are protected.
 
 ## What you get
 
@@ -119,7 +134,7 @@ gets switched off entirely, which enforces nothing.
 Say what you are building and the skill triggers on its own, or invoke it directly:
 
 ```
-/flow add refund handling to the ledger
+/flow:loop add refund handling to the ledger
 ```
 
 With no `.flow/STATE.md` the project is unframed, so it starts at FRAME.
