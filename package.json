@@ -1,0 +1,14 @@
+{
+  "name": "flow-loop",
+  "version": "1.7.0",
+  "private": true,
+  "description": "Tests for the Flow hooks. The plugin itself has no runtime dependencies.",
+  "type": "module",
+  "scripts": {
+    "test": "node --test test/flow-tdd-gate.test.mjs test/flow-commit-gate.test.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "MIT"
+}

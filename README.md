@@ -217,6 +217,25 @@ It is built to stay out of your way, because a gate people disable enforces noth
 When it does block, it shows the last 25 lines of the failure, so the reason is in front of
 you rather than a re-run away.
 
+## Developing on it
+
+The hooks have a test suite. No dependencies - Node built-ins and the built-in runner:
+
+```
+npm test
+```
+
+35 tests across both gates: what they guard and what they exempt, every way a covering
+test can be recognised (sibling name, shared token, suffixed name, `test/` directory,
+exported symbol), the stub rejection, the false-positive guard for helper-based suites,
+every escape hatch, malformed stdin, and Windows backslash paths.
+
+That suite exists because three real bugs shipped before it did - exact-name matching,
+Next.js `route.ts`, and tests living in `test/` with no marker in the filename. All three
+were found by pointing the gate at a real repository by hand. Each is now a test.
+
+Requires Node 18+ for the test runner; the hooks themselves still only need 16+.
+
 ## Using it
 
 Say what you are building and the skill triggers on its own, or invoke it directly:
