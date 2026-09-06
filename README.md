@@ -72,6 +72,7 @@ nothing until there is a bug.
 | the goal is not clear yet | `references/brainstorm.md` |
 | a bug or test failure | `references/debug.md` |
 | resuming, or about to compact | `references/resume.md` |
+| running unattended | `references/autonomous.md` |
 | state format, milestones | `references/state.md` |
 
 **Parallel by default.** Tasks touching disjoint files run in waves, not in sequence, and
@@ -85,6 +86,17 @@ and framing it anyway produces a confident plan for the wrong problem.
 
 **Match before you write.** FRAME names the closest existing analog for every new file, so
 new code looks like the code around it and is not rewritten later.
+
+**Autonomous when you say so.** Opt in with a phrase or a `.flow/autonomous` file and Flow
+runs task after task without stopping to ask, reporting once at the end. Questions become
+assumptions recorded in the state file - the report leads with them, since that is where you
+find out it guessed wrong.
+
+Autonomy covers *building*. It never covers pushing, opening a PR, deploying, publishing,
+force-pushing, deleting data, touching secrets, spending money, or a scope that turned out
+much larger than framed - those still stop and ask. It also refuses to start from an unclear
+goal: running unattended from a vague brief does not save time, it builds the wrong thing
+faster and with more commits to unwind.
 
 **One state file.** `.flow/STATE.md` per project holds the goal, acceptance criteria, task
 list, assumptions and decisions. It replaces `.planning/` trees, phase directories, and

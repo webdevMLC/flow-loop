@@ -1,6 +1,6 @@
 ---
 name: loop
-description: The single development loop — brainstorm when the goal is unclear, then FRAME, BUILD, CHECK, SHIP — replacing separate memory, planning, context, TDD, debugging and review frameworks with one protocol. Use for any real feature, fix, refactor, migration, debugging session, or milestone in a project codebase, and equally when the request is still vague and needs shaping before anything gets built. It sizes the task first, fixes the phase order, routes each kind of work to the cheapest model tier that can do it, enforces hard loop guards against repeated research and re-verification, and keeps one state file per project. Not needed for one-off questions or throwaway scratch scripts.
+description: The single development loop — brainstorm when the goal is unclear, then FRAME, BUILD, CHECK, SHIP — replacing separate memory, planning, context, TDD, debugging and review frameworks with one protocol. Use for any real feature, fix, refactor, migration, debugging session, or milestone in a project codebase, and equally when the request is still vague and needs shaping before anything gets built. It sizes the task first, fixes the phase order, routes each kind of work to the cheapest model tier that can do it, enforces hard loop guards against repeated research and re-verification, and keeps one state file per project. Can run autonomously without asking when the user explicitly opts in. Not needed for one-off questions or throwaway scratch scripts.
 ---
 
 # Flow
@@ -100,7 +100,18 @@ Repeated work, not model choice, is what actually burns the budget.
 | Entering CHECK | `references/review.md` |
 | A bug, test failure, or unexpected behavior | `references/debug.md` |
 | Resuming, or context about to compact | `references/resume.md` |
+| The user has asked you to run unattended | `references/autonomous.md` |
 | State file format, milestones | `references/state.md` |
+
+## Autonomous mode
+
+Off by default. **Only the user turns it on** — "autonomous", "keep going, don’t ask", or a
+`.flow/autonomous` file in the project. Never infer it from impatience.
+
+It needs a framed goal first: brainstorming is a dialogue and cannot be done alone, so
+brainstorm and FRAME **with** the user, then run BUILD → CHECK → SHIP unattended. Questions
+become recorded assumptions, every guard still applies, and anything that leaves the machine
+or cannot be undone still stops and asks. See `references/autonomous.md`.
 
 ## Memory
 

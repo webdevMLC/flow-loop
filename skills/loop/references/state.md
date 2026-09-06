@@ -15,6 +15,7 @@ Updated: <YYYY-MM-DD>
 ## Now
 **Goal:** <one sentence — what done looks like>
 **Gate:** FRAME | BUILD | CHECK | SHIP
+**Mode:** normal | autonomous
 
 ### Acceptance criteria
 - [ ] <testable statement>
