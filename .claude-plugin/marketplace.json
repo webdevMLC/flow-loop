@@ -1,0 +1,28 @@
+{
+  "name": "claude-flow",
+  "owner": {
+    "name": "Micho Calma"
+  },
+  "metadata": {
+    "description": "Claude Code plugins by Micho Calma",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "flow",
+      "source": "./",
+      "description": "One development loop - FRAME, BUILD, CHECK, SHIP - with enforced TDD.",
+      "version": "1.0.0",
+      "author": {
+        "name": "Micho Calma"
+      },
+      "category": "workflow",
+      "keywords": [
+        "workflow",
+        "tdd",
+        "code-review",
+        "planning"
+      ]
+    }
+  ]
+}
