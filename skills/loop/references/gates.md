@@ -108,6 +108,10 @@ when the previous one is done.
 - A task that everything else depends on (a schema, a shared type, a migration) is its own
   wave, first. Getting this wrong serialises the whole phase.
 
+To actually run tasks concurrently — when spawning agents is worth it, how to brief them,
+why their file sets must be disjoint and why commits stay serial — read
+`references/parallel.md` before spawning anything.
+
 ### Commits
 
 One commit per completed task, message describing the behavior change. Never a

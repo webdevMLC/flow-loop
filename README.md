@@ -72,11 +72,17 @@ nothing until there is a bug.
 | the goal is not clear yet | `references/brainstorm.md` |
 | a bug or test failure | `references/debug.md` |
 | resuming, or about to compact | `references/resume.md` |
+| running tasks concurrently | `references/parallel.md` |
 | running unattended | `references/autonomous.md` |
 | state format, milestones | `references/state.md` |
 
-**Parallel by default.** Tasks touching disjoint files run in waves, not in sequence, and
-the wave order comes from real dependencies rather than task numbering.
+**Parallel by default, in two tiers.** Independent operations are batched into one message -
+free, no agents, and most of the wall-clock win in a normal phase. Beyond that, tasks with
+disjoint file sets can run as concurrent background agents, which buys wall-clock and costs
+tokens, so it is opt-in and gated: three or more substantial tasks, no shared files, and any
+shared contract (schema, types, barrels) committed first as its own wave. Agents never
+commit - the orchestrator does, one commit per task, so history stays serial while work is
+parallel. Two tasks that would need to renegotiate mid-flight are one task.
 
 **Does not assume you know what you are building.** When the goal cannot be stated in one
 checkable sentence, Flow brainstorms before it frames: problem before solution, two or three

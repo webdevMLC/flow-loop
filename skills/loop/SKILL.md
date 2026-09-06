@@ -100,6 +100,7 @@ Repeated work, not model choice, is what actually burns the budget.
 | Entering CHECK | `references/review.md` |
 | A bug, test failure, or unexpected behavior | `references/debug.md` |
 | Resuming, or context about to compact | `references/resume.md` |
+| Running phase tasks concurrently | `references/parallel.md` |
 | The user has asked you to run unattended | `references/autonomous.md` |
 | State file format, milestones | `references/state.md` |
 
