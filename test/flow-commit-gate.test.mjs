@@ -112,3 +112,31 @@ describe('malformed input', () => {
     assert.equal(runHook(COMMIT_GATE, { tool_name: 'Bash', tool_input: {} }).allowed, true);
   });
 });
+
+describe('cross-platform payload shapes', () => {
+  test('argv-array shell commands are normalised', () => {
+    const d = repo(FAILING);
+    const v = runHook(COMMIT_GATE, {
+      tool_name: 'shell', cwd: d, tool_input: { command: ['git', 'commit', '-m', 'x'] },
+    });
+    assert.equal(v.allowed, false);
+  });
+
+  test('alternate command field names are understood', () => {
+    const d = repo(FAILING);
+    for (const key of ['command', 'cmd', 'script']) {
+      const v = runHook(COMMIT_GATE, {
+        tool_name: 'exec_command', cwd: d, tool_input: { [key]: 'git commit -m x' },
+      });
+      assert.equal(v.allowed, false, `${key} should be recognised`);
+    }
+  });
+
+  test('--no-verify still honoured through an argv array', () => {
+    const d = repo(FAILING);
+    const v = runHook(COMMIT_GATE, {
+      tool_name: 'shell', cwd: d, tool_input: { command: ['git', 'commit', '--no-verify', '-m', 'x'] },
+    });
+    assert.equal(v.allowed, true);
+  });
+});

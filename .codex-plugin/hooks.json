@@ -1,0 +1,29 @@
+{
+  "description": "Flow gates for Codex - TDD before a file write, fast tests before a commit.",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "apply_patch|Edit|Write|edit_file|write_file|create_file",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${PLUGIN_ROOT}/hooks/flow-tdd-gate.mjs\"",
+            "timeout": 10,
+            "statusMessage": "Flow TDD gate"
+          }
+        ]
+      },
+      {
+        "matcher": "local_shell|shell|shell_command|exec_command|Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${PLUGIN_ROOT}/hooks/flow-commit-gate.mjs\"",
+            "timeout": 120,
+            "statusMessage": "Flow commit gate"
+          }
+        ]
+      }
+    ]
+  }
+}

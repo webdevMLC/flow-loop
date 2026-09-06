@@ -27,7 +27,12 @@ for await (const chunk of process.stdin) raw += chunk;
 let input;
 try { input = JSON.parse(raw || '{}'); } catch { ok(); }
 
-const cmd = input?.tool_input?.command || '';
+// Shell tools differ by platform: Claude Code's Bash sends a command string, Codex's
+// shell/exec_command may send argv as an array. Normalise both, ignore anything else.
+const ti = input?.tool_input ?? {};
+const rawCmd = ti.command ?? ti.cmd ?? ti.script ?? '';
+const cmd = Array.isArray(rawCmd) ? rawCmd.join(' ') : String(rawCmd || '');
+
 // Defensive: the hook `if` filter should already have narrowed this.
 if (!/\bgit\s+(-[^\s]+\s+)*commit\b/.test(cmd)) ok();
 // Never fight an explicit bypass the user typed themselves.

@@ -31,12 +31,39 @@ make. Frameworks that offer only one path make it constantly.
 
 ## Install
 
+### Claude Code
+
 ```
 /plugin marketplace add webdevMLC/flow-loop
 /plugin install flow@flow-loop
 ```
 
-Restart the session so the hook loads. The skill is then `flow:loop`.
+Restart the session so the hooks load. The skill is then `flow:loop`.
+
+### Codex
+
+Install the repository as a plugin - `.codex-plugin/plugin.json` declares the skills and
+both hooks, using `${PLUGIN_ROOT}` and Codex tool names (`apply_patch`, `local_shell`).
+
+### Cursor, Zed, Aider, Gemini CLI, or anything else that reads AGENTS.md
+
+Copy `AGENTS.md` into your project root (or append it to the one you have) and copy
+`skills/loop/references/` alongside it. That is the whole protocol; the reference files are
+loaded on demand exactly as they are under Claude Code.
+
+### What ports, and what does not
+
+| | Protocol | TDD gate | Commit gate |
+|---|---|---|---|
+| Claude Code | yes | enforced | enforced |
+| Codex | yes | manifest provided, unverified against a live install |  same |
+| Everything reading AGENTS.md | yes | discipline | discipline |
+
+The hooks are plain Node with no dependencies. They read a `{tool_name, tool_input}`
+envelope on stdin and print JSON only when denying, so any host that can run a command
+before a file write can use them. Field naming differs by platform and both hooks accept
+the known spellings (`file_path`, `path`, `filePath`, `target_file`, `file`; string or
+argv-array commands), failing open on anything unrecognised rather than guessing.
 
 ## Requirements
 

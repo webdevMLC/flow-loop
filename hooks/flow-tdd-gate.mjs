@@ -26,8 +26,13 @@ for await (const chunk of process.stdin) raw += chunk;
 let input;
 try { input = JSON.parse(raw || '{}'); } catch { ok(); }
 
-const filePath = input?.tool_input?.file_path;
-if (!filePath) ok();
+// The envelope (tool_name / tool_input) is shared across platforms, but the field
+// naming inside it is not: Claude Code sends Write/Edit with file_path, Codex sends
+// apply_patch and friends with its own spelling. Accept the known ones and fail open
+// on anything unrecognised rather than guessing at a path.
+const ti = input?.tool_input ?? {};
+const filePath = ti.file_path ?? ti.path ?? ti.filePath ?? ti.target_file ?? ti.file ?? null;
+if (!filePath || typeof filePath !== 'string') ok();
 
 const p = filePath.split(BACKSLASH).join('/');
 const lower = p.toLowerCase();

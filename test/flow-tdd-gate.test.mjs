@@ -146,3 +146,30 @@ describe('escape hatches and malformed input', () => {
     assert.equal(v.allowed, true);
   });
 });
+
+describe('cross-platform payload shapes', () => {
+  test('Codex-style field names are understood', () => {
+    const d = fixture({ 'src/pricing.ts': SRC });
+    for (const key of ['file_path', 'path', 'filePath', 'target_file', 'file']) {
+      const v = runHook(TDD_GATE, {
+        tool_name: 'apply_patch',
+        tool_input: { [key]: `${d}/src/pricing.ts` },
+      });
+      assert.equal(v.allowed, false, `${key} should be recognised and denied`);
+    }
+  });
+
+  test('an unrecognised payload fails open rather than guessing', () => {
+    const d = fixture({ 'src/pricing.ts': SRC });
+    const v = runHook(TDD_GATE, {
+      tool_name: 'apply_patch',
+      tool_input: { diff: `--- a/src/pricing.ts\n+++ b/src/pricing.ts` },
+    });
+    assert.equal(v.allowed, true);
+  });
+
+  test('a non-string path is not treated as a path', () => {
+    const v = runHook(TDD_GATE, { tool_name: 'Edit', tool_input: { file_path: { a: 1 } } });
+    assert.equal(v.allowed, true);
+  });
+});

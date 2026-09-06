@@ -17,5 +17,13 @@
     "context",
     "planning",
     "hooks"
-  ]
+  ],
+  "hooks": "./.codex-plugin/hooks.json",
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Flow",
+    "shortDescription": "One development loop - FRAME, BUILD, CHECK, SHIP - with enforced TDD",
+    "developerName": "Micho Calma",
+    "category": "Productivity"
+  }
 }
