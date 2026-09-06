@@ -196,6 +196,24 @@ It matches on names and symbols, so it can be. In order of preference:
 The gate is deliberately looser than exact-name matching. A gate that blocks legitimate work
 gets switched off entirely, which enforces nothing.
 
+## The commit gate
+
+A second hook runs before `git commit`. If `.flow/PROJECT.md` declares a `test_fast`
+command, that command must pass before a commit containing source changes goes through.
+
+It is built to stay out of your way, because a gate people disable enforces nothing:
+
+- **Opt-in by configuration.** No `test_fast` in the profile means no gate.
+- **Docs-only commits are not gated.** It only fires when staged files include guarded
+  source extensions.
+- **Fails open** on anything ambiguous - no profile, unreadable profile, no staged files.
+- **Honours `--no-verify`**, `FLOW_SKIP_VERIFY=1`, and a `.flow/verify-off` file.
+- **90 second ceiling.** `test_fast` is meant to be the unit suite - no containers, no
+  network. If it times out the gate says so rather than blocking silently.
+
+When it does block, it shows the last 25 lines of the failure, so the reason is in front of
+you rather than a re-run away.
+
 ## Using it
 
 Say what you are building and the skill triggers on its own, or invoke it directly:

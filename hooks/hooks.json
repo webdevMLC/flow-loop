@@ -1,5 +1,5 @@
 {
-  "description": "Flow TDD gate - denies Write/Edit on a guarded source file when no test covering it exists.",
+  "description": "Flow gates - TDD on Write/Edit, and a fast-test check before git commit.",
   "hooks": {
     "PreToolUse": [
       {
@@ -10,6 +10,18 @@
             "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/flow-tdd-gate.mjs\"",
             "timeout": 10,
             "statusMessage": "Flow TDD gate"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/flow-commit-gate.mjs\"",
+            "if": "Bash(git commit *)",
+            "timeout": 120,
+            "statusMessage": "Flow commit gate"
           }
         ]
       }

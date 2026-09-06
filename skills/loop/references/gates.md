@@ -141,7 +141,12 @@ why their file sets must be disjoint and why commits stay serial — read
 
 ### Commits
 
-One commit per completed task, message describing the behavior change. Never a
+One commit per completed task, message describing the behavior change.
+
+A second hook gates the commit itself: if `.flow/PROJECT.md` declares `test_fast`, that
+command must pass before a commit containing source changes is allowed. It skips docs-only
+commits, skips projects with no `test_fast` declared, and honours `--no-verify`,
+`FLOW_SKIP_VERIFY=1` and `.flow/verify-off`. Never a
 single dump commit at the end — it defeats CHECK and undo.
 
 ### Deviation
