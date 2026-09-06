@@ -101,12 +101,25 @@ const nameCovers = (raw) => {
   return tokens.some((t) => n.includes(t));
 };
 
+// A stub named like a test is not a test. Require a recognisable assertion, or enough
+// substance that the assertions are plausibly behind a project-specific helper.
+const ASSERTS = /\bexpect\s*\(|\bassert\b|\bshould\b|\bt\.(is|deepEqual|throws|true|false|Error|Fatal)/i;
+const isRealTest = (full) => {
+  try {
+    if (statSync(full).size > 512 * 1024) return true;
+    const txt = readFileSync(full, 'utf8');
+    if (ASSERTS.test(txt)) return true;
+    return txt.split('\n').filter((l) => l.trim()).length >= 20;
+  } catch { return false; }
+};
+
 const SKIP = new Set(['node_modules', '.git', 'dist', 'build', '.next', 'out',
   'coverage', 'vendor', '.turbo', '.cache', 'target', '.venv', 'venv']);
 
 let budget = 4000;
 let matched = false;
 const tests = [];
+const stubs = [];
 const walk = (dir, depth) => {
   if (matched || depth > 8 || budget-- <= 0) return;
   let entries;
@@ -116,8 +129,13 @@ const walk = (dir, depth) => {
     if (e.isDirectory()) {
       if (!SKIP.has(e.name)) walk(join(dir, e.name), depth + 1);
     } else if (isTestName(e.name.toLowerCase())) {
-      if (nameCovers(e.name)) { matched = true; return; }
-      if (tests.length < 400) tests.push(join(dir, e.name));
+      const full = join(dir, e.name);
+      if (nameCovers(e.name)) {
+        if (isRealTest(full)) { matched = true; return; }
+        if (stubs.length < 10 && !stubs.includes(e.name)) stubs.push(e.name);
+      } else if (tests.length < 400) {
+        tests.push(full);
+      }
     }
   }
 };
@@ -145,8 +163,12 @@ if (symbols.length) {
 }
 
 deny(
-  'Flow TDD gate: no test file found for "' + base + '".\n' +
-  'RED comes first - write a failing test before this implementation.\n' +
+  (stubs.length
+    ? 'Flow TDD gate: ' + stubs.join(', ') + ' matches "' + base + '" by name but has no\n' +
+      'assertions - a file named like a test is not a test.\n'
+    : 'Flow TDD gate: no test file found for "' + base + '".\n') +
+  'RED comes first - write a failing test before this implementation, and watch it fail\n' +
+  'for the right reason.\n' +
   'Expected ' + stem + '.test' + ext + ' / ' + stem + '.spec' + ext + ' / test_' + stem + ext +
   ' somewhere under ' + root + '\n\n' +
   'If this file is config, glue, scaffolding, or markup it is outside the TDD scope: ' +

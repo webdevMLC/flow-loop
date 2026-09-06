@@ -74,6 +74,23 @@ styling, copy changes, generated code, or migrations. Verify those by running th
 Nothing in between: if unsure which side a file falls on, ask whether a test could
 fail for a reason a reviewer would care about. If yes, test it first.
 
+### RED must be observed, not assumed
+
+The hook stops you writing implementation that has no test, and rejects a file named like a
+test that contains no assertions. It cannot tell whether the test actually failed first, and
+it deliberately does not run your suite - running tests inside a write hook would spawn
+containers and network calls on every edit.
+
+So the two halves split like this:
+
+- **Mechanical:** a covering test must exist and must contain assertions. An empty
+  `pricing.test.ts` is rejected by name, with a message saying so.
+- **Yours:** run that test and watch it fail, for the reason you expect, before writing the
+  implementation. A test that passes before the code exists is testing nothing. A test that
+  fails for the wrong reason - an import error, a typo - has not established RED either.
+
+If you cannot make it fail, you do not yet understand what you are building.
+
 ### This rule is enforced, not advisory
 
 A PreToolUse hook (`hooks/flow-tdd-gate.mjs`, shipped with this plugin) denies Write/Edit on a guarded
