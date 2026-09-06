@@ -228,8 +228,16 @@ gets switched off entirely, which enforces nothing.
 
 ## The commit gate
 
-A second hook runs before `git commit`. If `.flow/PROJECT.md` declares a `test_fast`
-command, that command must pass before a commit containing source changes goes through.
+A second hook runs before `git commit` and enforces two things.
+
+**The state file must keep up.** A commit that changes source is refused when
+`.flow/STATE.md` has not been touched in that commit or either of the last two. This exists
+because it was observed failing in the wild: an unattended run shipped three commits of real
+work without checking off a single task, so the next session would have read an untouched
+list and redone it. The check is free and applies even to projects with no `PROJECT.md`.
+
+**The tests must pass.** If `.flow/PROJECT.md` declares a `test_fast` command, that command
+must pass before a commit containing source changes goes through.
 
 It is built to stay out of your way, because a gate people disable enforces nothing:
 

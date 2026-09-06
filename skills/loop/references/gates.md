@@ -141,7 +141,10 @@ why their file sets must be disjoint and why commits stay serial — read
 
 ### Commits
 
-One commit per completed task, message describing the behavior change.
+One commit per completed task, message describing the behavior change, **and the STATE.md
+update for that task in the same commit**. Checking a task off later is how a run that ends
+unexpectedly leaves work that looks unfinished and gets redone. The commit gate enforces
+this.
 
 A second hook gates the commit itself: if `.flow/PROJECT.md` declares `test_fast`, that
 command must pass before a commit containing source changes is allowed. It skips docs-only

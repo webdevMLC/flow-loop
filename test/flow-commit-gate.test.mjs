@@ -2,6 +2,7 @@ import { test, after, describe } from 'node:test';
 import assert from 'node:assert/strict';
 import { writeFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { execSync } from 'node:child_process';
 import { gitFixture, gitAdd, commitVerdict, runHook, cleanup, COMMIT_GATE } from './helpers.mjs';
 
 after(cleanup);
@@ -138,5 +139,67 @@ describe('cross-platform payload shapes', () => {
       tool_name: 'shell', cwd: d, tool_input: { command: ['git', 'commit', '--no-verify', '-m', 'x'] },
     });
     assert.equal(v.allowed, true);
+  });
+});
+
+describe('the state file must keep up with the commits', () => {
+  const STATE = '# s\n\n## Now\n**Gate:** BUILD\n\n### Tasks\n- [ ] T1 do the thing\n';
+
+  /** A repo with a profile, a state file, and staged source. */
+  function stateRepo(extra = {}) {
+    const d = gitFixture({
+      '.flow/PROJECT.md': PASSING,
+      '.flow/STATE.md': STATE,
+      'src/thing.ts': SRC,
+      ...extra,
+    });
+    execSync('git add -A && git commit -q -m "initial"', { cwd: d, stdio: 'ignore' });
+    writeFileSync(join(d, 'src', 'thing.ts'), SRC + 'export const y = 2;\n');
+    gitAdd(d, 'src/thing.ts');
+    return d;
+  }
+
+  test('source staged while the state file goes untouched is refused', () => {
+    const d = stateRepo();
+    // three commits of source with no state update - the BizDev failure mode
+    execSync('git commit -q -m "feat: one"', { cwd: d, stdio: 'ignore' });
+    writeFileSync(join(d, 'src', 'thing.ts'), SRC + 'export const z = 3;\n');
+    gitAdd(d, 'src/thing.ts');
+    execSync('git commit -q -m "feat: two"', { cwd: d, stdio: 'ignore' });
+    writeFileSync(join(d, 'src', 'thing.ts'), SRC + 'export const w = 4;\n');
+    gitAdd(d, 'src/thing.ts');
+    const v = commitVerdict(d, 'git commit -m "feat: three"');
+    assert.equal(v.allowed, false);
+    assert.match(v.reason, /STATE\.md/);
+  });
+
+  test('staging the state file alongside the source is accepted', () => {
+    const d = stateRepo();
+    writeFileSync(join(d, '.flow', 'STATE.md'), STATE.replace('- [ ] T1', '- [x] T1'));
+    gitAdd(d, '.flow/STATE.md');
+    assert.equal(commitVerdict(d, 'git commit -m "feat: one"').allowed, true);
+  });
+
+  test('a state update in the previous commit still counts', () => {
+    const d = stateRepo();
+    writeFileSync(join(d, '.flow', 'STATE.md'), STATE.replace('- [ ] T1', '- [x] T1'));
+    gitAdd(d, '.flow/STATE.md');
+    execSync('git commit -q -m "feat: test half"', { cwd: d, stdio: 'ignore' });
+    writeFileSync(join(d, 'src', 'thing.ts'), SRC + 'export const z = 3;\n');
+    gitAdd(d, 'src/thing.ts');
+    assert.equal(commitVerdict(d, 'git commit -m "feat: impl half"').allowed, true);
+  });
+
+  test('a project with no state file is not subject to the check', () => {
+    const d = repo(PASSING);
+    assert.equal(commitVerdict(d, 'git commit -m x').allowed, true);
+  });
+
+  test('a docs-only commit is never state-checked', () => {
+    const d = stateRepo();
+    execSync('git commit -q -m "feat: one"', { cwd: d, stdio: 'ignore' });
+    writeFileSync(join(d, 'README.md'), '# hi\n');
+    gitAdd(d, 'README.md');
+    assert.equal(commitVerdict(d, 'git commit -m docs').allowed, true);
   });
 });

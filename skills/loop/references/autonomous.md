@@ -80,10 +80,27 @@ The run ends — and you report — on the first of:
 
 Never end a run silently, and never end one mid-task with an uncommitted working tree.
 
+## It is not a daemon
+
+Autonomous mode means **you do not stop to ask questions during a run**. It does not mean
+the work continues after the session ends, because nothing here can make that happen: an
+agent runs inside a session, and when that session ends, so does the run. Continuing needs
+the host to start another one - a scheduled task, a loop command, or a person.
+
+So the end of a run is a certainty to design for, not an accident. The next session begins
+by reading `.flow/STATE.md` and nothing else. If that file does not say what was finished
+and what is next, the next run re-derives it, and often redoes work that is already
+committed.
+
 ## Keeping the trail
 
-Nobody is reading over your shoulder, so STATE.md is the record. Update it as you go, not at
-the end — a run that dies at task 7 must leave task 6 legible.
+Nobody is reading over your shoulder, so STATE.md is the record. **Update it in the same
+commit as the work**, not at the end of the run - a run that dies at task 7 must leave task
+6 legible.
+
+This is enforced. The commit gate refuses a commit that changes source when STATE.md has
+not been touched in that commit or either of the last two. It applies even to projects with
+no `PROJECT.md`, because state drift is not conditional on having a test command.
 
 Per task: check it off with its commit sha. Per decision made instead of asked: one line
 under Assumptions. Per surprise: one line under Deviations.

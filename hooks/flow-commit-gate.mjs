@@ -52,16 +52,6 @@ if (!existsSync(join(root, '.git'))) ok();
 if (process.env.FLOW_SKIP_VERIFY === '1') ok();
 if (existsSync(join(root, '.flow', 'verify-off'))) ok();
 
-// ---------- the command comes from the project profile ----------
-const profile = join(root, '.flow', 'PROJECT.md');
-if (!existsSync(profile)) ok();
-let testCmd = '';
-try {
-  const m = readFileSync(profile, 'utf8').match(/^[ \t]*-?[ \t]*test_fast:[ \t]*(.+)$/m);
-  testCmd = m ? m[1].trim() : '';
-} catch { ok(); }
-if (!testCmd || /^<.*>$/.test(testCmd)) ok();
-
 // ---------- only gate commits that actually stage code ----------
 const GUARDED = /\.(ts|tsx|js|jsx|mjs|cjs|py|go|rb|php|java|cs)$/i;
 let staged = [];
@@ -71,6 +61,41 @@ try {
 } catch { ok(); }
 if (!staged.length) ok();
 if (!staged.some((f) => GUARDED.test(f))) ok();
+
+// ---------- the state file must keep up with the commits ----------
+// Checked before the tests because it is free, and because it applies even to projects
+// with no PROJECT.md — which is exactly where the drift was found.
+const IS_STATE = /(^|\/)\.flow\/STATE\.md$/i;
+if (existsSync(join(root, '.flow', 'STATE.md'))) {
+  const stagedState = staged.some((f) => IS_STATE.test(f.split(BACKSLASH).join('/')));
+  let recent = '';
+  if (!stagedState) {
+    try {
+      recent = execSync('git log -2 --name-only --pretty=format:', { cwd: root, encoding: 'utf8' });
+    } catch { /* shallow or empty history */ }
+  }
+  if (!stagedState && !/\.flow\/STATE\.md/i.test(recent.split(BACKSLASH).join('/'))) {
+    deny(
+      'Flow state gate: this commit changes source, but .flow/STATE.md has not been\n' +
+      'updated in this commit or either of the last two.\n\n' +
+      'The state file is the only thing that survives the end of a session. When tasks ship\n' +
+      'without being checked off, the next run reads an untouched task list and redoes work\n' +
+      'that is already committed.\n\n' +
+      'Check off what this commit finished, with its sha, and set the gate. Then commit.\n' +
+      'Bypass once: FLOW_SKIP_VERIFY=1   Suspend for the project: .flow/verify-off'
+    );
+  }
+}
+
+// ---------- the test command comes from the project profile ----------
+const profile = join(root, '.flow', 'PROJECT.md');
+if (!existsSync(profile)) ok();
+let testCmd = '';
+try {
+  const m = readFileSync(profile, 'utf8').match(/^[ \t]*-?[ \t]*test_fast:[ \t]*(.+)$/m);
+  testCmd = m ? m[1].trim() : '';
+} catch { ok(); }
+if (!testCmd || /^<.*>$/.test(testCmd)) ok();
 
 // ---------- run it ----------
 try {

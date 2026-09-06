@@ -46,6 +46,9 @@ A failed check that does **not** change the goal is fixed inside CHECK, not by r
 | CHECK | one verdict report | cheap subagents, parallel | 1 pass + 1 targeted re-verify |
 | SHIP | commit / PR + memory write | inline, cheapest | 1 pass |
 
+Every task commit carries its own `.flow/STATE.md` update. A task shipped but not checked
+off is a task the next session will do again.
+
 **No code is written outside BUILD.** No research is done inside BUILD.
 
 ## Loop guards (non-negotiable)
