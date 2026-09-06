@@ -2,6 +2,21 @@
 
 One pass. Three checkers in parallel. One report. Then done.
 
+## Machine pass first
+
+Before spending a single model token on the lenses below, run the checks a machine does
+better and cheaper. Commands come from `.flow/PROJECT.md`.
+
+1. **Typecheck** — `tsc --noEmit` or the language equivalent.
+2. **Lint** — the project's configured linter.
+3. **The affected tests** — full suite if the change is broad.
+
+Fix everything they report **before** dispatching reviewers. A type error found by `tsc` in
+two seconds is the same defect a review agent would spend a thousand tokens describing, and
+the compiler is never wrong about it in the way a reviewer can be.
+
+If the machine pass is red, the review has nothing useful to say yet. Do not run it.
+
 ## Dispatch
 
 Spawn these **in a single message** so they run concurrently. Use Sonnet, or Haiku
