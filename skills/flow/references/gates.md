@@ -10,6 +10,13 @@ Goal: know what "done" means and what the tasks are. **No code.**
    Route this through the sandbox — index or grep, print only what matters.
    Delegate to a Haiku/Sonnet subagent **only** if the survey spans many files
    (guard 4); otherwise do it inline.
+
+   **Find the analog.** For every new file you expect to write, name the closest existing
+   file that already does something similar, and note what it does — its layout, its error
+   handling, its test shape, its naming. New code that matches the surrounding code is
+   reviewed faster, breaks less, and is not rewritten later. Record the analogs in STATE.md
+   as one line each. If there is no analog, say so — you are setting a precedent, and that
+   is worth one sentence of deliberate choice rather than an accident.
 3. **Write STATE.md.** Goal, acceptance criteria, task list, and every assumption
    you are proceeding on. This file is the plan. There is no separate plan document.
 4. **Ask once.** If different readings of the request lead to materially different
@@ -81,6 +88,19 @@ A test counts as covering a source file by either of two passes:
 
 A brand-new logic file in a project with no related test at all is still denied, which is
 the point.
+
+### Parallelism
+
+Tasks that touch disjoint files and share no ordering constraint run **together**, not in
+sequence. Group them into waves: everything in a wave is independent, and a wave starts only
+when the previous one is done.
+
+- Establish the wave order in FRAME, from the dependency between tasks, not their numbering.
+- Within a wave, issue the independent tool calls in one message.
+- Only delegate a wave to subagents when it clears guard 5 — otherwise waves are just an
+  ordering device for your own work, which is still most of their value.
+- A task that everything else depends on (a schema, a shared type, a migration) is its own
+  wave, first. Getting this wrong serialises the whole phase.
 
 ### Commits
 

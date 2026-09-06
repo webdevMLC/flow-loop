@@ -14,6 +14,19 @@ FRAME  ->  BUILD  ->  CHECK  ->  SHIP
   +--- only on a CHECK failure that changes the goal
 ```
 
+## Triage - not every task deserves four gates
+
+The first thing Flow does is size the work. This is where most of the speed comes from.
+
+| Size | Looks like | Path |
+|------|-----------|------|
+| **Direct** | a question, a typo, a rename, a one-line fix | just do it - no gates, no state file |
+| **Quick** | one file, clear requirement, no new interface | BUILD then SHIP; still test-first if it is logic |
+| **Full** | several files, a new interface, money/auth/data | all four gates |
+
+Running the full loop on a typo is the most expensive mistake available, and the easiest to
+make. Frameworks that offer only one path make it constantly.
+
 ## Install
 
 ```
@@ -32,18 +45,34 @@ Restart the session so the hook loads.
 | CHECK | one verdict report | cheap subagents, parallel | 1 pass + 1 targeted re-verify |
 | SHIP | commit / PR + memory write | inline | 1 pass |
 
+**Protocols load only when you reach them.** One entry in the skill listing, ~110 resident
+lines. The gate protocols, the debugging cycle, and the resume procedure sit in reference
+files that are read only when the situation calls for them - a debugging protocol costs
+nothing until there is a bug.
+
+| Situation | Loads |
+|-----------|-------|
+| FRAME / BUILD / SHIP | `references/gates.md` |
+| CHECK | `references/review.md` |
+| a bug or test failure | `references/debug.md` |
+| resuming, or about to compact | `references/resume.md` |
+| state format, milestones | `references/state.md` |
+
+**Parallel by default.** Tasks touching disjoint files run in waves, not in sequence, and
+the wave order comes from real dependencies rather than task numbering.
+
+**Match before you write.** FRAME names the closest existing analog for every new file, so
+new code looks like the code around it and is not rewritten later.
+
 **One state file.** `.flow/STATE.md` per project holds the goal, acceptance criteria, task
 list, assumptions and decisions. It replaces `.planning/` trees, phase directories, and
 separate plan documents. It is small on purpose - it is read at the start of every session.
 
-**Seven loop guards.** The expensive failure mode is not model choice, it is repeated work:
+**Eight loop guards.** The expensive failure mode is not model choice, it is repeated work:
 re-verifying what already passed, researching the same fact twice, a third silent debug
 attempt, spawning a subagent whose prompt costs more than reading three files yourself.
 The guards cut each of those off explicitly, with a red-flags table for the rationalisations
 that precede them.
-
-**Progressive disclosure.** `SKILL.md` is ~100 lines and loads on trigger. The gate protocols
-load only at the gate that needs them.
 
 ## The TDD gate
 
@@ -104,6 +133,24 @@ ones it supersedes in `~/.claude/settings.json`.
 Keep anything that genuinely saves context rather than spending it - a sandboxed
 execution/search layer is complementary, and Flow's token rules assume one may be present
 while working correctly without it.
+
+## What this is, and what it is not
+
+Flow is a distillation, not a bundle. It contains no code from any other plugin, and
+installing it installs nothing else. What it carries is the *practice* those tools encoded,
+rewritten as one protocol:
+
+| Idea from | What Flow keeps | What it drops |
+|---|---|---|
+| phase-based planning frameworks | the loop, compressed to 4 gates and one state file | dozens of commands, agent fleets, `.planning/` trees |
+| TDD skill libraries | test-first scoped to logic, plus the enforcing hook | the surrounding skill catalogue |
+| multi-agent review tools | the three review lenses as one CHECK pass | the orchestration layer |
+| session-memory plugins | two touchpoints: recall at FRAME, write at SHIP | the persistence engine itself |
+| context-saving MCP servers | the token rules, as ambient guidance | the sandbox and the search index |
+
+The last two rows matter: a skill file cannot replace a running MCP server. If you want
+sandboxed execution or durable cross-session memory, install those separately - Flow detects
+and uses them when present, and works without them.
 
 ## Honest limits
 

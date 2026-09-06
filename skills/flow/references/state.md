@@ -24,8 +24,16 @@ Updated: <YYYY-MM-DD>
 - [x] <task> — <commit sha>
 - [ ] <task>
 
+### Analogs
+- <new file> mirrors <existing file> — <what is being matched>
+
 ### Assumptions
 - <fact assumed, because research was capped at one pass>
+
+### Debugging
+- **Symptom:** <what fails, and the exact command that reproduces it>
+- **Ruled out:** <hypothesis — how it was falsified>
+- **Next:** <the candidate being tested now>
 
 ### Deviations
 - <what changed from plan, and why>
