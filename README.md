@@ -1,5 +1,7 @@
 # Flow
 
+[![version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FwebdevMLC%2Fflow-loop%2Fmain%2F.claude-plugin%2Fplugin.json&query=%24.version&label=version&color=blue)](https://github.com/webdevMLC/flow-loop/blob/main/.claude-plugin/plugin.json)
+
 One development loop for Claude Code. Four gates, hard loop guards, and a TDD rule that is
 actually enforced by a hook instead of politely suggested.
 
