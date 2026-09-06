@@ -11,7 +11,12 @@ onboarding better" — is not a goal, and framing it anyway produces a confident
 wrong problem.
 
 1. **Recall once.** One memory query (see SKILL.md → Memory). Do not query twice.
-2. **Survey once.** One batched pass to establish the ground truth you need:
+2. **Read the profile, or write it.** `.flow/PROJECT.md` holds the stack, the commands
+   (test, test_fast, test_one, typecheck, lint, run), the conventions, and the analog map.
+   If it exists, read it and skip most of the survey below — that is the point of it. If it
+   does not, this is the phase that writes it. See `references/state.md`.
+
+3. **Survey what the profile does not cover.** One batched pass for the rest:
    existing patterns, the files in play, the test command, the run command.
    Route this through the sandbox — index or grep, print only what matters.
    Delegate to a Haiku/Sonnet subagent **only** if the survey spans many files
@@ -23,13 +28,13 @@ wrong problem.
    reviewed faster, breaks less, and is not rewritten later. Record the analogs in STATE.md
    as one line each. If there is no analog, say so — you are setting a precedent, and that
    is worth one sentence of deliberate choice rather than an accident.
-3. **Write STATE.md.** Goal, acceptance criteria, task list, and every assumption
+4. **Write STATE.md.** Goal, acceptance criteria, task list, and every assumption
    you are proceeding on. This file is the plan. There is no separate plan document.
-4. **Ask once.** If different readings of the request lead to materially different
+5. **Ask once.** If different readings of the request lead to materially different
    work, batch every open question into a single AskUserQuestion. Otherwise decide
    like a careful colleague, record the call as an assumption, and continue.
 
-5. **Threat model, if the phase warrants it.** If it touches money, identity, other
+6. **Threat model, if the phase warrants it.** If it touches money, identity, other
    people’s data, or input from outside the trust boundary, read `references/threat.md` and
    write the threat register before BUILD. Every mitigation becomes a task in the list, not
    a wishlist item.

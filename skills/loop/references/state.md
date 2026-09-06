@@ -66,3 +66,48 @@ Updated: <YYYY-MM-DD>
 
 Read `.flow/STATE.md` if it exists — that read is the whole context restoration step.
 If it does not exist, the project has not been framed; start at FRAME.
+
+## Project profile — `.flow/PROJECT.md`
+
+Written once, on the first FRAME. Read by every FRAME after that **instead of surveying
+again**. This is the difference between deriving the same facts once and deriving them every
+phase forever.
+
+Update it only when something in it turns out to be wrong. It is a cache, not a document.
+
+```markdown
+# <project> — profile
+Updated: <YYYY-MM-DD>
+
+## Stack
+<language, framework, database, package manager, test runner>
+
+## Commands
+- test:      <the full suite>
+- test_fast: <unit tests only — no containers, no network. Used by the commit gate.>
+- test_one:  <run a single file, e.g. pnpm vitest run <file>>
+- typecheck: <e.g. tsc --noEmit>
+- lint:      <e.g. eslint .>
+- run:       <start the app>
+
+## Conventions
+- <error handling, naming, module layout, how results are returned — one line each>
+
+## Analogs
+- new API endpoint -> <closest existing one>
+- new db module    -> <closest existing one>
+- new test         -> <closest existing one>
+
+## Landmarks
+- <where the things you keep looking for actually live>
+```
+
+**Commands are the load-bearing part.** The CHECK machine pass, the commit gate, and
+affected-test selection all read them. Without `test_fast` the commit gate cannot run, and
+without `typecheck` the cheapest accuracy check in the loop is skipped.
+
+**Analogs are the speed part.** FRAME's "find the closest existing file" becomes a lookup
+rather than a search, and new code keeps matching the code around it.
+
+If the profile is missing, FRAME writes it as its first act. If a command in it fails, fix
+the profile — do not work around it silently, or the next phase pays the same cost again.

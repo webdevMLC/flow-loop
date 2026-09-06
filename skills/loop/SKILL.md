@@ -103,7 +103,7 @@ Repeated work, not model choice, is what actually burns the budget.
 | Resuming, or context about to compact | `references/resume.md` |
 | Running phase tasks concurrently | `references/parallel.md` |
 | The user has asked you to run unattended | `references/autonomous.md` |
-| State file format, milestones | `references/state.md` |
+| State file format, project profile, milestones | `references/state.md` |
 
 ## Autonomous mode
 
