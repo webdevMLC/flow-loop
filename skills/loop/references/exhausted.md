@@ -33,15 +33,37 @@ not open anything not named here. The whole sweep should cost less than a single
 
 ## Classify every candidate
 
-Two buckets, and the boundary is: **could this start right now, on this machine, with what is
-already here?**
+Three buckets. The distinction that matters is not "is something missing" but **who can
+supply it** — and a disposable service on localhost is not the same kind of missing as a
+banking licence.
 
 | | Means | Report as |
 |---|---|---|
 | **Unblocked** | Everything needed is present | a task, with the command that starts it |
-| **Blocked** | Needs a credential, a licence, a partner, a database, a decision | a request, naming exactly what is needed and from whom |
+| **Needs local setup** | A throwaway service, fixture or env var the loop could create itself — a test Postgres, a Redis, a seeded schema | **not terminal.** Propose it with the exact command; act only if pre-authorised |
+| **Needs a person** | A licence, a partner, a contract, a production credential, a decision only a human can make | a request, naming what is needed and from whom |
 
-A blocked item is never a task. Saying "add SMS delivery" when nobody can obtain a telco
+**Do not collapse the middle bucket into the last one.** That mistake makes a project look
+finished when it is one `docker run` from twenty test files. If the only thing standing
+between you and a candidate is a disposable local service, the candidate is *work*, and the
+setup is the first step of it.
+
+**The line inside the middle bucket:** disposable and local is fine — a container on
+localhost, a scratch schema, an env var pointing at either. A **production** credential never
+is. `TWILIO_MODE=live` or a real `DATABASE_URL` for a deployed system belongs in the last
+bucket no matter how easy it would be to set.
+
+**Pre-authorising it.** Starting a service touches the machine, so the default is to propose
+and wait. The user can lift that for a run by saying so, or with a line in `.flow/nonstop`:
+
+```
+allow local services
+```
+
+With that present, the loop may start disposable local services itself, and must say in the
+report exactly what it started and how to remove it.
+
+A last-bucket item is never a task. Saying "add SMS delivery" when nobody can obtain a telco
 contract wastes a wake and reads as though the project is closer than it is.
 
 ## Then report — and usually stop

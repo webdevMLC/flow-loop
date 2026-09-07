@@ -467,9 +467,15 @@ that has never run, a mutation gate reporting survivors, two documents describin
 differently), then requirements the project's own specification states and no code implements.
 With no specification, that third tier does not exist.
 
-It ends when **every remaining candidate is blocked on a human** — a licence, a partner, a
-credential, a database, a decision. That is a real terminal condition, unlike an empty
-roadmap: it means the project is blocked rather than merely unplanned.
+It ends when **every remaining candidate needs a person** — a licence, a partner, a
+production credential, a decision. That is a real terminal condition, unlike an empty roadmap:
+it means the project is blocked rather than merely unplanned.
+
+**Something that only needs local setup is not that.** A suite that has never run because no
+test database exists is *work*, and starting a throwaway Postgres is its first step — not a
+reason to declare the project blocked. The loop proposes that with the exact command, and
+will do it itself if you put `allow local services` in `.flow/nonstop`. Production
+credentials are never in this category, however easy they would be to set.
 
 **What it will not do:** invent a feature nobody wrote down, reclassify blocked work as
 buildable to stay busy, or soften a hard stop. Every self-selected phase is written into the

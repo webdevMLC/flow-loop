@@ -41,6 +41,13 @@ Mechanically discoverable, and none of it is new scope — it is finishing work 
 Prefer the gaps that sit on money, auth, or persistence. An untested helper matters less than
 an unasserted ledger path, and this tier is where that judgement belongs.
 
+**A command that needs a disposable local service is a tier 2 task, not a blocker.** If
+`test:pg` has never run because no database is set, the work is *"start a throwaway Postgres,
+run the suite, act on what it reports"* — propose it with the command, or run it if the user
+pre-authorised local services. Falling through to tier 3 because a container was not running
+is how a run reaches for new code while twenty existing suites have never executed once.
+Setting up the service is the first step of the task, not a reason to abandon it.
+
 ### Tier 3 — work the authority document already specifies
 
 **Only when the project has an authority** — a specification, a contract, a requirements
@@ -54,8 +61,10 @@ With no authority document, **this tier does not exist**. Skip to the stop.
 
 ### Stop — and this one is real
 
-End the loop when **every remaining candidate is blocked on a human**: a licence, a partner,
-a credential, a database, a decision, a rulebook. Say what each is waiting on and who it
+End the loop when **every remaining candidate needs a person**: a licence, a partner, a
+production credential, a decision, a rulebook. Not when something merely needs local setup —
+check that bucket is empty first, and if it is not, either do that work or say which command
+would unblock it. Say what each is waiting on and who it
 needs. A budget cannot authorise work that cannot start, and non-stop does not mean
 inventing work to avoid an idle report.
 
