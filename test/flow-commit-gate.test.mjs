@@ -203,3 +203,31 @@ describe('the state file must keep up with the commits', () => {
     assert.equal(commitVerdict(d, 'git commit -m docs').allowed, true);
   });
 });
+
+describe('test_fast that is prose, not a command', () => {
+  // The line is captured to end-of-line and handed to execSync. A profile written by hand
+  // saying "test_fast: none" would run `none` in a shell, fail, and deny every commit -
+  // the gate reporting a red suite for a project that has no suite at all.
+  const SRC = 'export const rate = 0.25;\n';
+
+  for (const absent of ['none', 'None', 'n/a', 'N/A', '-', 'TODO', 'none yet', 'tbd']) {
+    test(`"${absent}" is read as absent, not run`, () => {
+      const d = gitFixture({
+        '.flow/PROJECT.md': `# p\n- test_fast: ${absent}\n`,
+        'src/pricing.ts': SRC,
+      });
+      gitAdd(d, 'src/pricing.ts');
+      const v = commitVerdict(d, 'git commit -m "x"');
+      assert.equal(v.allowed, true, `expected allow, got: ${v.reason}`);
+    });
+  }
+
+  test('a real command is still run and can still deny', () => {
+    const d = gitFixture({
+      '.flow/PROJECT.md': '# p\n- test_fast: node -e "process.exit(1)"\n',
+      'src/pricing.ts': SRC,
+    });
+    gitAdd(d, 'src/pricing.ts');
+    assert.equal(commitVerdict(d, 'git commit -m "x"').allowed, false);
+  });
+});

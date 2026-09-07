@@ -95,7 +95,14 @@ try {
   const m = readFileSync(profile, 'utf8').match(/^[ \t]*-?[ \t]*test_fast:[ \t]*(.+)$/m);
   testCmd = m ? m[1].trim() : '';
 } catch { ok(); }
-if (!testCmd || /^<.*>$/.test(testCmd)) ok();
+// The line is captured to end-of-line and handed to a shell, so a profile that answers
+// "test_fast: none" in English would run `none`, fail, and deny every commit - the gate
+// reporting a red suite for a project that has no suite. Treat those answers as absent.
+const ABSENT = ['none', 'n/a', 'na', '-', 'tbd', 'todo', 'pending', 'not set', 'unset', 'nothing'];
+const lowerCmd = testCmd.toLowerCase();
+const saysAbsent = ABSENT.some((w) => lowerCmd === w || lowerCmd.startsWith(w + ' '));
+const isPlaceholder = testCmd.startsWith('<') && testCmd.endsWith('>');
+if (!testCmd || saysAbsent || isPlaceholder) ok();
 
 // ---------- run it ----------
 try {
