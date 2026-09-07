@@ -109,7 +109,7 @@ test. Do not route around it.
 
 The gate is filename-based, so it can be wrong. Two escape hatches, in order of preference:
 
-- The file is genuinely outside TDD scope -> add its directory to `EXEMPT_DIR` in the hook.
+- The file is genuinely outside TDD scope -> add a fragment to `.flow/tdd-exempt`.
 - The whole project needs the gate off -> create `.flow/tdd-off` in the project root.
 - One-off -> `FLOW_TDD_OFF=1`.
 

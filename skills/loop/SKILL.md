@@ -18,6 +18,13 @@ restoration step — goal, task list, decisions, assumptions, what was deliberat
 It applies to a new request as much as to an obvious resume; a request that feels like fresh
 work is exactly when the prior decisions get re-derived at full cost.
 
+**If there is no `.flow/` directory, the project has not adopted Flow.** Nothing is enforced
+until it does — both gates stay dormant. On a Full task, FRAME creates it. Adopting a codebase
+that already builds is not designing from scratch: FRAME's survey is about what is *already
+true* — the test command, the conventions, the closest analog file, which directories hold
+legacy code nobody will retrofit tests for. Record those in `.flow/PROJECT.md` (and legacy
+paths in `.flow/tdd-exempt`) so no later wake re-derives them.
+
 ## Triage first — this is where the speed comes from
 
 Not every task deserves four gates. Size the work before starting:

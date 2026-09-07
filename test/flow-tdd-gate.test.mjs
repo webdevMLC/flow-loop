@@ -177,7 +177,7 @@ describe('cross-platform payload shapes', () => {
 });
 
 describe('outside a project, there is nothing to gate', () => {
-  test('a file with no .git or .flow above it is not gated', () => {
+  test('a file with no .flow above it is not gated', () => {
     // mkdtemp gives a bare temp dir with no project marker anywhere up to the drive root.
     // Gating there produced advice like "create C://.flow/tdd-off", which is nonsense.
     const d = fixture({});
@@ -190,5 +190,66 @@ describe('outside a project, there is nothing to gate', () => {
   test('a project marked only by .flow is still gated', () => {
     const d = fixture({ 'src/pricing.ts': SRC });
     assert.equal(tddVerdict(d, 'src/pricing.ts').allowed, false);
+  });
+});
+
+describe('adoption — a project opts in by having .flow/', () => {
+  // The plugin installs globally, so before this the gate fired in every git
+  // repository on the machine, adopted or not. Verified against a real untested
+  // Next.js repo: every edit denied from the moment the plugin was installed.
+  test('a git repo that has not adopted Flow is not gated', () => {
+    const d = fixture({ 'src/pricing.ts': SRC });
+    rmSync(join(d, '.flow'), { recursive: true, force: true });
+    mkdirSync(join(d, '.git'), { recursive: true });
+    assert.equal(tddVerdict(d, 'src/pricing.ts').allowed, true);
+  });
+
+  test('adding .flow/ turns the gate on', () => {
+    const d = fixture({ 'src/pricing.ts': SRC });
+    mkdirSync(join(d, '.git'), { recursive: true });
+    assert.equal(tddVerdict(d, 'src/pricing.ts').allowed, false);
+  });
+});
+
+describe('.flow/tdd-exempt — carving out legacy code without editing the plugin', () => {
+  // The deny message used to say "add its directory to EXEMPT_DIR in
+  // flow-tdd-gate.mjs". That file lives in the versioned plugin cache and is
+  // replaced on every update, so the advice produced a change that vanished.
+  test('a listed directory is exempt', () => {
+    const d = fixture({ '.flow/tdd-exempt': 'legacy/\n', 'legacy/old.ts': SRC });
+    assert.equal(tddVerdict(d, 'legacy/old.ts').allowed, true);
+  });
+
+  test('a directory not listed is still gated', () => {
+    const d = fixture({ '.flow/tdd-exempt': 'legacy/\n', 'src/pricing.ts': SRC });
+    assert.equal(tddVerdict(d, 'src/pricing.ts').allowed, false);
+  });
+
+  test('blank lines and # comments are ignored', () => {
+    const d = fixture({
+      '.flow/tdd-exempt': '# legacy code, tested manually\n\n  legacy/  \n',
+      'legacy/old.ts': SRC,
+      'src/pricing.ts': SRC,
+    });
+    assert.equal(tddVerdict(d, 'legacy/old.ts').allowed, true);
+    assert.equal(tddVerdict(d, 'src/pricing.ts').allowed, false);
+  });
+
+  test('a bare filename fragment works too', () => {
+    const d = fixture({ '.flow/tdd-exempt': 'vendored-parser\n', 'src/vendored-parser.ts': SRC });
+    assert.equal(tddVerdict(d, 'src/vendored-parser.ts').allowed, true);
+  });
+
+  test('an empty or unreadable list gates nothing extra', () => {
+    const d = fixture({ '.flow/tdd-exempt': '\n\n', 'src/pricing.ts': SRC });
+    assert.equal(tddVerdict(d, 'src/pricing.ts').allowed, false);
+  });
+
+  test('the deny message points at .flow/tdd-exempt, not the plugin source', () => {
+    const d = fixture({ 'src/pricing.ts': SRC });
+    const v = tddVerdict(d, 'src/pricing.ts');
+    assert.equal(v.allowed, false);
+    assert.match(v.reason, /\.flow\/tdd-exempt/);
+    assert.doesNotMatch(v.reason, /EXEMPT_DIR in flow-tdd-gate\.mjs/);
   });
 });

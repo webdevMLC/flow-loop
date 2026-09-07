@@ -66,7 +66,7 @@ if (/^(index|types|constants|setup|main|app|layout|page)\.[^.]+$/i.test(base)) o
 let root = dirname(p);
 let inProject = false;
 for (let i = 0; i < 40; i++) {
-  if (existsSync(join(root, '.git')) || existsSync(join(root, '.flow'))) { inProject = true; break; }
+  if (existsSync(join(root, '.flow'))) { inProject = true; break; }
   const up = dirname(root);
   if (up === root) break;
   root = up;
@@ -76,6 +76,20 @@ if (!inProject) ok();
 // ---------- escape hatches ----------
 if (process.env.FLOW_TDD_OFF === '1') ok();
 if (existsSync(join(root, '.flow', 'tdd-off'))) ok();
+
+// Project-local exemptions: one path fragment per line, # for comments. Lives in the
+// repository so it survives plugin updates and is reviewable in the diff.
+const exemptList = join(root, '.flow', 'tdd-exempt');
+if (existsSync(exemptList)) {
+  let patterns = [];
+  try {
+    patterns = readFileSync(exemptList, 'utf8')
+      .split(String.fromCharCode(10))
+      .map((line) => line.split('#')[0].trim().toLowerCase())
+      .filter(Boolean);
+  } catch { /* unreadable list exempts nothing */ }
+  if (patterns.some((frag) => lower.includes(frag))) ok();
+}
 
 // ---------- look for a matching test ----------
 const stemRaw = base.slice(0, base.length - ext.length);
@@ -194,7 +208,7 @@ deny(
   'around it to keep moving - the escape hatches below are for files genuinely outside ' +
   'TDD scope, not for code you would rather not test yet.\n\n' +
   'If this file is config, glue, scaffolding, or markup it is outside the TDD scope: ' +
-  'add its directory to EXEMPT_DIR in flow-tdd-gate.mjs\n' +
+  'add a line to ' + root + '/.flow/tdd-exempt (one path fragment per line)\n' +
   'Suspend for this project: create ' + root + '/.flow/tdd-off\n' +
   'Suspend for one command: FLOW_TDD_OFF=1'
 );

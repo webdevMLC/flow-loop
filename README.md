@@ -108,6 +108,53 @@ before a file write can use them. Field naming differs by platform and both hook
 the known spellings (`file_path`, `path`, `filePath`, `target_file`, `file`; string or
 argv-array commands), failing open on anything unrecognised rather than guessing.
 
+## Adopting it in a project that already exists
+
+Installing the plugin changes nothing on its own. **Both gates stay dormant until the project
+has a `.flow/` directory**, so a repository that has not opted in behaves exactly as it did
+before — no denied writes, no commit checks. Adoption is a deliberate act, not a side effect
+of installing.
+
+To adopt an existing codebase, point Flow at it and say what you want built next:
+
+```
+/flow:loop frame the next piece of work in this repo
+```
+
+FRAME writes two files. On a codebase that already builds, its survey is about what is
+*already true* rather than what to design:
+
+| File | Holds | Why it matters later |
+|---|---|---|
+| `.flow/STATE.md` | goal, acceptance criteria, task list, decisions, assumptions | every later session and every `/loop` wake restores from this one read |
+| `.flow/PROJECT.md` | `test_fast`, typecheck and lint commands, conventions, analog files | without it the commit gate runs no tests, and every wake re-derives the commands |
+
+You can also write both by hand — they are plain markdown, and the format is in
+`skills/loop/references/state.md`.
+
+### Legacy code that will never have tests
+
+This is the part that bites on an inherited codebase. Once `.flow/` exists the TDD gate is
+live, and it will deny an edit to any source file with no covering test — including code that
+predates you by years.
+
+List those paths in `.flow/tdd-exempt`, one fragment per line:
+
+```
+# inherited, tested manually against staging
+legacy/
+src/vendored-parser
+```
+
+It lives in the repository, so it survives plugin updates and shows up in review — unlike the
+older advice to edit `EXEMPT_DIR` inside the plugin, which was silently discarded on every
+upgrade. `.flow/tdd-off` still suspends the gate entirely, and `FLOW_TDD_OFF=1` suspends it
+for one command; prefer the exempt list, because it says *which* code is exempt and why.
+
+The honest way to adopt a large untested codebase is to exempt the old code and let the gate
+hold the line on everything new. Retrofitting tests to all of it first is a project, not a
+setup step.
+
 ## Requirements
 
 | Needs | For | Without it |
@@ -149,7 +196,7 @@ Suspending the gate for a single command differs by shell:
 | bash / zsh | `FLOW_TDD_OFF=1 <command>` |
 | PowerShell | `$env:FLOW_TDD_OFF = "1"` |
 
-The other two escape hatches - a `.flow/tdd-off` file and the `EXEMPT_DIR` list - are
+The other two escape hatches - a `.flow/tdd-off` file and the `.flow/tdd-exempt` list - are
 identical on every platform.
 
 
@@ -272,7 +319,7 @@ A new logic file in a project with no related test is denied. That is the point.
 
 It matches on names and symbols, so it can be. In order of preference:
 
-- The file is genuinely outside TDD scope: add its directory to `EXEMPT_DIR` in the hook.
+- The file is genuinely outside TDD scope: add a fragment to `.flow/tdd-exempt`.
 - The whole project needs it off: create `.flow/tdd-off` in the project root.
 - One-off: `FLOW_TDD_OFF=1`.
 
