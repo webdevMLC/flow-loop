@@ -62,20 +62,47 @@ Scale to the budget, not to the task list:
 
 - No budget named → **do not start**. Ask for one. Fleet mode without a ceiling is the most
   expensive thing in this skill.
-- Rough rule: one concurrent agent per 100k tokens of budget, capped at what the host allows
-  concurrently. Ten ready tasks and a 300k budget means three agents and a queue, not ten.
+- Rough rule: **budget ÷ 550k = concurrent agents**, capped at what the host allows
+  concurrently. Ten ready tasks and a 3M budget means about four agents and a queue, not ten.
 - Reserve at least a third of the budget for CHECK and the merge passes. Fleet mode
   front-loads spend into BUILD, and a phase that runs out of budget before review is worse
   than one that built less.
 
-**Below roughly 300k, refuse and run sequentially instead.** After the reserve, a smaller
-budget funds one agent — which is the sequential loop carrying worktree setup, briefing and
-report overhead for no concurrency at all. Say so rather than starting: "fleet mode needs
-about 300k to run two agents; at this budget the sequential loop is strictly faster and
-cheaper." Two agents is the minimum at which any of this is parallel.
+### Where 550k comes from
 
-These numbers are a starting heuristic, not a measurement. Once a real fleet run has
-happened, size from what it actually cost and correct this file.
+Measured on 2026-09-06, from a 69-agent verification fleet on a real repository:
+
+| | |
+|---|---|
+| Raw tokens | 221.6M |
+| of which cache reads | 208.0M |
+| Output | 179k |
+| Input-equivalent | ~37.7M |
+| **Per agent** | **~547k** |
+
+Two things to take from it. First, the old figure in this file — one agent per 100k — was
+wrong by more than five times, and it was wrong in the expensive direction: it would have
+authorised a fleet five times larger than the budget could pay for.
+
+Second, look at the composition. **94% of those tokens were cache reads**, which is each
+agent independently loading context the orchestrator already had. That fleet did not follow
+the context-pack discipline below. So 547k is what a *carelessly briefed* agent costs, not a
+law of nature — a well-packed agent should land far lower, and the gap between the two is the
+entire argument for the section on cost discipline.
+
+Size on 547k until you have your own measurement. Then correct this file with it, and say
+which of the two regimes your fleet was in.
+
+### The floor
+
+**The floor is two agents plus the reserve** — at 547k, about **1.6M**. Below it, say so and
+run sequentially: "fleet mode needs about 1.6M to run two agents; at this budget the
+sequential loop is strictly faster and cheaper." One agent is not a fleet, it is the
+sequential loop carrying worktree setup, briefing and report overhead for no concurrency at
+all. Two is the minimum at which any of this is parallel.
+
+If a run is well-packed enough to beat 547k, the floor moves down with it — but lower it on a
+measurement you took, never on the hope that this one will brief better.
 
 ## Model tiering
 

@@ -44,7 +44,7 @@ finishing sooner is worth more to you than the tokens it costs.
 | Token cost | lowest | modestly higher, if briefed properly |
 | Wall-clock | one task at a time | many at once, where the work allows |
 | Worth it when | most of the time | independent work, and your time is worth more than the spend |
-| Needs a budget | no | **yes — it refuses below ~300k** |
+| Needs a budget | no | **yes — it refuses below ~1.6M** |
 
 Fleet mode is **not cheaper** than sequential — it buys elapsed time, and only on work that
 is genuinely parallel. But how much more it costs is mostly a design choice, not a law.
@@ -313,7 +313,7 @@ The hooks have a test suite. No dependencies - Node built-ins and the built-in r
 npm test
 ```
 
-35 tests across both gates: what they guard and what they exempt, every way a covering
+48 tests across both gates: what they guard and what they exempt, every way a covering
 test can be recognised (sibling name, shared token, suffixed name, `test/` directory,
 exported symbol), the stub rejection, the false-positive guard for helper-based suites,
 every escape hatch, malformed stdin, and Windows backslash paths.
@@ -323,6 +323,22 @@ Next.js `route.ts`, and tests living in `test/` with no marker in the filename. 
 were found by pointing the gate at a real repository by hand. Each is now a test.
 
 Requires Node 18+ for the test runner; the hooks themselves still only need 16+.
+
+### Releasing
+
+```
+npm run release 1.15.0 "fix(fleet): size from measurement"
+```
+
+Tests, bumps the version in all three manifests, commits, pushes, **and pulls the local
+marketplace clone**. That last step is why the script exists: `/plugin` installs read from
+the clone under `~/.claude/plugins/marketplaces/flow-loop`, not from GitHub. A push without
+it leaves every install on the previous version, and looks from the outside exactly like a
+broken updater. It was forgotten four times before this was automated.
+
+`autoUpdate: true` on the marketplace entry does not appear to close this gap on its own -
+after a day and several restarts the clone was still on the version it was cloned at. Treat
+the pull as required, not as a backstop.
 
 ## Using it
 
@@ -425,14 +441,19 @@ run one at a time with `test_fast` between them, never concurrently. And a confl
 one function* is a design signal, not a merge problem: those two agents were one task split
 wrongly, so discard both and run it once.
 
-**It needs a budget or it will not start, and it declines small ones.** Roughly one
-concurrent agent per 100k tokens, with a third held back for CHECK and the merge passes.
-Below about 300k that funds a single agent - the sequential loop carrying worktree and
-briefing overhead for no concurrency - so fleet mode says so and runs sequentially instead.
-Two agents is the minimum at which any of this is parallel. These figures are a starting
-heuristic, not a measurement; correct them once a real fleet run has happened — a phase that runs out of budget
-before review is worse than one that built less. Mechanical work against a frozen contract
-drops to a cheaper tier; money, auth and invariants never do.
+**It needs a budget or it will not start, and it declines small ones.** A real 69-agent fleet
+run measured **~547k input-equivalent tokens per agent** — 94% of it cache reads, each agent
+loading context the orchestrator already had. So: budget ÷ 550k concurrent agents, a third
+held back for CHECK and the merge passes, and **below about 1.6M it refuses** — that is two
+agents plus the reserve, and one agent is not a fleet, it is the sequential loop carrying
+worktree and briefing overhead for no concurrency. A phase that runs out of budget before
+review is worse than one that built less. Mechanical work against a frozen contract drops to
+a cheaper tier; money, auth and invariants never do.
+
+That 547k is a *carelessly briefed* agent, not a floor on the technology — the fleet that
+produced it did not use a context pack. Brief properly and the number falls, and the minimum
+budget with it. But move it on a measurement you took, not on the hope that this run will be
+tidier.
 
 **Where it does not help:** a dependency chain. Four agents on four tasks that must happen in
 order finish no sooner and cost four times as much. Check the file sets first — if they
