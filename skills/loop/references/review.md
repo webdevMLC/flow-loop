@@ -120,6 +120,14 @@ Verbs that mean a human surface: sees, views, opens, reviews, drills into, filte
 submits, is warned, is shown, at a glance, without a page reload. Verbs that do not: returns,
 computes, records, produces, rejects, enforces.
 
+**"Surface" is not a synonym for "endpoint".** On the same project, a CHECK finding worded
+"give the compliance rules a surface" was closed with four `route.ts` files and no page —
+the finding was right, and the word let a backend-shaped run satisfy it backend-side. When
+writing a finding of this kind, say **page**, **screen** or **the route a person opens in a
+browser**, never "surface" or "expose". When reading one, resolve the ambiguity toward the
+person: an HTTP endpoint nobody can navigate to has not closed a criterion about someone
+seeing something.
+
 ## Falsification
 
 Every finding must carry a concrete failure scenario: inputs or state → wrong output
