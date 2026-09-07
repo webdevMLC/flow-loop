@@ -34,9 +34,15 @@ make. Frameworks that offer only one path make it constantly.
 ### Claude Code
 
 ```
-/plugin marketplace add webdevMLC/flow-loop
+/plugin marketplace add https://github.com/webdevMLC/flow-loop.git
 /plugin install flow@flow-loop
 ```
+
+Use the full URL with the `.git` suffix. The `owner/repo` shorthand is not reliably accepted
+and reports "Unable to load plugin".
+
+If the marketplace is already registered and you want to re-add it, remove it first —
+adding an existing one fails rather than doing nothing.
 
 Restart the session so the hooks load. The skill is then `flow:loop`.
 
