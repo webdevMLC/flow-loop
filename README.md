@@ -417,6 +417,27 @@ No skill can change that. Continuing past that boundary is a host feature — on
 can stop itself. A fixed `/loop 20m` fires on the clock whether or not there is anything to
 do, and waking every 20 minutes on a task that takes an hour is three wasted context loads.
 
+**Say the pacing out loud in the prompt.** Both `/loop` and the `ScheduleWakeup` tool
+suggest a 1200-1800s delay, because they are written for a watcher polling an external event.
+A Flow run with an open task list is not waiting for anything, and this skill overrides that
+default — but only in the version you actually have loaded. Putting it in the prompt costs a
+line and works on every version:
+
+```
+/loop /flow:loop continue from .flow/STATE.md — budget: until the roadmap is exhausted.
+When you call ScheduleWakeup and tasks remain with nothing external pending, use
+delaySeconds 60, never 1200-1800.
+```
+
+Without it, a run can commit a task and then sleep 25 minutes with the next one ready — four
+hours of nothing across a phase, and indistinguishable from a crash to anyone watching. This
+happened on two real projects before the rule was moved into resident context.
+
+**A resumed session keeps the plugin version it started with.** Updating the plugin does not
+change a conversation that is already running: it reloads at session start only. If a long
+run is behaving like an older version, start a new session in the project rather than
+restarting the app — restarting updates what is *installed*, resuming keeps what is *loaded*.
+
 Each wake reads `.flow/STATE.md` and nothing else, reconciles it against `git log` before
 trusting it, continues from `Next action`, and reports only what changed.
 
