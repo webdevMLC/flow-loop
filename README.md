@@ -29,6 +29,31 @@ The first thing Flow does is size the work. This is where most of the speed come
 Running the full loop on a typo is the most expensive mistake available, and the easiest to
 make. Frameworks that offer only one path make it constantly.
 
+## Two speeds
+
+Flow runs **sequentially by default** — one agent, one task at a time. That is the cheapest
+option per unit of work, and on a dependency chain it is also the fastest, because four
+agents on four tasks that must happen in order finish no sooner.
+
+**Fleet mode** is the other option: many agents at once, in isolated git worktrees, for when
+finishing sooner is worth more to you than the tokens it costs.
+
+| | Sequential (default) | Fleet mode (opt-in) |
+|---|---|---|
+| Agents | one | many, sized to your budget |
+| Token cost | lowest | several times higher |
+| Wall-clock | one task at a time | many at once, where the work allows |
+| Worth it when | most of the time | independent work, and your time is worth more than the spend |
+| Needs a budget | no | **yes — it refuses below ~300k** |
+
+Be clear-eyed about the trade: fleet mode is **not cheaper**, and it is not more efficient.
+It pays twice for the same reading and adds worktree, briefing and merge overhead. What it
+buys is elapsed time, and only on work that is genuinely parallel. Pointed at a dependency
+chain it costs several times more and finishes no earlier — so it checks the file sets first
+and says so rather than pretending.
+
+Details, including the merge protocol and where it declines: [Fleet mode](#fleet-mode--many-agents-at-once).
+
 ## Install
 
 ### Claude Code
