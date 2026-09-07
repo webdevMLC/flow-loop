@@ -128,6 +128,7 @@ Repeated work, not model choice, is what actually burns the budget.
 | The user has asked you to run unattended | `references/autonomous.md` |
 | Running under `/loop`, or waking from one | `references/continuous.md` |
 | The roadmap has no next phase | `references/exhausted.md` |
+| The user said to keep building past the roadmap | `references/nonstop.md` |
 | State file format, project profile, milestones | `references/state.md` |
 
 ## Autonomous mode
@@ -165,6 +166,10 @@ End the loop with `stop: true` and say which one fired:
    roadmap (deferred findings, claims never proven, planning drift). An empty roadmap means
    the list someone wrote is complete, not that nothing is left. Report what it finds; then
    stop, unless the budget was broader than the roadmap.
+   **If the user turned on non-stop mode** — `.flow/nonstop`, or "keep building" in the
+   prompt — do not stop here at all: work the ladder in `references/nonstop.md` and end only
+   when every remaining candidate is blocked on a human. Record each self-selected phase in
+   the roadmap *before* building it, and say in the report that the loop chose it.
 2. **A hard stop needs a human** — pushing, deploying, secrets, money, deleting data, a scope
    change, a concurrent writer. Report it; do not wake again to rediscover it.
 3. **Two consecutive wakes with no commit.** Track it in STATE.md's `Wakes since commit`.

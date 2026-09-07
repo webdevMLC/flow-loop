@@ -441,6 +441,40 @@ restarting the app — restarting updates what is *installed*, resuming keeps wh
 Each wake reads `.flow/STATE.md` and nothing else, reconciles it against `git log` before
 trusting it, continues from `Next action`, and reports only what changed.
 
+### Building past the roadmap
+
+An empty roadmap means the list someone wrote is complete, not that the project is finished.
+Before reporting the good ending, the loop sweeps five places where work is usually already
+recorded — the state file's own deferred findings, tasks ticked as built but never proven,
+drift between planning documents, `TODO`s that name a referent, and the blocked list read to
+classify rather than schedule. It reports unblocked candidates with the command that starts
+each, and blocked ones with what they need and from whom.
+
+If you want it to keep going rather than report and stop, turn on **non-stop mode** — say
+"keep building" in the loop prompt, or drop a `.flow/nonstop` file in the project:
+
+```
+/loop /flow:loop continue from .flow/STATE.md — keep building past the roadmap
+```
+
+It then works a ladder, never skipping a tier to reach a more interesting one: work already
+recorded, then evidence gaps in code that already shipped (a module with no test, a command
+that has never run, a mutation gate reporting survivors, two documents describing one control
+differently), then requirements the project's own specification states and no code implements.
+With no specification, that third tier does not exist.
+
+It ends when **every remaining candidate is blocked on a human** — a licence, a partner, a
+credential, a database, a decision. That is a real terminal condition, unlike an empty
+roadmap: it means the project is blocked rather than merely unplanned.
+
+**What it will not do:** invent a feature nobody wrote down, reclassify blocked work as
+buildable to stay busy, or soften a hard stop. Every self-selected phase is written into the
+roadmap *before* it is built, one at a time, and flagged as self-selected in the report — so
+you can tell at a glance which work you asked for and which the loop chose.
+
+**It is the most expensive setting here.** Unlike fleet mode it does not finish sooner, it
+simply does not stop, so name a ceiling unless you genuinely mean "until it is blocked".
+
 ### It stops itself
 
 A loop with no stop condition is not autonomy, it is a leak. The run ends, and says which

@@ -59,6 +59,9 @@ can make in ten seconds.
   frame it as a phase, record it in the roadmap so the next wake can see it, and continue.
 - **No unblocked candidates** → stop regardless of budget, and say what everything is waiting
   on. A budget cannot authorise work that cannot start.
+- **Non-stop mode is on** (`.flow/nonstop`, or the user said "keep building") → do not stop
+  when this sweep runs dry. `references/nonstop.md` continues down two further tiers and
+  ends only when everything left is blocked on a human.
 
 ## Never
 
