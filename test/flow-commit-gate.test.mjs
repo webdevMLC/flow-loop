@@ -231,3 +231,55 @@ describe('test_fast that is prose, not a command', () => {
     assert.equal(commitVerdict(d, 'git commit -m "x"').allowed, false);
   });
 });
+
+describe('test_fast written the way the rest of the profile is written', () => {
+  // Every other command line in a profile is backticked, so test_fast gets backticked too.
+  // The whole rest of the line is handed to a shell, so it tried to execute a word starting
+  // with a backtick and denied every commit with "'`node' is not recognized" - a gate that
+  // cannot run its own command refuses everything, which reads exactly like a red suite.
+  const PASSES = 'node -e "process.exit(0)"';
+  const FAILS = 'node -e "process.exit(1)"';
+  const SRC = 'export const rate = 0.25;\n';
+
+  const profile = (line) => ({ '.flow/PROJECT.md': `# p\n- test_fast: ${line}\n`, 'src/pricing.ts': SRC });
+
+  test('a backticked command is unwrapped and run', () => {
+    const d = gitFixture(profile('`' + FAILS + '`'));
+    gitAdd(d, 'src/pricing.ts');
+    const v = commitVerdict(d, 'git commit -m "x"');
+    assert.equal(v.allowed, false, 'a red suite must still deny');
+    assert.doesNotMatch(v.reason, /not recognized|not found/i);
+  });
+
+  test('a backticked command that passes allows the commit', () => {
+    const d = gitFixture(profile('`' + PASSES + '`'));
+    gitAdd(d, 'src/pricing.ts');
+    assert.equal(commitVerdict(d, 'git commit -m "x"').allowed, true);
+  });
+
+  test('trailing prose after an em dash is not part of the command', () => {
+    const d = gitFixture(profile('`' + PASSES + '` — 113ms, no database, no network'));
+    gitAdd(d, 'src/pricing.ts');
+    assert.equal(commitVerdict(d, 'git commit -m "x"').allowed, true);
+  });
+
+  test('trailing prose after a hyphen separator is not part of the command', () => {
+    const d = gitFixture(profile('`' + PASSES + '` - the fast unit suite'));
+    gitAdd(d, 'src/pricing.ts');
+    assert.equal(commitVerdict(d, 'git commit -m "x"').allowed, true);
+  });
+
+  test('a bare command with no backticks is untouched', () => {
+    const d = gitFixture(profile(PASSES));
+    gitAdd(d, 'src/pricing.ts');
+    assert.equal(commitVerdict(d, 'git commit -m "x"').allowed, true);
+  });
+
+  test('a hyphen inside a bare command is not treated as a separator', () => {
+    const d = gitFixture(profile('node --test-reporter=dot -e "process.exit(1)"'));
+    gitAdd(d, 'src/pricing.ts');
+    const v = commitVerdict(d, 'git commit -m "x"');
+    assert.equal(v.allowed, false);
+    assert.doesNotMatch(v.reason, /not recognized|not found/i);
+  });
+});

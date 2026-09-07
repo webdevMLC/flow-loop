@@ -95,6 +95,17 @@ try {
   const m = readFileSync(profile, 'utf8').match(/^[ \t]*-?[ \t]*test_fast:[ \t]*(.+)$/m);
   testCmd = m ? m[1].trim() : '';
 } catch { ok(); }
+
+// Profiles backtick their command lines, so test_fast arrives wrapped and trailed by prose.
+// The whole rest of the line went to the shell, so it executed a word starting with a
+// backtick and denied every commit with "not recognized". A gate that cannot run its own
+// command refuses everything, which is indistinguishable from a red suite.
+const BT = String.fromCharCode(96);
+if (testCmd.startsWith(BT)) {
+  const close = testCmd.indexOf(BT, 1);
+  if (close > 1) testCmd = testCmd.slice(1, close).trim();
+}
+
 // The line is captured to end-of-line and handed to a shell, so a profile that answers
 // "test_fast: none" in English would run `none`, fail, and deny every commit - the gate
 // reporting a red suite for a project that has no suite. Treat those answers as absent.
