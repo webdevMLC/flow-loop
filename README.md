@@ -41,16 +41,28 @@ finishing sooner is worth more to you than the tokens it costs.
 | | Sequential (default) | Fleet mode (opt-in) |
 |---|---|---|
 | Agents | one | many, sized to your budget |
-| Token cost | lowest | several times higher |
+| Token cost | lowest | modestly higher, if briefed properly |
 | Wall-clock | one task at a time | many at once, where the work allows |
 | Worth it when | most of the time | independent work, and your time is worth more than the spend |
 | Needs a budget | no | **yes — it refuses below ~300k** |
 
-Be clear-eyed about the trade: fleet mode is **not cheaper**, and it is not more efficient.
-It pays twice for the same reading and adds worktree, briefing and merge overhead. What it
-buys is elapsed time, and only on work that is genuinely parallel. Pointed at a dependency
-chain it costs several times more and finishes no earlier — so it checks the file sets first
-and says so rather than pretending.
+Fleet mode is **not cheaper** than sequential — it buys elapsed time, and only on work that
+is genuinely parallel. But how much more it costs is mostly a design choice, not a law.
+
+The waste in a naive fleet is not the parallelism, it is **duplicated context loading**: five
+agents each reading the same schema, conventions and analog file pay five times for one act
+of reading, and that dwarfs the code they write. So the orchestrator reads once and inlines
+it — actual contract signatures, actual analog file contents, the cached conventions from
+`.flow/PROJECT.md` — into every brief, and tells each agent it already has everything.
+Paths make an agent go read; content means it does not.
+
+With that, plus capped structured returns, tier routing by task class, and one CHECK per
+wave rather than per task, fleet mode costs modestly more than sequential and finishes
+substantially sooner. Briefed carelessly it costs several times more for the same work. The
+difference is almost entirely in the brief.
+
+Pointed at a dependency chain it helps regardless of briefing — it checks the file sets
+first and declines rather than pretending.
 
 Details, including the merge protocol and where it declines: [Fleet mode](#fleet-mode--many-agents-at-once).
 

@@ -89,6 +89,53 @@ Fleet mode is where tiering earns its keep, because the volume is high:
 - **Merge and CHECK** — full tier. This is where parallel work either converges or silently
   diverges.
 
+## Cost discipline — where the waste actually is
+
+Parallelism is not what makes fleet mode expensive. **Duplicated context loading is.** Five
+agents each independently reading the schema, the conventions and the analog file pay five
+times for one act of reading, and that dwarfs the cost of the code they write.
+
+So the orchestrator reads once and hands it over. Do all of this, or do not spawn:
+
+**1. Build one context pack, before spawning.** Assemble it once and paste it into every
+brief:
+
+- the frozen contract — actual type signatures and schema, not a path to them
+- the conventions and analog entries from `.flow/PROJECT.md`, already cached there
+- the **contents** of the closest analog file, inlined
+- the test command for the slice, and the acceptance criteria
+
+Paths make an agent go read. Content means it does not. That single change is the difference
+between an N-times multiplier and something close to 1.
+
+**2. Tell every agent it has everything it needs.** State plainly: do not re-read the schema,
+do not survey the codebase, do not look for conventions — they are in this brief. An agent
+that re-derives what it was handed is the waste this section exists to remove.
+
+**3. Cap the return.** Structured output only: files changed, tests run, the output proving
+they passed, assumptions made. No narration, no restating the brief, no summary of the
+codebase. A long report is paid for twice — once to write, once to read.
+
+**4. Tier by task class, not by convenience.** Mechanical work against a frozen contract runs
+on a cheaper tier at low effort. Money, auth and invariants never do. Getting this wrong in
+either direction is expensive: a cheap tier on money code produces a wrong number, and a full
+tier on a fixture pays a premium for nothing.
+
+**5. Decompose before spawning, not after.** Compare file sets first. Two tasks that overlap
+are either different waves or one task. Discovering it at merge time means paying for two
+drafts and keeping neither — the most expensive failure available here.
+
+**6. One CHECK per wave, never per task.** Review the merged result once. Per-task review
+multiplies the most model-heavy gate by the fleet size for no additional signal.
+
+**7. Report the multiplier.** At the end of a wave, say what it cost against what a
+sequential run of the same tasks would have. That number is the only way the sizing
+heuristics in this file get corrected, and right now they are estimates.
+
+Done properly, fleet mode should cost modestly more than sequential and finish substantially
+sooner. Done carelessly — paths instead of content, uncapped reports, full tier everywhere —
+it costs several times more for the same work. The difference is entirely in the brief.
+
 ## Briefing a fleet agent
 
 Same as `references/parallel.md`, plus:
