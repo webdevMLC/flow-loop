@@ -1,5 +1,7 @@
 import { test, after, describe } from 'node:test';
 import assert from 'node:assert/strict';
+import { rmSync, mkdirSync, writeFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { fixture, tddVerdict, runHook, cleanup, TDD_GATE, REAL_TEST } from './helpers.mjs';
 
 after(cleanup);
@@ -171,5 +173,22 @@ describe('cross-platform payload shapes', () => {
   test('a non-string path is not treated as a path', () => {
     const v = runHook(TDD_GATE, { tool_name: 'Edit', tool_input: { file_path: { a: 1 } } });
     assert.equal(v.allowed, true);
+  });
+});
+
+describe('outside a project, there is nothing to gate', () => {
+  test('a file with no .git or .flow above it is not gated', () => {
+    // mkdtemp gives a bare temp dir with no project marker anywhere up to the drive root.
+    // Gating there produced advice like "create C://.flow/tdd-off", which is nonsense.
+    const d = fixture({});
+    rmSync(join(d, '.flow'), { recursive: true, force: true });
+    mkdirSync(join(d, 'src'), { recursive: true });
+    writeFileSync(join(d, 'src', 'scratch.ts'), SRC);
+    assert.equal(tddVerdict(d, 'src/scratch.ts').allowed, true);
+  });
+
+  test('a project marked only by .flow is still gated', () => {
+    const d = fixture({ 'src/pricing.ts': SRC });
+    assert.equal(tddVerdict(d, 'src/pricing.ts').allowed, false);
   });
 });

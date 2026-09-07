@@ -34,6 +34,11 @@ Updated: <YYYY-MM-DD>
 ### Assumptions
 - <fact assumed, because research was capped at one pass>
 
+### Constants register
+| Value | Means | Stated at | Lives in code | Verified |
+|---|---|---|---|---|
+| <value> | <what it governs> | <authority file:line> | <symbol or path> | [ ] |
+
 ### Threat register
 - **T1 — <what an attacker does>** — impact / mitigation / lives in / proven by
 - **Accepted:** <risk not mitigated, and why>

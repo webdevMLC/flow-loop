@@ -130,11 +130,21 @@ nothing until there is a bug.
 | money, auth, PII, or outside input | `references/threat.md` |
 | CHECK | `references/review.md` |
 | the goal is not clear yet | `references/brainstorm.md` |
+| a contract or spec already decided it | `references/authority.md` |
 | a bug or test failure | `references/debug.md` |
 | resuming, or about to compact | `references/resume.md` |
 | running tasks concurrently | `references/parallel.md` |
 | running unattended | `references/autonomous.md` |
 | state format, milestones | `references/state.md` |
+
+**Authority reconciliation.** When a contract, specification or playbook already decided
+the rates, thresholds and formulas, FRAME extracts them with citations into a constants
+register and reconciles each against the code before BUILD. A contradiction is a blocker.
+This exists because of a real 3.125x payout error: a wrong commission rate entered a
+research document on day one, the roadmap inherited it, the phase plan inherited it from
+the roadmap, fifteen fixtures encoded it, and five phases shipped against it while every
+gate passed. Planning documents manufacture confidence as they propagate; only the source
+decides.
 
 **Threat modelling where it is warranted.** Phases touching money, identity, other
 people's data, or input from outside the trust boundary get a threat register before BUILD -

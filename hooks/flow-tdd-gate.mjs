@@ -60,13 +60,18 @@ if (/(\.config\.[^.]+|\.d\.ts|\.stories\.[^.]+|\.gen\.[^.]+)$/i.test(base)) ok()
 if (/^(index|types|constants|setup|main|app|layout|page)\.[^.]+$/i.test(base)) ok();
 
 // ---------- find project root ----------
+// If nothing above the file marks a project, the file is not part of one - a scratch
+// script in a temp directory, say. Gating there is noise, and the advice it produces
+// ("create C://.flow/tdd-off") is nonsense.
 let root = dirname(p);
+let inProject = false;
 for (let i = 0; i < 40; i++) {
-  if (existsSync(join(root, '.git')) || existsSync(join(root, '.flow'))) break;
+  if (existsSync(join(root, '.git')) || existsSync(join(root, '.flow'))) { inProject = true; break; }
   const up = dirname(root);
   if (up === root) break;
   root = up;
 }
+if (!inProject) ok();
 
 // ---------- escape hatches ----------
 if (process.env.FLOW_TDD_OFF === '1') ok();

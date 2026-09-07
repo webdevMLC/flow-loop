@@ -34,7 +34,13 @@ wrong problem.
    work, batch every open question into a single AskUserQuestion. Otherwise decide
    like a careful colleague, record the call as an assumption, and continue.
 
-6. **Threat model, if the phase warrants it.** If it touches money, identity, other
+6. **Reconcile against the authority, if an external document decided any of this.**
+   A contract, specification, regulation, pricing agreement or playbook that states rates,
+   thresholds, windows or formulas is the source; a roadmap or a phase plan is not. Read
+   `references/authority.md` and build the constants register before BUILD. A value that
+   contradicts the authority is a BLOCKER, not an assumption.
+
+7. **Threat model, if the phase warrants it.** If it touches money, identity, other
    people’s data, or input from outside the trust boundary, read `references/threat.md` and
    write the threat register before BUILD. Every mitigation becomes a task in the list, not
    a wishlist item.

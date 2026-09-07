@@ -100,6 +100,7 @@ Repeated work, not model choice, is what actually burns the budget.
 |-----------|------|
 | The goal is not clear enough to state | `references/brainstorm.md` |
 | Entering FRAME / BUILD / SHIP | `references/gates.md` |
+| The phase implements something a contract or spec already decided | `references/authority.md` |
 | The phase touches money, auth, PII, or outside input | `references/threat.md` |
 | Entering CHECK | `references/review.md` |
 | A bug, test failure, or unexpected behavior | `references/debug.md` |

@@ -35,6 +35,13 @@ performance oracle; a pure-frontend diff needs no tenancy audit.
 If the diff is <=3 files or <=200 lines, **do not spawn** (guard 4) — run all three
 lenses inline yourself.
 
+## Verifying the constants register
+
+If FRAME produced one (`references/authority.md`), every row must be closed: the file and
+line where the value now lives, matching the cited authority. An unchecked row is a
+BLOCKER. Check fixtures and seeds as well as source - a wrong value defended by a test is
+the hardest kind to see.
+
 ## Verifying a threat register
 
 If FRAME produced one (`references/threat.md`), the security lens closes each row or fails
