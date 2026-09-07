@@ -10,6 +10,9 @@ better and cheaper. Commands come from `.flow/PROJECT.md`.
 1. **Typecheck** — `tsc --noEmit` or the language equivalent.
 2. **Lint** — the project's configured linter.
 3. **The affected tests** — full suite if the change is broad.
+4. **Seeded tables with no reader** — grep the tables named in seed files and migrations
+   against the client tree. One command, and it finds the class of defect where the data
+   ships and the screen never does. See below.
 
 Fix everything they report **before** dispatching reviewers. A type error found by `tsc` in
 two seconds is the same defect a review agent would spend a thousand tokens describing, and
@@ -127,6 +130,39 @@ writing a finding of this kind, say **page**, **screen** or **the route a person
 browser**, never "surface" or "expose". When reading one, resolve the ambiguity toward the
 person: an HTTP endpoint nobody can navigate to has not closed a criterion about someone
 seeing something.
+
+## Seeded data with no reader
+
+A build that keeps seeding rows and never renders them produces a system that works and that
+nobody can operate. It is easy to miss because every test passes: the data is there, the
+functions that read it are correct, and no criterion was violated — there was simply never a
+screen.
+
+**Check it directly.** List the tables populated by a seed script, a fixture or a
+`*_seed.sql` migration. For each, ask whether anything a person opens reads it — a page, or
+an endpoint that a page calls. A table with no reader anywhere in the client is a finding.
+
+**Configuration seeded as SQL is the important case.** Rates, weights, thresholds, approval
+matrices, policy tables. If changing a value means writing a migration, then the people who
+own that rule — finance, a manager, whoever the authority actually belongs to — cannot change
+it, and every change needs an engineer and a deploy. Report it, and say who is locked out:
+
+> MAJOR — `authority_matrix` is seeded by `0023_authority_matrix_seed.sql` and read by no
+> page or endpoint. Changing who may approve a pricing exception requires a migration, so the
+> authority §27 assigns to a manager is only exercisable by a developer.
+
+**Not every seeded table needs a screen**, and saying so is part of the check. Reference data
+that never changes, an enum-shaped lookup, a bootstrap admin row, a test fixture — these are
+correctly invisible. The question is not "is it rendered" but **"who needs to change this, and
+can they?"** A table nobody will ever edit is fine. A table the business owns and only
+engineers can reach is a defect, however green the suite.
+
+Two related shapes worth the same question:
+
+- **An entity that can only be created by a seed.** If the product cannot create one, the
+  feature is a demo.
+- **An endpoint no page calls.** Either the screen is missing, or the endpoint is dead. Both
+  are findings, and they are distinguished by asking who was supposed to call it.
 
 ## Falsification
 
