@@ -209,7 +209,7 @@ identical on every platform.
 | CHECK | one verdict report | cheap subagents, parallel | 1 pass + 1 targeted re-verify |
 | SHIP | commit / PR + memory write | inline | 1 pass |
 
-**Protocols load only when you reach them.** One entry in the skill listing, ~110 resident
+**Protocols load only when you reach them.** One entry in the skill listing, ~195 resident
 lines. The gate protocols, the debugging cycle, and the resume procedure sit in reference
 files that are read only when the situation calls for them - a debugging protocol costs
 nothing until there is a bug.
@@ -225,6 +225,10 @@ nothing until there is a bug.
 | resuming, or about to compact | `references/resume.md` |
 | running tasks concurrently | `references/parallel.md` |
 | running unattended | `references/autonomous.md` |
+| running under `/loop`, or waking from one | `references/continuous.md` |
+| the roadmap has no next phase | `references/exhausted.md` |
+| told to keep building past the roadmap | `references/nonstop.md` |
+| many agents at once | `references/fleet.md` |
 | state format, milestones | `references/state.md` |
 
 **Authority reconciliation.** When a contract, specification or playbook already decided
@@ -480,7 +484,9 @@ simply does not stop, so name a ceiling unless you genuinely mean "until it is b
 A loop with no stop condition is not autonomy, it is a leak. The run ends, and says which
 fired:
 
-- the roadmap is exhausted — the good ending, and the reason to keep a roadmap
+- the roadmap is exhausted **and the sweep above found nothing startable** — the good
+  ending, and the reason to keep a roadmap. In non-stop mode this one does not end the run;
+  only "everything left is blocked on a human" does
 - a hard stop needs you, and then it stops waking rather than paying full context every
   cycle to rediscover the same blocker
 - two consecutive wakes with no commit — spinning is worse than stopping, because it is
