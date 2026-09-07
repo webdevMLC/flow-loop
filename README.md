@@ -392,6 +392,12 @@ for itself. Put it in the prompt in plain words — there is no special syntax:
 | **a token ceiling** — "budget 400k" | required by fleet mode, which sizes the fleet from it |
 | **the roadmap** — "until the roadmap is exhausted" | long unattended runs. Weigh it honestly: a mistake in an early phase propagates through every later one before you look at any of them |
 
+**Pacing.** When the task list is not empty and nothing external is being waited on, the
+loop wakes in about a minute - there is nothing to sleep for. Long delays are a fallback
+heartbeat for waiting on CI, a deploy or a person, not a work cadence. Thirteen tasks at a
+twenty-minute delay is four hours of sleeping on top of the work, and to anyone watching it
+is indistinguishable from a loop that has stopped.
+
 Two practical notes. **Run it from a session whose working directory is the project**, or
 name the path — `.flow/STATE.md` is relative and a loop started elsewhere finds nothing.
 And **you run it once.** A self-paced loop re-arms itself each cycle; you do not re-issue it.

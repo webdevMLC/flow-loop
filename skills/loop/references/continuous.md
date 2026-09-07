@@ -64,6 +64,28 @@ state file is wrong. Two things make it affordable:
 Prefer a self-paced loop over a short fixed interval. Waking every five minutes on a task
 that takes forty is four wasted context loads.
 
+## Pacing — how long to sleep between wakes
+
+**If the task list is not empty and you are waiting on nothing external, wake in about a
+minute.** There is no reason to sleep. The work is queued, the state file is current, and
+the next task can start immediately.
+
+Long delays are a **fallback heartbeat**, for when the next useful moment depends on
+something you do not control — CI finishing, a deploy settling, a queue draining, a person
+answering. That is not the same as a work cadence, and using one as the other is the single
+easiest way to waste a night.
+
+The arithmetic is unforgiving. Thirteen remaining tasks at a twenty-minute delay is more
+than four hours of sleeping, on top of the time the work itself takes. The run is not
+faster for having rested.
+
+It also reads as broken. A user watching sees the loop commit, announce that it is armed,
+and then do nothing for twenty minutes — indistinguishable from a loop that has stopped.
+"Armed" is only reassuring if the next wake comes soon enough to feel like continuation.
+
+So: **queue non-empty and nothing to wait for → minimum delay.** Reserve the long ones for
+genuine waiting, and say in the report which of the two you are doing.
+
 ## Running the loop as a fleet
 
 By default each wake is one agent working sequentially. If the user has turned on fleet
