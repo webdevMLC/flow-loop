@@ -6,14 +6,14 @@
   },
   "metadata": {
     "description": "Claude Code plugins by Micho Calma",
-    "version": "1.11.0"
+    "version": "1.11.1"
   },
   "plugins": [
     {
       "name": "flow",
       "source": "./",
       "description": "One development loop - FRAME, BUILD, CHECK, SHIP - with enforced TDD.",
-      "version": "1.11.0",
+      "version": "1.11.1",
       "author": {
         "name": "Micho Calma"
       },

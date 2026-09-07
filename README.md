@@ -291,6 +291,59 @@ Say what you are building and the skill triggers on its own, or invoke it direct
 
 With no `.flow/STATE.md` the project is unframed, so it starts at FRAME.
 
+## Running unattended, and running overnight
+
+Two different things, and conflating them is the most common misunderstanding.
+
+**Autonomous mode** stops asking you questions during a run. Turn it on with a phrase
+("autonomous", "keep going, don't ask") or a `.flow/autonomous` file in the project.
+Questions become assumptions recorded in the state file, and the report leads with them.
+
+**It is not a daemon.** An agent runs inside a session; when the session ends, the run ends.
+No skill can change that. Continuing past that boundary is a host feature — on Claude Code,
+`/loop`:
+
+```
+/loop /flow:loop continue from .flow/STATE.md
+```
+
+**Omit the interval.** That is self-paced mode: the run decides when to wake and, crucially,
+can stop itself. A fixed `/loop 20m` fires on the clock whether or not there is anything to
+do, and waking every 20 minutes on a task that takes an hour is three wasted context loads.
+
+Each wake reads `.flow/STATE.md` and nothing else, reconciles it against `git log` before
+trusting it, continues from `Next action`, and reports only what changed.
+
+### It stops itself
+
+A loop with no stop condition is not autonomy, it is a leak. The run ends, and says which
+fired:
+
+- the roadmap is exhausted — the good ending, and the reason to keep a roadmap
+- a hard stop needs you, and then it stops waking rather than paying full context every
+  cycle to rediscover the same blocker
+- two consecutive wakes with no commit — spinning is worse than stopping, because it is
+  invisible
+- two failed debug cycles on one defect, or CHECK failing twice on one finding
+- the budget you named
+
+**It never pushes, opens a PR, or deploys.** Committing locally is the boundary; a human
+decides what leaves the machine.
+
+### Before you start a long one
+
+- `.flow/STATE.md` has a goal, acceptance criteria and a task list
+- `.flow/PROJECT.md` exists, so no wake re-derives the commands
+- a roadmap exists, if the run is meant to cross phases
+- the working tree is clean — a loop starting dirty cannot tell its own work from someone
+  else's
+- **you have named a budget.** "Until it is done" is not a budget on a roadmap with eleven
+  phases. An unattended loop runs frontier reasoning for as long as you let it, and the
+  state file being current is what keeps that affordable — every wake with a stale state
+  file re-derives context that was already paid for.
+
+Full protocol: `references/continuous.md`.
+
 ## If you are coming from a framework stack
 
 Flow is meant to replace them, not sit alongside them. Running Flow's gates *and* a separate
