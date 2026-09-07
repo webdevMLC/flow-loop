@@ -51,6 +51,15 @@ how the work will be verified, the frame is not finished.
 Do **not** produce: a research report, a separate PRD, a roadmap, or a design doc,
 unless the user asked for that artifact by name.
 
+### Before leaving FRAME: mark every criterion with how it will be proven
+
+`by test`, `by artifact`, or `by person` — `references/evidence.md`. Do it while writing
+the criterion, because the class is a property of the claim, not of the verification. A
+criterion whose class is awkward to choose is a criterion that is not yet specific enough.
+
+Unmarked defaults to `by test`, and that default is how a build satisfies every gate and
+produces something nobody can use.
+
 ### Before leaving FRAME: does a person ever see this?
 
 If the goal describes something a **person** does — sees, reviews, submits, is warned by —
@@ -192,6 +201,15 @@ rescope — that is the user's call.
    Facts only — no narration of the session.
 4. Update STATE.md: mark tasks done, archive the section.
 5. Report plainly: what was built, what was verified and how, what was skipped and why.
+
+### The evidence ledger — end every report with it
+
+```
+Evidence: 6 by test (pass), 3 by artifact (.flow/evidence/12/), 2 by person (open).
+```
+
+Open `by person` criteria do not block a ship; **silently closing them does**. A run left
+alone overnight that reports two criteria awaiting review has done its job.
 
 ### The reachability check — before any of the above
 

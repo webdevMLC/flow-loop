@@ -97,6 +97,20 @@ under any outcome — a minor gates nothing, so being wrong about one costs noth
 are one finding; verifying both pays twice for one answer. Match on the claim, not on
 `file:line` — the same bug is often reported a few lines apart.
 
+## Close each criterion with the evidence its class demands
+
+`references/evidence.md` gives every criterion a class. CHECK honours it:
+
+- **`by test`** — the command output. Paste it.
+- **`by artifact`** — produce the artifact now and save it under `.flow/evidence/<phase>/`.
+  A promise to produce one does not close anything, and a passing unit test never substitutes.
+- **`by person`** — do not close it. Report it awaiting review, with the artifact if one
+  exists and the specific question a reader should answer.
+
+End the report with the ledger: how many closed by test, by artifact, and how many are open
+awaiting a person. A phase claiming every criterion met, on a goal about people, with nothing
+but `by test` behind it, is the defect this whole section exists to catch.
+
 ## A criterion about a person is not closed by a test
 
 **If an acceptance criterion says a person sees, opens, reviews, drills into or is warned by

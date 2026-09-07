@@ -43,6 +43,13 @@ Size is not clarity. If you cannot state what "done" looks like in one checkable
 sentence, the goal is not ready to build against **at any size** — read
 `references/brainstorm.md` before FRAME, however small the task looks.
 
+**Every acceptance criterion says how it will be proven** — `by test` (a command exits 0),
+`by artifact` (something produced that a person opens and judges), or `by person`
+(judgement no artifact settles). Unmarked means `by test`, and that default is how a system
+passes four gates while being unusable: a claim no command can settle gets closed by the
+nearest command that can. `by person` criteria are reported awaiting review, never closed by
+the loop. Every CHECK and SHIP report ends with the count. See `references/evidence.md`.
+
 **If a phase claims a person will see something, one acceptance criterion must name the
 screen** — and SHIP confirms it renders. Criteria written purely as system behaviour get built
 purely as system behaviour, and the TDD gate compounds it by making modules cheaper to test
@@ -132,6 +139,7 @@ Repeated work, not model choice, is what actually burns the budget.
 | The user wants many agents at once, and accepts the cost | `references/fleet.md` |
 | The user has asked you to run unattended | `references/autonomous.md` |
 | Running under `/loop`, or waking from one | `references/continuous.md` |
+| Writing acceptance criteria, or closing one | `references/evidence.md` |
 | The roadmap has no next phase | `references/exhausted.md` |
 | The user said to keep building past the roadmap | `references/nonstop.md` |
 | State file format, project profile, milestones | `references/state.md` |

@@ -19,8 +19,9 @@ Updated: <YYYY-MM-DD>
 **Wakes since commit:** <0 — only under `/loop`; at 2 the loop stops>
 
 ### Acceptance criteria
-- [ ] <testable statement>
-- [ ] <testable statement>
+- [ ] <statement> — `by test`
+- [ ] <statement> — `by artifact`: <what is produced, and where it is saved>
+- [ ] <statement> — `by person`: <the question a reader answers>
 
 ### Not building
 - <explicit exclusion agreed during brainstorming>
