@@ -94,6 +94,32 @@ under any outcome — a minor gates nothing, so being wrong about one costs noth
 are one finding; verifying both pays twice for one answer. Match on the claim, not on
 `file:line` — the same bug is often reported a few lines apart.
 
+## A criterion about a person is not closed by a test
+
+**If an acceptance criterion says a person sees, opens, reviews, drills into or is warned by
+something, a passing unit test does not close it.** The test proves the function behind the
+screen. The criterion claimed the screen.
+
+This is the single most expensive mistake this gate can make, because it is invisible: the
+suite is green, the report is honest about the suite, and the criterion is marked met. Nobody
+discovers otherwise until someone opens the product.
+
+It has happened at scale. A phase whose criteria read "a manager **sees** each associate's
+weighted KPI scorecard" and "a stage change **appears on the manager's board** within seconds,
+with **no page reload**" was closed on tests of the scorecard computation. It shipped
+twenty-four database modules and no page. Across that project, nine phases declared a user
+surface and three page files were written in total — every phase green, every report accurate
+about what it had actually run.
+
+To close a criterion of this kind, name **the route or component a person opens**, and say how
+you know it renders — you opened it, a browser-driven test drives it, or a screenshot exists.
+If none of those is true, the criterion is **not met**. Report it as: *"the computation is
+proven; no surface reaches it"* — which is useful, honest, and lets someone decide.
+
+Verbs that mean a human surface: sees, views, opens, reviews, drills into, filters, sorts,
+submits, is warned, is shown, at a glance, without a page reload. Verbs that do not: returns,
+computes, records, produces, rejects, enforces.
+
 ## Falsification
 
 Every finding must carry a concrete failure scenario: inputs or state → wrong output

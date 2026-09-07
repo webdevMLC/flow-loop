@@ -57,9 +57,13 @@ If the goal describes something a **person** does — sees, reviews, submits, is
 then at least one acceptance criterion must name the surface they do it on, and it must be
 checkable by opening that surface rather than by running a test.
 
-A phase whose criteria are entirely machine-checkable will be built entirely machine-side.
-That is not a prediction; it is what happens, because every gate downstream is satisfied by
-tests. If the roadmap carries a field like `UI hint: yes`, read it here and turn it into a
+Do not assume well-written criteria are enough. On the project that motivated this rule the
+criteria were fine — "a manager sees each associate's weighted KPI scorecard", "appears on the
+board with no page reload" — and the phase still shipped no page, because CHECK closed those
+criteria on tests of the computation behind them. Wording it correctly at FRAME is necessary
+and not sufficient; `references/review.md` carries the half that catches it.
+
+If the roadmap carries a field like `UI hint: yes`, read it here and turn it into a
 criterion — a field nothing consumes changes nothing.
 
 If the phase genuinely is infrastructure with no human surface, say so in the frame. The
