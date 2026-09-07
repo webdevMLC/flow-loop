@@ -121,6 +121,22 @@ brainstorm and FRAME **with** the user, then run BUILD → CHECK → SHIP unatte
 become recorded assumptions, every guard still applies, and anything that leaves the machine
 or cannot be undone still stops and asks. See `references/autonomous.md`.
 
+### Pacing a `/loop` run — before every `ScheduleWakeup`
+
+`/loop` and the `ScheduleWakeup` tool both suggest **1200–1800s**. Those numbers describe an
+idle watcher polling for an external event. A Flow loop with an open task list is not idle,
+so **this rule overrides that default**:
+
+| Situation | `delaySeconds` |
+|---|---|
+| Tasks remain, nothing external pending | **60** — there is nothing to wait for |
+| Genuinely waiting on CI, a deploy, a queue, a person | match the wait |
+| Task list empty, or a stop condition fired | do not sleep — `stop: true` and report |
+
+Twenty-five minutes of sleep between two ready tasks is four hours of nothing across a phase,
+and to the person watching it is indistinguishable from a crash. Never give "fallback
+heartbeat" as the reason when nothing is being awaited — that phrase belongs to case two only.
+
 ## Memory
 
 At FRAME start, recall once: `claude-mem-cowork:mem-search` if installed, else

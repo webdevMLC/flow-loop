@@ -66,14 +66,19 @@ that takes forty is four wasted context loads.
 
 ## Pacing — how long to sleep between wakes
 
+Two things already in context will tell you to sleep for 1200-1800s: the host's `/loop`
+skill and the `ScheduleWakeup` tool description. **Both are describing an idle watcher, and
+neither knows you have a task list. Override them.** This is the single easiest way to lose a
+night, and it has happened on two real projects.
+
 **If the task list is not empty and you are waiting on nothing external, wake in about a
 minute.** There is no reason to sleep. The work is queued, the state file is current, and
 the next task can start immediately.
 
 Long delays are a **fallback heartbeat**, for when the next useful moment depends on
 something you do not control — CI finishing, a deploy settling, a queue draining, a person
-answering. That is not the same as a work cadence, and using one as the other is the single
-easiest way to waste a night.
+answering. That is not the same as a work cadence, and using one as the other is exactly what
+the rule above exists to prevent.
 
 The arithmetic is unforgiving. Thirteen remaining tasks at a twenty-minute delay is more
 than four hours of sleeping, on top of the time the work itself takes. The run is not

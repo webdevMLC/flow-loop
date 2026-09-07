@@ -1,6 +1,6 @@
 {
   "name": "flow-loop",
-  "version": "1.15.1",
+  "version": "1.16.0",
   "private": true,
   "description": "Tests for the Flow hooks. The plugin itself has no runtime dependencies.",
   "type": "module",
