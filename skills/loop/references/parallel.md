@@ -20,6 +20,11 @@ see the test below.
 
 Do not reach for tier 2 to avoid a wait that tier 1 already removes.
 
+**Tier 3 - fleet mode.** When the user explicitly accepts the cost to finish sooner, the
+gates below relax and worktree isolation lets tasks that share files run at once. That is
+an opt-in mode with its own rules: `references/fleet.md`. It does not change what is
+serial - it changes what you are willing to pay to parallelise what is not.
+
 ## When to spawn
 
 All four must be true. Any one false → do it inline.

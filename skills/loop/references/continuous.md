@@ -60,6 +60,12 @@ state file is wrong. Two things make it affordable:
 Prefer a self-paced loop over a short fixed interval. Waking every five minutes on a task
 that takes forty is four wasted context loads.
 
+## Running the loop as a fleet
+
+By default each wake is one agent working sequentially. If the user has turned on fleet
+mode (`references/fleet.md`), each wake may spawn many - and the budget question below
+stops being advisory, because a fleet with no ceiling is the most expensive thing here.
+
 ## Before starting a long run
 
 - `.flow/STATE.md` has a goal, acceptance criteria and a task list.

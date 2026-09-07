@@ -96,6 +96,7 @@ Repeated work, not model choice, is what burns the budget.
 | A bug, test failure, or unexpected behavior | `references/debug.md` |
 | Resuming, or context about to compact | `references/resume.md` |
 | Running phase tasks concurrently | `references/parallel.md` |
+| The user wants many agents at once, and accepts the cost | `references/fleet.md` |
 | The user has asked you to run unattended | `references/autonomous.md` |
 | The run must continue past the end of a session | `references/continuous.md` |
 | State file format, project profile, milestones | `references/state.md` |

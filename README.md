@@ -336,6 +336,40 @@ fired:
 **It never pushes, opens a PR, or deploys.** Committing locally is the boundary; a human
 decides what leaves the machine.
 
+### Fleet mode — many agents at once
+
+The default loop is one agent working sequentially. Fleet mode trades tokens for wall-clock:
+
+```
+/loop /flow:loop continue from .flow/STATE.md — fleet mode, budget 400k
+```
+
+or durably, a `.flow/fleet` file in the project root.
+
+**What relaxes:** the context-positive test (paying twice for the same reading is accepted —
+you are buying time, not efficiency), the size floor that normally keeps small work inline,
+and the look-ahead, which scans the whole task list rather than the current wave.
+
+**What does not, ever:** wave 0 still runs alone and first; two agents never write the same
+file in the same working tree; agents never commit, push or merge; TDD still applies.
+
+**The actual unlock is worktree isolation.** Each agent gets its own checkout, so tasks that
+share a file can run at once and be reconciled after — an overwrite becomes a merge. Merges
+run one at a time with `test_fast` between them, never concurrently. And a conflict *inside
+one function* is a design signal, not a merge problem: those two agents were one task split
+wrongly, so discard both and run it once.
+
+**It needs a budget or it will not start.** Roughly one concurrent agent per 100k tokens,
+with a third held back for CHECK and the merge passes — a phase that runs out of budget
+before review is worse than one that built less. Mechanical work against a frozen contract
+drops to a cheaper tier; money, auth and invariants never do.
+
+**Where it does not help:** a dependency chain. Four agents on four tasks that must happen in
+order finish no sooner and cost four times as much. Check the file sets first — if they
+overlap and you cannot isolate, the work is serial and fleet mode will say so.
+
+Full protocol: `references/fleet.md`.
+
 ### Before you start a long one
 
 - `.flow/STATE.md` has a goal, acceptance criteria and a task list
