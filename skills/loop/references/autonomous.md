@@ -87,6 +87,10 @@ the work continues after the session ends, because nothing here can make that ha
 agent runs inside a session, and when that session ends, so does the run. Continuing needs
 the host to start another one - a scheduled task, a loop command, or a person.
 
+Continuing past that boundary is a host feature, not a skill one - on Claude Code, `/loop`.
+See `references/continuous.md` for how to run across sessions, and for the stop conditions
+that keep a long run from becoming a leak.
+
 So the end of a run is a certainty to design for, not an accident. The next session begins
 by reading `.flow/STATE.md` and nothing else. If that file does not say what was finished
 and what is next, the next run re-derives it, and often redoes work that is already
