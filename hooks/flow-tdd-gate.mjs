@@ -190,6 +190,9 @@ deny(
   'for the right reason.\n' +
   'Expected ' + stem + '.test' + ext + ' / ' + stem + '.spec' + ext + ' / test_' + stem + ext +
   ' somewhere under ' + root + '\n\n' +
+  'This denial is the RED step reporting that it has not happened yet. Do not route ' +
+  'around it to keep moving - the escape hatches below are for files genuinely outside ' +
+  'TDD scope, not for code you would rather not test yet.\n\n' +
   'If this file is config, glue, scaffolding, or markup it is outside the TDD scope: ' +
   'add its directory to EXEMPT_DIR in flow-tdd-gate.mjs\n' +
   'Suspend for this project: create ' + root + '/.flow/tdd-off\n' +

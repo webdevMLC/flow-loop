@@ -25,7 +25,9 @@ here, so the stop conditions below are not optional garnish — they are what se
    If commits exist that the state file does not mention, trust the repository and correct
    the file before building anything.
 3. **Continue from `Next action`.** Open tasks → BUILD. All tasks done → CHECK, then SHIP.
-4. **Phase shipped, roadmap has more?** Archive the phase and FRAME the next one.
+4. **Phase shipped, roadmap has more?** Archive it and report. Then FRAME the next one only
+   if the budget reaches past this phase; if it does not, that is a stop condition, not a
+   formality to skip.
 5. **Report only what changed since the last wake.** Not a re-summary of the project.
 
 ## Stop conditions — check these before doing any work

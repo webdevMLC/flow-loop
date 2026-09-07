@@ -11,6 +11,13 @@ This skill replaces the separate memory / milestone / context / TDD / debugging 
 layers. Do not also run another framework's phase commands or a separate review pass on
 top of it — that duplication is the cost problem it solves.
 
+## Before anything else
+
+**If `.flow/STATE.md` exists, read it first.** That one read is the whole context
+restoration step — goal, task list, decisions, assumptions, what was deliberately excluded.
+It applies to a new request as much as to an obvious resume; a request that feels like fresh
+work is exactly when the prior decisions get re-derived at full cost.
+
 ## Triage first — this is where the speed comes from
 
 Not every task deserves four gates. Size the work before starting:
@@ -28,6 +35,10 @@ you were wrong — escalating costs one gate, over-ceremony costs the whole loop
 Size is not clarity. If you cannot state what "done" looks like in one checkable
 sentence, the goal is not ready to build against **at any size** — read
 `references/brainstorm.md` before FRAME, however small the task looks.
+
+**The TDD and commit gates fire on every task, including Direct and Quick ones.** They are
+harness hooks, not gate ceremony — "no gates" above means no FRAME/CHECK/SHIP, not that a
+denied write can be worked around.
 
 ## The loop
 
@@ -108,7 +119,7 @@ Repeated work, not model choice, is what actually burns the budget.
 | Running phase tasks concurrently | `references/parallel.md` |
 | The user wants many agents at once, and accepts the cost | `references/fleet.md` |
 | The user has asked you to run unattended | `references/autonomous.md` |
-| The run must continue past the end of a session | `references/continuous.md` |
+| Running under `/loop`, or waking from one | `references/continuous.md` |
 | State file format, project profile, milestones | `references/state.md` |
 
 ## Autonomous mode
@@ -136,6 +147,27 @@ so **this rule overrides that default**:
 Twenty-five minutes of sleep between two ready tasks is four hours of nothing across a phase,
 and to the person watching it is indistinguishable from a crash. Never give "fallback
 heartbeat" as the reason when nothing is being awaited — that phrase belongs to case two only.
+
+### Stop conditions — check these at the top of a wake, before any work
+
+End the loop with `stop: true` and say which one fired:
+
+1. **The roadmap is exhausted.** The good ending.
+2. **A hard stop needs a human** — pushing, deploying, secrets, money, deleting data, a scope
+   change, a concurrent writer. Report it; do not wake again to rediscover it.
+3. **Two consecutive wakes with no commit.** Track it in STATE.md's `Wakes since commit`.
+   Spinning is worse than stopping, because it is invisible.
+4. **Guard 4** — two failed debug cycles on one defect.
+5. **CHECK fails twice on the same finding.**
+6. **The budget the user set**, in their own words in the loop prompt.
+
+Report only what changed since the last wake, never a re-summary of the project.
+
+**A wake that finishes a phase archives it and reports before touching the next.** It may
+then continue, but only if the user's budget covers more than this phase: "until the roadmap
+is exhausted" does, "finish phase 6, then stop" does not. Silence is not permission — with no
+budget reaching past this phase, stop at the boundary. The roadmap decides *which* phase is
+next; the budget decides *whether* there is one.
 
 ## Memory
 

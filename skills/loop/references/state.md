@@ -16,6 +16,7 @@ Updated: <YYYY-MM-DD>
 **Goal:** <one sentence — what done looks like>
 **Gate:** FRAME | BUILD | CHECK | SHIP
 **Mode:** normal | autonomous
+**Wakes since commit:** <0 — only under `/loop`; at 2 the loop stops>
 
 ### Acceptance criteria
 - [ ] <testable statement>
@@ -60,7 +61,9 @@ Updated: <YYYY-MM-DD>
 
 ## Rules
 
-- **One writer.** STATE.md is updated at gate transitions only, not continuously.
+- **One writer.** STATE.md is updated in the same commit as the work it describes — the
+  commit gate refuses a source commit that leaves it untouched. Not continuously, and not
+  batched up at the end of a gate.
 - **Absolute dates.** Never "last week" or "yesterday."
 - **No narration.** Facts and decisions, not a session log.
 - **Archive on SHIP.** Move the finished `## Now` block to ARCHIVE.md, then compact.

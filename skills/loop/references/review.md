@@ -32,7 +32,7 @@ from STATE.md, and returns findings only.
 Skip a checker whose domain the diff does not touch. A CSS change needs no
 performance oracle; a pure-frontend diff needs no tenancy audit.
 
-If the diff is <=3 files or <=200 lines, **do not spawn** (guard 4) — run all three
+If the diff is <=3 files or <=200 lines, **do not spawn** (guard 5) — run all three
 lenses inline yourself.
 
 ## Verifying the constants register
@@ -121,7 +121,7 @@ MINOR (works, but will bite).
 3. Do not re-run the checkers. They ran.
 4. MINOR findings: state them in the SHIP report. Fix only if the user asks.
 
-If a fix fails twice, guard 3 applies — surface it, do not attempt a third time.
+If a fix fails twice, guard 4 applies — surface it, do not attempt a third time.
 
 ## Verification honesty
 

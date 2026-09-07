@@ -20,7 +20,7 @@ wrong problem.
    existing patterns, the files in play, the test command, the run command.
    Route this through the sandbox — index or grep, print only what matters.
    Delegate to a Haiku/Sonnet subagent **only** if the survey spans many files
-   (guard 4); otherwise do it inline.
+   (guard 5); otherwise do it inline.
 
    **Find the analog.** For every new file you expect to write, name the closest existing
    file that already does something similar, and note what it does — its layout, its error
