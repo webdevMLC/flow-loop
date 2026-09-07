@@ -43,6 +43,11 @@ Size is not clarity. If you cannot state what "done" looks like in one checkable
 sentence, the goal is not ready to build against **at any size** — read
 `references/brainstorm.md` before FRAME, however small the task looks.
 
+**If a phase claims a person will see something, one acceptance criterion must name the
+screen** — and SHIP confirms it renders. Criteria written purely as system behaviour get built
+purely as system behaviour, and the TDD gate compounds it by making modules cheaper to test
+than pages. A run left alone will drift backend-ward until nothing is visible.
+
 **The TDD and commit gates fire on every task, including Direct and Quick ones.** They are
 harness hooks, not gate ceremony — "no gates" above means no FRAME/CHECK/SHIP, not that a
 denied write can be worked around.

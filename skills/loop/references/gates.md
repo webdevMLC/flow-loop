@@ -51,6 +51,21 @@ how the work will be verified, the frame is not finished.
 Do **not** produce: a research report, a separate PRD, a roadmap, or a design doc,
 unless the user asked for that artifact by name.
 
+### Before leaving FRAME: does a person ever see this?
+
+If the goal describes something a **person** does — sees, reviews, submits, is warned by —
+then at least one acceptance criterion must name the surface they do it on, and it must be
+checkable by opening that surface rather than by running a test.
+
+A phase whose criteria are entirely machine-checkable will be built entirely machine-side.
+That is not a prediction; it is what happens, because every gate downstream is satisfied by
+tests. If the roadmap carries a field like `UI hint: yes`, read it here and turn it into a
+criterion — a field nothing consumes changes nothing.
+
+If the phase genuinely is infrastructure with no human surface, say so in the frame. The
+failure is not building backend phases; it is believing a screen was delivered when the
+criteria never asked for one.
+
 ## BUILD
 
 Goal: working code. **This is the only gate that spends frontier reasoning.**
@@ -173,5 +188,29 @@ rescope — that is the user's call.
    Facts only — no narration of the session.
 4. Update STATE.md: mark tasks done, archive the section.
 5. Report plainly: what was built, what was verified and how, what was skipped and why.
+
+### The reachability check — before any of the above
+
+**If the phase claimed user-facing value, name the route or screen a person reaches it
+through, and confirm it renders.** Not the module. Not the endpoint. The thing a human opens.
+
+A phase whose entire output is modules, endpoints and tests has shipped **capability**, not
+user value, and must say so in the report rather than claiming the goal. Write it plainly:
+"the computation ships and is proven; no screen reaches it yet."
+
+This exists because it has failed at scale. One project declared a user surface on nine
+consecutive phases and shipped three page files across all of them — including a phase named
+"Live Dashboards" that added twenty-four database modules and no dashboard. Every gate passed
+honestly, because every acceptance criterion was a system behaviour a test could satisfy.
+
+Two forces make this the default rather than an accident, and both need naming:
+
+- **Acceptance criteria written as system behaviours are satisfied without a UI.** "A paid
+  booking produces exactly one immutable entry" is a database module and a test.
+- **The TDD gate makes backend work cheaper.** A domain module is trivially unit-testable; a
+  page is not. Under a test-first rule the path of least resistance is always another module,
+  so an unattended run will drift backend-ward for as long as you let it.
+
+Neither is a reason to skip UI. They are reasons it needs a check of its own.
 
 Then stop. Do not re-verify, re-read, or re-summarize.
