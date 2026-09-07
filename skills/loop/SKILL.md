@@ -127,6 +127,7 @@ Repeated work, not model choice, is what actually burns the budget.
 | The user wants many agents at once, and accepts the cost | `references/fleet.md` |
 | The user has asked you to run unattended | `references/autonomous.md` |
 | Running under `/loop`, or waking from one | `references/continuous.md` |
+| The roadmap has no next phase | `references/exhausted.md` |
 | State file format, project profile, milestones | `references/state.md` |
 
 ## Autonomous mode
@@ -159,7 +160,11 @@ heartbeat" as the reason when nothing is being awaited — that phrase belongs t
 
 End the loop with `stop: true` and say which one fired:
 
-1. **The roadmap is exhausted.** The good ending.
+1. **The roadmap is exhausted.** Before ending, run the sweep in
+   `references/exhausted.md` — one bounded pass over work already recorded but not on the
+   roadmap (deferred findings, claims never proven, planning drift). An empty roadmap means
+   the list someone wrote is complete, not that nothing is left. Report what it finds; then
+   stop, unless the budget was broader than the roadmap.
 2. **A hard stop needs a human** — pushing, deploying, secrets, money, deleting data, a scope
    change, a concurrent writer. Report it; do not wake again to rediscover it.
 3. **Two consecutive wakes with no commit.** Track it in STATE.md's `Wakes since commit`.

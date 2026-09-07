@@ -34,8 +34,11 @@ here, so the stop conditions below are not optional garnish — they are what se
 
 End the loop, and say which one fired:
 
-- **The roadmap is exhausted.** No next phase. This is the good ending, and the reason to
-  keep a roadmap rather than a single goal.
+- **The roadmap is exhausted.** No next phase — but sweep before you believe it. A roadmap
+  is usually scoped to a known set of gaps, so an empty one means that list is done, not that
+  the project is. `references/exhausted.md` names the five places to look and what may be
+  started without asking. This is still the good ending; the sweep only decides what the
+  final report says.
 - **A hard stop needs a human** — the list in `references/autonomous.md`. Pushing, secrets,
   money, deleting data, a scope change, a concurrent writer. Report it and stop; do not wake
   again to re-discover the same blocker.
