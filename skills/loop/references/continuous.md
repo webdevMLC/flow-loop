@@ -41,8 +41,12 @@ End the loop, and say which one fired:
   Spinning is worse than stopping, because it is invisible.
 - **Guard 4** — two failed debug cycles on one defect.
 - **CHECK fails twice on the same finding.**
-- **The budget the user set** — a phase count, a wall-clock, or a spend. Ask for one before
-  starting a long run; "until it is done" is not a budget on a roadmap with eleven phases.
+- **The budget the user set.** It goes in the loop prompt in plain words - "finish phase 6,
+  then stop", "stop after 6 hours", "until the roadmap is exhausted", or a token ceiling.
+  Ask for one before starting a long run; "until it is done" is not a budget on a roadmap
+  with eleven phases. Prefer a stopping point over a clock: a phase boundary is where a
+  mistake stops propagating, and it is the only budget that lands the run somewhere
+  reviewable.
 
 A loop with no stop condition is not autonomy, it is a leak.
 

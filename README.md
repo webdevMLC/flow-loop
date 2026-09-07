@@ -373,6 +373,29 @@ fired:
 **It never pushes, opens a PR, or deploys.** Committing locally is the boundary; a human
 decides what leaves the machine.
 
+### Naming a budget
+
+The last stop condition is the one you set, and it is the only one the loop cannot work out
+for itself. Put it in the prompt in plain words — there is no special syntax:
+
+```
+/loop /flow:loop continue from .flow/STATE.md — budget: finish phase 6, then stop
+/loop /flow:loop continue from .flow/STATE.md — budget: stop after 6 hours
+/loop /flow:loop continue from .flow/STATE.md — budget: until the roadmap is exhausted
+/loop /flow:loop continue from .flow/STATE.md — fleet mode, budget 400k
+```
+
+| Form | Good for |
+|---|---|
+| **a stopping point** — "finish phase 6, then stop" | the default, and the one to reach for. A phase boundary is a natural checkpoint, and it is where a mistake stops propagating |
+| **a wall-clock** — "stop after 6 hours" | overnight, when you care more about the morning than about exactly where it lands |
+| **a token ceiling** — "budget 400k" | required by fleet mode, which sizes the fleet from it |
+| **the roadmap** — "until the roadmap is exhausted" | long unattended runs. Weigh it honestly: a mistake in an early phase propagates through every later one before you look at any of them |
+
+Two practical notes. **Run it from a session whose working directory is the project**, or
+name the path — `.flow/STATE.md` is relative and a loop started elsewhere finds nothing.
+And **you run it once.** A self-paced loop re-arms itself each cycle; you do not re-issue it.
+
 ### Fleet mode — many agents at once
 
 The default loop is one agent working sequentially. Fleet mode trades tokens for wall-clock:
