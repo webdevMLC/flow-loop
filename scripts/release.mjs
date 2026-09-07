@@ -27,7 +27,12 @@ const step = (n, what) => console.log(`\n[${n}/5] ${what}`);
 // 1. Tests. A release that ships a red suite is worse than no release.
 step(1, 'tests');
 try {
-  run('npm', ['test'], { shell: process.platform === 'win32' });
+  // Run the suite with this Node rather than via npm: the npm shim is a .cmd on Windows,
+  // which cannot be spawned without a shell, and spawning through one does not escape args.
+  const script = JSON.parse(readFileSync('package.json', 'utf8')).scripts.test;
+  const argv = script.split(' ').filter(Boolean);
+  if (argv.shift() !== 'node') die('the test script no longer starts with "node" — update release.mjs');
+  run(process.execPath, argv);
   console.log('      pass');
 } catch (e) {
   console.error(e.stdout || e.message);
