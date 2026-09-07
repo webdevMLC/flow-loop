@@ -68,6 +68,15 @@ Scale to the budget, not to the task list:
   front-loads spend into BUILD, and a phase that runs out of budget before review is worse
   than one that built less.
 
+**Below roughly 300k, refuse and run sequentially instead.** After the reserve, a smaller
+budget funds one agent — which is the sequential loop carrying worktree setup, briefing and
+report overhead for no concurrency at all. Say so rather than starting: "fleet mode needs
+about 300k to run two agents; at this budget the sequential loop is strictly faster and
+cheaper." Two agents is the minimum at which any of this is parallel.
+
+These numbers are a starting heuristic, not a measurement. Once a real fleet run has
+happened, size from what it actually cost and correct this file.
+
 ## Model tiering
 
 Fleet mode is where tiering earns its keep, because the volume is high:

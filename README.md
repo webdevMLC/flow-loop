@@ -359,8 +359,12 @@ run one at a time with `test_fast` between them, never concurrently. And a confl
 one function* is a design signal, not a merge problem: those two agents were one task split
 wrongly, so discard both and run it once.
 
-**It needs a budget or it will not start.** Roughly one concurrent agent per 100k tokens,
-with a third held back for CHECK and the merge passes — a phase that runs out of budget
+**It needs a budget or it will not start, and it declines small ones.** Roughly one
+concurrent agent per 100k tokens, with a third held back for CHECK and the merge passes.
+Below about 300k that funds a single agent - the sequential loop carrying worktree and
+briefing overhead for no concurrency - so fleet mode says so and runs sequentially instead.
+Two agents is the minimum at which any of this is parallel. These figures are a starting
+heuristic, not a measurement; correct them once a real fleet run has happened — a phase that runs out of budget
 before review is worse than one that built less. Mechanical work against a frozen contract
 drops to a cheaper tier; money, auth and invariants never do.
 
