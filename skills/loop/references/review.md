@@ -55,6 +55,45 @@ it. For every threat:
 A threat model nobody verifies is theatre, and the verification is the whole reason to write
 one.
 
+## Verify only when reading will not do
+
+Adversarial verification — spawning skeptics to refute each finding — is the most expensive
+thing CHECK can do, and most of the time it is not worth doing. **The default is to report
+the findings and let the person who owns the code judge them.**
+
+A finding that names a file, a line, and a concrete failure is judged in seconds by someone
+who knows the codebase. Paying several agents to argue about it costs far more than the
+reading it replaces.
+
+Verification earns its cost in exactly two situations:
+
+1. **The count exceeds what the owner would read.** A sweep returning two hundred findings
+   needs triage before a human sees it. Thirty does not.
+2. **The reviewer cannot judge** — unfamiliar domain, no owner available, or a claim that
+   turns on behaviour nobody present can confirm.
+
+Neither is about how important the code is. Money code deserves *careful review*; it does
+not automatically deserve a skeptic panel, because the person who owns a ledger can read a
+ledger finding faster than three agents can debate it.
+
+### When you do verify, tier it
+
+Never spend the same on every finding — that costs as much to check a typo as a money defect.
+
+| Severity | Skeptics | Why |
+|---|---|---|
+| **BLOCKER** | up to 3 | A false blocker stops a ship and burns an investigation |
+| **MAJOR** | 1 | Worth a second opinion, not a panel |
+| **MINOR** | 0 — report it | If it is wrong the reader loses five seconds |
+
+Uniform verification is the failure mode to avoid. Thirty-two findings at two skeptics each
+is sixty-four agents, of which the twenty spent on minor findings could not have paid off
+under any outcome — a minor gates nothing, so being wrong about one costs nothing.
+
+**Deduplicate before verifying, not after.** Two findings on the same defect at nearby lines
+are one finding; verifying both pays twice for one answer. Match on the claim, not on
+`file:line` — the same bug is often reported a few lines apart.
+
 ## Falsification
 
 Every finding must carry a concrete failure scenario: inputs or state → wrong output
