@@ -121,6 +121,15 @@ reads in the morning instead of a five-thousand-line diff.
 the reviewer raises nothing above MINOR. Say in the next report that a checkpoint passed and
 where the file is. Reset the count.
 
+**"Continue" means arm the next wake, in the same turn.** Writing `CHECKPOINT-<n>.md` feels
+like an ending — it is a document, it is thorough, and the turn wants to stop there. It is not
+an ending. A green checkpoint that does not call `ScheduleWakeup` has ended the run exactly as
+surely as `stop: true` would, and left a report saying everything passed.
+
+This has happened. Two runs on the same night wrote a fully green Checkpoint 3 and stopped —
+one of them saying, in as many words, *"green, and stopping anyway"*. **A green checkpoint is
+the least eventful thing that can happen. Note it, reset the count, take the next phase.**
+
 **Stop and ask when any of these is true** — these are the things automation cannot settle:
 
 | Trigger | Why a person |

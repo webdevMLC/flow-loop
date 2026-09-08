@@ -202,6 +202,13 @@ or cannot be undone still stops and asks. See `references/autonomous.md`.
 idle watcher polling for an external event. A Flow loop with an open task list is not idle,
 so **this rule overrides that default**:
 
+**"Idle tick" is the tool's phrase, not your situation.** A wake with a phase to frame, a task
+to start, or a finding to act on is *queued work*, however quiet the machine is. One run armed
+1800s with the reason "nothing pending in the background; idle tick to frame Phase 72" — it
+named the queued work inside the sentence explaining why it was idle. **Nothing pending in the
+background is not the same as nothing to do.** If the task list or the roadmap has anything at
+all, this is not an idle tick.
+
 | Situation | `delaySeconds` |
 |---|---|
 | Tasks remain, nothing external pending | **60** — there is nothing to wait for |
