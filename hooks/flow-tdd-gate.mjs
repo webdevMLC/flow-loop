@@ -57,7 +57,7 @@ const EXEMPT_DIR = ['/node_modules/', '/dist/', '/build/', '/.next/', '/out/', '
 if (EXEMPT_DIR.some((d) => lower.includes(d))) ok();
 
 if (/(\.config\.[^.]+|\.d\.ts|\.stories\.[^.]+|\.gen\.[^.]+)$/i.test(base)) ok();
-if (/^(index|types|constants|setup|main|app|layout|page)\.[^.]+$/i.test(base)) ok();
+if (/^(index|types|constants|setup|main|app)\.[^.]+$/i.test(base)) ok();
 
 // ---------- find project root ----------
 // If nothing above the file marks a project, the file is not part of one - a scratch
@@ -110,7 +110,7 @@ const tokenize = (s) => s
 
 // Framework files whose basename carries no meaning (Next.js route.ts, etc).
 // Their tests are named for the behavior, so anchor on the route segment instead.
-const GENERIC = /^(route|middleware|handler|controller|service|resolver)$/;
+const GENERIC = /^(route|middleware|handler|controller|service|resolver|page|layout|loading|error|template|default|not-found)$/;
 const tokens = tokenize(GENERIC.test(stem) ? basename(dirname(p)) : stemRaw);
 
 // A file is a test if its NAME says so, or if it LIVES in a test directory. The second
@@ -175,6 +175,20 @@ const walk = (dir, depth) => {
 walk(root, 0);
 if (matched) ok();
 
+// Pass 1b: the route this file serves. app/(console)/scorecard/page.tsx -> /scorecard.
+// A spec that drives that path is the honest covering test for a screen; demanding a unit
+// test named for a file called "page" is what taught this gate to prefer modules to
+// interfaces.
+let route = '';
+{
+  const parts = p.split('/');
+  const i = parts.lastIndexOf('app');
+  if (i >= 0) {
+    const segs = parts.slice(i + 1, -1).filter((x) => x && !(x.startsWith('(') && x.endsWith(')')));
+    if (segs.length) route = '/' + segs.join('/');
+  }
+}
+
 // Pass 2 (bounded reads): a test that exercises one of this module's exports even
 // though its filename shares nothing with it -- e.g. imported via a barrel.
 let source = '';
@@ -183,7 +197,7 @@ const symbols = [...source.matchAll(
   /export\s+(?:async\s+)?(?:function|const|class|type|interface|enum)\s+([A-Za-z_$][\w$]*)/g,
 )].map((m) => m[1]).filter((s) => s.length >= 4);
 
-if (symbols.length) {
+if (symbols.length || (route && route.length > 1)) {
   let reads = 0;
   for (const t of tests) {
     if (reads++ > 80) break;
@@ -191,6 +205,7 @@ if (symbols.length) {
       if (statSync(t).size > 512 * 1024) continue;
       const txt = readFileSync(t, 'utf8');
       if (symbols.some((s) => txt.includes(s))) ok();
+        if (route && route.length > 1 && txt.includes(route)) ok();
     } catch { /* unreadable, skip */ }
   }
 }
@@ -202,8 +217,22 @@ deny(
     : 'Flow TDD gate: no test file found for "' + base + '".\n') +
   'RED comes first - write a failing test before this implementation, and watch it fail\n' +
   'for the right reason.\n' +
-  'Expected ' + stem + '.test' + ext + ' / ' + stem + '.spec' + ext + ' / test_' + stem + ext +
-  ' somewhere under ' + root + '\n\n' +
+  (route
+    ? 'Expected a render or end-to-end test driving ' + route + ', or a component test'
+    : 'Expected ' + stem + '.test' + ext + ' / ' + stem + '.spec' + ext + ' / test_' + stem + ext) +
+  (route ? '' :
+  ' somewhere under ' + root) + '\n\n' +
+  (route
+    ? 'This is a screen. Its honest test is that the route RENDERS with its states - '
+      + 'loading, empty, error, unauthorized - not a unit test named after a file called '
+      + '"page". A render or end-to-end test driving ' + route + ' satisfies this gate.'
+      + '\n\n'
+      + 'DO NOT move this work into a module to make it easier to test. That is the failure '
+      + 'this gate actually caused: modules are trivially unit-testable and screens are not, '
+      + 'so a project under a naive test-first rule drifts backend-ward until nothing is '
+      + 'visible. One real project shipped eleven phases that way.'
+      + '\n\n'
+    : '') +
   'This denial is the RED step reporting that it has not happened yet. Do not route ' +
   'around it to keep moving - the escape hatches below are for files genuinely outside ' +
   'TDD scope, not for code you would rather not test yet.\n\n' +

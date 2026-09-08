@@ -37,7 +37,11 @@ describe('what the gate does not guard', () => {
     const d = fixture({});
     for (const p of [
       'vite.config.ts', 'src/types.d.ts', 'src/Button.stories.tsx', 'src/api.gen.ts',
-      'src/index.ts', 'src/types.ts', 'src/constants.ts', 'app/page.tsx', 'app/layout.tsx',
+      'src/index.ts', 'src/types.ts', 'src/constants.ts',
+      // page.tsx and layout.tsx were here. They are route files carrying real behaviour, and
+      // exempting them left every screen with no RED step while every module had one — the
+      // pressure that bent one project eleven phases backend-ward. They are gated now, and
+      // anchored on their route segment rather than the word "page".
     ]) {
       assert.equal(tddVerdict(d, p).allowed, true, `${p} should be exempt`);
     }
@@ -251,5 +255,69 @@ describe('.flow/tdd-exempt — carving out legacy code without editing the plugi
     assert.equal(v.allowed, false);
     assert.match(v.reason, /\.flow\/tdd-exempt/);
     assert.doesNotMatch(v.reason, /EXEMPT_DIR in flow-tdd-gate\.mjs/);
+  });
+});
+
+describe('a screen is not a module — the honest test is different', () => {
+  // The gate demanded a unit test named for the file. A domain module is trivially
+  // unit-testable; a page is not. So the cheapest way to satisfy this gate was always to
+  // write another backend module, and across eleven phases that is exactly where the build
+  // drifted. The gate meant to enforce quality was steering work away from anything a
+  // person could see.
+  const PAGE = 'export default function Page() { return <main>hi</main>; }\n';
+  const E2E = `import { test, expect } from '@playwright/test';
+test('the scorecard lists associates', async ({ page }) => {
+  await page.goto('/scorecard');
+  await expect(page.getByRole('table')).toBeVisible();
+});
+`;
+
+  test('a route-level e2e test covers the page it drives', () => {
+    const d = fixture({
+      'apps/web/app/(console)/scorecard/page.tsx': PAGE,
+      'apps/web/test/e2e/console.spec.ts': E2E,
+    });
+    assert.equal(tddVerdict(d, 'apps/web/app/(console)/scorecard/page.tsx').allowed, true);
+  });
+
+  test('a page whose route nothing drives is still gated', () => {
+    const d = fixture({ 'apps/web/app/(console)/scorecard/page.tsx': PAGE });
+    assert.equal(tddVerdict(d, 'apps/web/app/(console)/scorecard/page.tsx').allowed, false);
+  });
+
+  test('page.tsx anchors on its route segment, not on the word "page"', () => {
+    const d = fixture({
+      'apps/web/app/(console)/reconciliation/page.tsx': PAGE,
+      'apps/web/test/reconciliation-view.test.tsx': REAL_TEST,
+    });
+    assert.equal(tddVerdict(d, 'apps/web/app/(console)/reconciliation/page.tsx').allowed, true);
+  });
+
+  test('layout, loading and error files anchor the same way', () => {
+    const d = fixture({
+      'apps/web/app/(console)/layout.tsx': PAGE,
+      'apps/web/app/(console)/loading.tsx': PAGE,
+      'apps/web/test/console-shell.test.tsx': REAL_TEST,
+    });
+    assert.equal(tddVerdict(d, 'apps/web/app/(console)/layout.tsx').allowed, true);
+    assert.equal(tddVerdict(d, 'apps/web/app/(console)/loading.tsx').allowed, true);
+  });
+
+  test('a named component still needs a test named for it', () => {
+    const d = fixture({ 'apps/web/components/weights-form.tsx': PAGE });
+    assert.equal(tddVerdict(d, 'apps/web/components/weights-form.tsx').allowed, false);
+  });
+
+  test('the denial tells you what a screen test is, and names the drift', () => {
+    const d = fixture({ 'apps/web/app/(console)/scorecard/page.tsx': PAGE });
+    const v = tddVerdict(d, 'apps/web/app/(console)/scorecard/page.tsx');
+    assert.equal(v.allowed, false);
+    assert.match(v.reason, /renders/i);
+    assert.match(v.reason, /module/i);
+  });
+
+  test('a plain module is unaffected — it still needs its own test', () => {
+    const d = fixture({ 'packages/db/src/pricing.ts': SRC });
+    assert.equal(tddVerdict(d, 'packages/db/src/pricing.ts').allowed, false);
   });
 });
