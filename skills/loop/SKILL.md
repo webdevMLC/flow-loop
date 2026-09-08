@@ -48,6 +48,13 @@ exist, who changes the rules it creates, what in the source documents did nothin
 what did the last phase leave open. Each answer becomes a task, a recorded assumption, or a
 blocker — never silence. It reads what the survey already returned; it does not search again.
 
+**CHECK is five stages and each gates the next** — machine (build, full suite, every project
+gate), contract (the authority, re-read, not just the criteria), composition (is the new code
+reachable, called, read; does last phase's green still hold), adversarial (the lenses, plus one
+that tries to falsify the SHIP report's own claims), verdict. Nothing model-heavy runs until
+the machine stage is green. A phase ships only when all five pass — that, not the absence of a
+watcher, is what makes an unattended run trustworthy. See `references/review.md`.
+
 **SHIP hands the work over, it does not just stop.** If the phase produced a migration, an
 environment variable, a schema change or a job, append its entry to `.flow/RELEASE.md` —
 what changed, which migrations and whether each reverses, the order and its reason, and what
@@ -84,7 +91,7 @@ A failed check that does **not** change the goal is fixed inside CHECK, not by r
 |------|----------|-----------|-------------|
 | FRAME | goal + task list in `.flow/STATE.md` | cheap / inline | 1 recall + 1 survey + 1 question batch |
 | BUILD | working code + tests | **frontier** (the only such spend) | no research; assumptions already fixed |
-| CHECK | one verdict report | cheap subagents, parallel | 1 pass + 1 targeted re-verify |
+| CHECK | one verdict report | machine first, then cheap subagents | 5 gating stages, 1 targeted re-verify |
 | SHIP | commit / PR + memory write | inline, cheapest | 1 pass |
 
 Every task commit carries its own `.flow/STATE.md` update. A task shipped but not checked

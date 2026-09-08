@@ -2,41 +2,99 @@
 
 One pass. Three checkers in parallel. One report. Then done.
 
-## Machine pass first
+CHECK is five stages, and **each one gates the next**. The order is by cost: nothing
+model-heavy runs until everything a machine can settle is green, because a reviewer arguing
+about code that does not compile is pure waste.
 
-Before spending a single model token on the lenses below, run the checks a machine does
-better and cheaper. Commands come from `.flow/PROJECT.md`.
+A phase ships only when all five pass. That is what makes an unattended run trustworthy —
+not that nobody is watching, but that nothing reaches SHIP without clearing every stage.
+
+| Stage | Asks | Cost |
+|---|---|---|
+| **0 Machine** | does it build, typecheck, lint, and pass everything? | free |
+| **1 Contract** | does it still match the authority it was framed against? | cheap |
+| **2 Composition** | is it connected to the system, or an island? | cheap |
+| **3 Adversarial** | what is wrong with it? | model-heavy |
+| **4 Verdict** | what is proven, what is open, what ships? | inline |
+
+---
+
+## Stage 0 — the machine pass
+
+Run all of it. Do not sample, and do not skip a step because the change "looks small" — the
+cheapest stage is the one you never earn the right to skip.
 
 1. **Typecheck** — `tsc --noEmit` or the language equivalent.
 2. **Lint** — the project's configured linter.
-3. **The affected tests** — full suite if the change is broad.
-4. **Seeded tables with no reader** — grep the tables named in seed files and migrations
-   against the client tree. One command, and it finds the class of defect where the data
-   ships and the screen never does. See below.
+3. **The full suite.** Not `test_fast`, not the affected subset. `test_fast` is what BUILD
+   runs between tasks; CHECK runs everything, because the defect a fast suite misses is
+   exactly the one that reaches a user.
+4. **The build.** `next build`, `cargo build --release`, whatever produces the artifact.
+   **Unit tests never catch a server/client boundary violation, a bad import, or a route
+   config error.** One project ran two days of green commits on a build that had not been
+   attempted since before any of them.
+5. **Every gate the project has** — its own consistency checkers, mutation gates, schema
+   validators. A repository that built its own gates expects them run.
+6. **Seeded data with no reader** — see below.
 
-Fix everything they report **before** dispatching reviewers. A type error found by `tsc` in
-two seconds is the same defect a review agent would spend a thousand tokens describing, and
-the compiler is never wrong about it in the way a reviewer can be.
+Red at stage 0 means CHECK is over. Fix and start again; the later stages have nothing useful
+to say about code that does not compile.
 
-If the machine pass is red, the review has nothing useful to say yet. Do not run it.
+## Stage 1 — the contract
 
-## Dispatch
+Correctness against the criteria is not correctness. **CHECK verifies the code against the
+frame; this stage verifies the frame.**
 
-Spawn these **in a single message** so they run concurrently. Use Sonnet, or Haiku
-for a small diff — never Opus. Each gets the diff scope and the acceptance criteria
-from STATE.md, and returns findings only.
+- **The constants register** — every row closed against the authority document, not against
+  the roadmap or the phase plan. Details below.
+- **The threat register** — every row closed by named code and a test that fails without it.
+- **The premise.** Re-read the authority for the values this phase depends on, and confirm the
+  frame still states them correctly. This exists because of a specific failure: a rate entered
+  a research document wrong, propagated through the roadmap into a phase plan, into fifteen
+  fixtures, and into five shipped phases — **every gate green the whole way**, because each
+  one verified the code against criteria nobody had re-checked. A phase that implements its
+  criteria perfectly and its authority wrongly has failed, and this is the only stage that can
+  see it.
+
+## Stage 2 — composition
+
+Every gate before this one examines a part. This one asks whether the parts connect — the
+failure mode where every component is correct and the system does not work.
+
+- **Every new module is imported by something reachable.** A module nothing calls is either
+  dead or unfinished; both are findings, distinguished by asking who was supposed to call it.
+- **Every new endpoint is called by a surface, or documented as a published API.** An endpoint
+  with neither is a screen that was never built.
+- **Every new table is read.** See the seeded-data section below.
+- **Every criterion is closed by the evidence its class demands** — `by test`, `by artifact`,
+  `by person`. Details below.
+- **Regression: what passed at the last phase still passes.** Compare against the previous
+  phase's recorded results. A suite that silently stopped running is indistinguishable from one
+  that passes, and the difference only shows up here.
+
+## Stage 3 — the adversarial pass
+
+Only now, and only on green. Spawn these **in a single message** so they run concurrently. Use
+Sonnet, or Haiku for a small diff — never Opus. Each gets the diff scope and the acceptance
+criteria from STATE.md, and returns findings only.
 
 | Checker | Looks for |
 |---------|-----------|
 | **Logic** | Does the code meet the acceptance criteria? Wrong results, off-by-one, unhandled null/empty/error paths, broken invariants, state transitions that can't happen or can't be undone. |
-| **Security** | Injection, missing authz on new endpoints, tenancy leaks, secrets in code or logs, unvalidated input crossing a trust boundary, unsafe defaults. **And: if `.flow/STATE.md` holds a threat register, verify every row** — see below. |
+| **Security** | Injection, missing authz on new endpoints, tenancy leaks, secrets in code or logs, unvalidated input crossing a trust boundary, unsafe defaults. |
 | **Performance** | N+1 queries, unbounded loops or fetches, missing indexes on new query paths, work repeated per-request that could be hoisted, blocking calls on hot paths. |
+| **Claims** | Read the SHIP report as drafted and try to falsify each sentence. "Mutation-proven" — was it? "All criteria met" — by what evidence? This one reviews the *account of the work*, which is what a person will read and believe. |
 
-Skip a checker whose domain the diff does not touch. A CSS change needs no
-performance oracle; a pure-frontend diff needs no tenancy audit.
+Skip a checker whose domain the diff does not touch. A CSS change needs no performance oracle.
+If the diff is <=3 files or <=200 lines, **do not spawn** (guard 5) — run the lenses inline.
 
-If the diff is <=3 files or <=200 lines, **do not spawn** (guard 5) — run all three
-lenses inline yourself.
+## Stage 4 — the verdict
+
+Report, resolve, and state the evidence ledger. Details in the sections below. A phase ships
+when stages 0-2 are green, every BLOCKER and MAJOR from stage 3 is fixed and re-verified, and
+the ledger says what remains open and to whom.
+
+---
 
 ## Verifying the constants register
 
