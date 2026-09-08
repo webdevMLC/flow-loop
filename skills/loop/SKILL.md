@@ -43,6 +43,11 @@ Size is not clarity. If you cannot state what "done" looks like in one checkable
 sentence, the goal is not ready to build against **at any size** — read
 `references/brainstorm.md` before FRAME, however small the task looks.
 
+**FRAME ends with a gap pass**, not with a task list: what does this plan need that does not
+exist, who changes the rules it creates, what in the source documents did nothing consume, and
+what did the last phase leave open. Each answer becomes a task, a recorded assumption, or a
+blocker — never silence. It reads what the survey already returned; it does not search again.
+
 **Every acceptance criterion says how it will be proven** — `by test` (a command exits 0),
 `by artifact` (something produced that a person opens and judges), or `by person`
 (judgement no artifact settles). Unmarked means `by test`, and that default is how a system

@@ -45,6 +45,43 @@ wrong problem.
    write the threat register before BUILD. Every mitigation becomes a task in the list, not
    a wishlist item.
 
+### 8. The gap pass — what does this plan assume exists that does not?
+
+Steps 3, 6 and 7 ask *how do I build this*, *is any value wrong*, and *what could attack
+this*. None asks what the plan is quietly taking for granted. That question is where the
+expensive failures live, and every one of them was answerable from documents already read.
+
+**This is a pass over what the survey returned, not a second survey.** If it sends you
+searching for something new, it has failed — record the unknown as an assumption and move on
+(guard 2). Five questions:
+
+1. **What does this need that does not exist yet?** A screen, a service, a credential, a
+   table, a seeded value, a command that has never successfully run. Name each one.
+2. **Who operates this after it ships?** If the phase creates a rate, a threshold, a policy or
+   an authority rule, name the person who will change it later and how. "By writing a
+   migration" means the people who own that rule cannot change it.
+3. **What in the source documents did nobody consume?** A field in the plan format, a
+   requirements row, a blocked-list entry, a `UI hint`. A signal nothing reads is a signal
+   that will be missed — one project carried `UI hint: yes` on nine phases and shipped three
+   page files.
+4. **Which criteria have no evidence path?** Cross-check the classes from step "mark every
+   criterion". A criterion you cannot mark `by test`, `by artifact` or `by person` is not
+   specific enough yet.
+5. **What did the last phase leave open?** Findings not acted on, deviations, claims ticked as
+   built but never proven. `references/exhausted.md` names where these hide; read them at the
+   start of a phase rather than only at the end of a roadmap.
+
+**Every gap resolves into exactly one of three things, and silence is not among them:**
+
+| Resolution | Goes to |
+|---|---|
+| We build it this phase | the task list |
+| We proceed without it, knowingly | `### Assumptions`, with what breaks if wrong |
+| We cannot proceed without it | a blocker — reported, and the phase does not start |
+
+A gap recorded as an assumption is fine. A gap nobody wrote down is how a phase ships a
+computation with no screen, a rate no one can change, and a durable path nothing ever asserted.
+
 Exit FRAME when acceptance criteria are written and testable. If you cannot state
 how the work will be verified, the frame is not finished.
 
