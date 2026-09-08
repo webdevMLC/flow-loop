@@ -82,6 +82,17 @@ searching for something new, it has failed — record the unknown as an assumpti
 A gap recorded as an assumption is fine. A gap nobody wrote down is how a phase ships a
 computation with no screen, a rate no one can change, and a durable path nothing ever asserted.
 
+### 9. Review the plan before building it — Full work only
+
+One reviewer reads the frame, not the codebase: is this the right work, are the criteria
+checkable, do the tasks actually produce them, what does it assume that is not true, what would
+someone be surprised is missing. Concerns are accepted, recorded as assumptions, or rejected
+with a reason — and the frame is edited to say which. Two revision rounds, then surface the
+disagreement rather than settling it alone. `references/planreview.md`.
+
+Three gates check the work. This is the only one that checks the plan, and the plan is where
+the expensive failures start.
+
 Exit FRAME when acceptance criteria are written and testable. If you cannot state
 how the work will be verified, the frame is not finished.
 
@@ -238,6 +249,21 @@ rescope — that is the user's call.
    Facts only — no narration of the session.
 4. Update STATE.md: mark tasks done, archive the section.
 5. Report plainly: what was built, what was verified and how, what was skipped and why.
+
+### Append the manifest entry
+
+`.flow/MANIFEST.md` gets the phase's commit range, its migrations, which phases it depends
+on, and whether it was self-selected. Written now, from facts in hand — reconstructed later it
+is guesswork, and a phase with no manifest entry cannot be safely reverted at all.
+`references/reverse.md`.
+
+### At a milestone boundary, audit against the original intent
+
+Roadmap exhausted, a version cut, or a run of self-selected phases ending: read what was
+originally asked for against what actually shipped. Which requirements are met and by what
+evidence, which were **quietly dropped**, what shipped that nobody asked for, what is still
+open. Every phase gate examines one phase; a requirement can fall between all of them without
+any gate being wrong. `references/milestone.md`.
 
 ### Append the release entry — before the report
 

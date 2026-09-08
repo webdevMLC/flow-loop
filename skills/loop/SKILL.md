@@ -55,6 +55,11 @@ that tries to falsify the SHIP report's own claims), verdict. Nothing model-heav
 the machine stage is green. A phase ships only when all five pass — that, not the absence of a
 watcher, is what makes an unattended run trustworthy. See `references/review.md`.
 
+**FRAME ends by reviewing its own plan** on Full work — one reader asking whether this is the
+right work, whether the criteria are checkable, and whether the tasks actually produce them.
+Three gates check the work; this is the only one that checks the plan, and the plan is where
+the expensive failures start.
+
 **A phase that touched a screen gets the screen audited** — automatically, inside CHECK, not
 by a skill someone remembers. It opens the route, captures it at desktop and 375px, checks the
 five states and the project's own design standard, and the capture is what closes an
@@ -166,7 +171,10 @@ Repeated work, not model choice, is what actually burns the budget.
 | Running under `/loop`, or waking from one | `references/continuous.md` |
 | Writing acceptance criteria, or closing one | `references/evidence.md` |
 | SHIP, when the phase produced a migration or config | `references/release.md` |
+| Leaving FRAME on a Full phase | `references/planreview.md` |
 | CHECK, when the phase touched a screen | `references/uiaudit.md` |
+| Undoing a shipped phase | `references/reverse.md` |
+| A milestone or roadmap boundary | `references/milestone.md` |
 | Closing a `by person` criterion | `references/uat.md` |
 | The roadmap has no next phase | `references/exhausted.md` |
 | The user said to keep building past the roadmap | `references/nonstop.md` |
