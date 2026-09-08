@@ -135,6 +135,44 @@ No research here. If a fact is missing, use the assumption recorded in FRAME.
 If no assumption covers it, that is a FRAME defect — record it, pick the option
 most consistent with the surrounding code, and keep building.
 
+### When the frame turns out to be wrong
+
+The rule above covers a fact the frame **did not have**: proceed on an assumption. This covers
+a fact the frame **got wrong** — and the two need opposite responses. Continuing past a false
+premise builds something the frame no longer describes, and the state file keeps claiming the
+old plan until someone reads the code.
+
+You have hit one when, mid-task:
+
+- the analog named in the frame does not exist, or does something materially different
+- a contract, type or schema has a different shape than the frame assumed
+- **the test cannot be written as specified** — the behaviour the criterion describes is not
+  reachable from here. This is the loudest signal available and the easiest to explain away
+- a dependency the frame assumed — a service, a table, a function, an endpoint — is not there
+- finishing the task as written would violate an invariant, an authority value, or another
+  criterion in the same phase
+- the task is already done, or cannot be done at all
+
+**Three responses, and the choice is about blast radius, not effort:**
+
+| What is wrong | Do this |
+|---|---|
+| A detail inside one task | Adapt. Record it in `### Deviations` with what you found and what you did. Continue. |
+| The task itself | Re-frame **that task** in STATE.md — the new task, and one line on why the old one was wrong. Then build the new one. |
+| A criterion, or the goal | **Stop the phase.** Report what was assumed, what is true, and which criterion no longer stands. Do not redesign the phase mid-BUILD. |
+
+**The divergence reaches STATE.md before the code does.** Not after the task, not at SHIP. A
+state file describing a plan that stopped being true two tasks ago is worse than no plan — the
+next wake resumes from it, a reader trusts it, and both are working from fiction.
+
+**Two re-frames in one phase and the phase stops.** If the tasks keep turning out wrong, the
+frame is wrong, not the tasks, and rewriting a third is how a phase quietly becomes a different
+phase. Same shape as guard 4: two attempts, then surface it.
+
+**An authority contradiction is never a deviation.** If the thing you found disagrees with a
+specification, contract or regulation, `references/authority.md` governs — that is a BLOCKER
+and it stops the phase, however small it looks from inside the task.
+
 ### TDD scope rule
 
 Test-first is **mandatory** where a test can actually fail meaningfully:

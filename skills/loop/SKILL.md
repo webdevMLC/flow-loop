@@ -55,6 +55,12 @@ that tries to falsify the SHIP report's own claims), verdict. Nothing model-heav
 the machine stage is green. A phase ships only when all five pass — that, not the absence of a
 watcher, is what makes an unattended run trustworthy. See `references/review.md`.
 
+**A frame that turns out wrong mid-BUILD stops the work, it does not get built around.** A
+missing fact becomes an assumption and the build continues; a *false* one does not. Adapt a
+detail and record it in Deviations, re-frame a wrong task in STATE.md before writing its code,
+and stop the phase outright when a criterion or the goal rests on the false premise. Two
+re-frames in one phase means the frame was wrong, not the tasks — stop.
+
 **FRAME ends by reviewing its own plan** on Full work — one reader asking whether this is the
 right work, whether the criteria are checkable, and whether the tasks actually produce them.
 Three gates check the work; this is the only one that checks the plan, and the plan is where
