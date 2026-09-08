@@ -55,6 +55,13 @@ that tries to falsify the SHIP report's own claims), verdict. Nothing model-heav
 the machine stage is green. A phase ships only when all five pass — that, not the absence of a
 watcher, is what makes an unattended run trustworthy. See `references/review.md`.
 
+**A phase that touched a screen gets the screen audited** — automatically, inside CHECK, not
+by a skill someone remembers. It opens the route, captures it at desktop and 375px, checks the
+five states and the project's own design standard, and the capture is what closes an
+`by artifact` criterion. **A `by person` criterion gets a prepared question in
+`.flow/UAT.md`** — route, one specific question, what yes and no mean — which the loop never
+answers itself.
+
 **SHIP hands the work over, it does not just stop.** If the phase produced a migration, an
 environment variable, a schema change or a job, append its entry to `.flow/RELEASE.md` —
 what changed, which migrations and whether each reverses, the order and its reason, and what
@@ -159,6 +166,8 @@ Repeated work, not model choice, is what actually burns the budget.
 | Running under `/loop`, or waking from one | `references/continuous.md` |
 | Writing acceptance criteria, or closing one | `references/evidence.md` |
 | SHIP, when the phase produced a migration or config | `references/release.md` |
+| CHECK, when the phase touched a screen | `references/uiaudit.md` |
+| Closing a `by person` criterion | `references/uat.md` |
 | The roadmap has no next phase | `references/exhausted.md` |
 | The user said to keep building past the roadmap | `references/nonstop.md` |
 | State file format, project profile, milestones | `references/state.md` |

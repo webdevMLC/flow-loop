@@ -68,6 +68,10 @@ failure mode where every component is correct and the system does not work.
 - **Every new table is read.** See the seeded-data section below.
 - **Every criterion is closed by the evidence its class demands** — `by test`, `by artifact`,
   `by person`. Details below.
+- **If the phase touched a user surface, audit the screen** — `references/uiaudit.md`. It
+  opens the route, captures it at desktop and 375px into `.flow/evidence/<phase>/`, checks
+  the five states and the project's own design standard, and returns findings. The capture is
+  what closes an `by artifact` criterion; a score without one is an opinion.
 - **Regression: what passed at the last phase still passes.** Compare against the previous
   phase's recorded results. A suite that silently stopped running is indistinguishable from one
   that passes, and the difference only shows up here.
@@ -95,6 +99,16 @@ when stages 0-2 are green, every BLOCKER and MAJOR from stage 3 is fixed and re-
 the ledger says what remains open and to whom.
 
 ---
+
+## Prepare the UAT entries — do not answer them
+
+Every criterion still marked `by person` gets an entry appended to `.flow/UAT.md`:
+the exact route or artifact, one specific question, and what yes and no each mean.
+`references/uat.md` gives the shape.
+
+**Prepare, never answer.** The loop may capture the artifact and predict the severity; it may
+not decide. A loop that closes its own judgement criteria has reinvented the substitution this
+gate exists to prevent, under a heading claiming a person did it.
 
 ## Verifying the constants register
 
