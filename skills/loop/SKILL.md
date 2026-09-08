@@ -48,6 +48,12 @@ exist, who changes the rules it creates, what in the source documents did nothin
 what did the last phase leave open. Each answer becomes a task, a recorded assumption, or a
 blocker — never silence. It reads what the survey already returned; it does not search again.
 
+**SHIP hands the work over, it does not just stop.** If the phase produced a migration, an
+environment variable, a schema change or a job, append its entry to `.flow/RELEASE.md` —
+what changed, which migrations and whether each reverses, the order and its reason, and what
+to watch. Committing locally is still the boundary; a phase nobody can safely release is half
+finished. See `references/release.md`.
+
 **Every acceptance criterion says how it will be proven** — `by test` (a command exits 0),
 `by artifact` (something produced that a person opens and judges), or `by person`
 (judgement no artifact settles). Unmarked means `by test`, and that default is how a system
@@ -145,6 +151,7 @@ Repeated work, not model choice, is what actually burns the budget.
 | The user has asked you to run unattended | `references/autonomous.md` |
 | Running under `/loop`, or waking from one | `references/continuous.md` |
 | Writing acceptance criteria, or closing one | `references/evidence.md` |
+| SHIP, when the phase produced a migration or config | `references/release.md` |
 | The roadmap has no next phase | `references/exhausted.md` |
 | The user said to keep building past the roadmap | `references/nonstop.md` |
 | State file format, project profile, milestones | `references/state.md` |
@@ -188,6 +195,12 @@ End the loop with `stop: true` and say which one fired:
    prompt — do not stop here at all: work the ladder in `references/nonstop.md` and end only
    when every remaining candidate is blocked on a human. Record each self-selected phase in
    the roadmap *before* building it, and say in the report that the loop chose it.
+   **Run a checkpoint audit every 3 self-selected phases** (`Phases since review` in
+   STATE.md), and immediately for money, auth or data destruction: full suite, the build,
+   every project gate, the cumulative evidence ledger, and one independent reviewer with no
+   memory of building it. **Continue automatically if it passes.** Stop only for what a
+   machine cannot settle — a red build, a BLOCKER, drift from the project, or judgement
+   piling up unjudged.
 2. **A hard stop needs a human** — pushing, deploying, secrets, money, deleting data, a scope
    change, a concurrent writer. Report it; do not wake again to rediscover it.
 3. **Two consecutive wakes with no commit.** Track it in STATE.md's `Wakes since commit`.

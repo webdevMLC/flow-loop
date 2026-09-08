@@ -17,6 +17,7 @@ Updated: <YYYY-MM-DD>
 **Gate:** FRAME | BUILD | CHECK | SHIP
 **Mode:** normal | autonomous
 **Wakes since commit:** <0 — only under `/loop`; at 2 the loop stops>
+**Phases since review:** <0 — only in non-stop; at 3 the run pauses to be read>
 
 ### Acceptance criteria
 - [ ] <statement> — `by test`

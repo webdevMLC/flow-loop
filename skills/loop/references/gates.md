@@ -239,6 +239,18 @@ rescope — that is the user's call.
 4. Update STATE.md: mark tasks done, archive the section.
 5. Report plainly: what was built, what was verified and how, what was skipped and why.
 
+### Append the release entry — before the report
+
+If the phase produced anything that has to reach an environment — a migration, a new
+environment variable, a schema change, a route, a background job — append its entry to
+`.flow/RELEASE.md` now, while the facts are still in hand. `references/release.md` gives the
+shape. Reconstructing a reversal plan later means reading migrations and guessing, which is
+how a rollback plan becomes fiction.
+
+An irreversible migration is stated as irreversible. The order of migrate-and-deploy is stated
+with its reason. Configuration whose absence breaks something is named. If the project does
+not deploy at all, say so once in that file and stop writing entries.
+
 ### The evidence ledger — end every report with it
 
 ```

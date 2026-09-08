@@ -71,6 +71,70 @@ inventing work to avoid an idle report.
 This is a genuine terminal condition, unlike an empty roadmap. Reaching it means the project
 is blocked, not merely unplanned.
 
+## The checkpoint — an audit that runs itself
+
+Self-selected work accumulates without anyone seeing it. On one project it reached
+**twenty-two phases and five thousand lines before a person looked**, which is not a run that
+went wrong — it is this mode working as designed, and that is the defect.
+
+The answer is not to stop and wait. A run that needs a human every third phase is not
+unattended. **Every 3 self-selected phases, run a checkpoint audit automatically, and
+continue if it passes.** Track the count in STATE.md as `Phases since review`. A phase
+touching money, auth or data destruction triggers one immediately regardless of count.
+
+### What the audit runs — machine first, all of it
+
+Per-task work runs `test_fast`. The checkpoint runs what a fast loop skips, because that is
+exactly where drift hides:
+
+1. **The full suite**, not the fast one.
+2. **The build.** `next build`, `tsc --noEmit`, whatever produces the artifact. Unit tests
+   never catch a server/client boundary violation or a bad import, and on one project the
+   build had not been run in two days of green commits.
+3. **Every gate the project has** — its own consistency checkers, mutation gates, linters.
+4. **The seeded-data check** from `references/review.md`: tables written and read by nothing.
+5. **The evidence ledger, cumulative.** How many `by person` criteria are now open across all
+   phases since the last checkpoint? They decay silently — nobody is reading them.
+
+### Then one independent reviewer, and this is the part worth paying for
+
+Spawn a **single agent with no memory of building any of it**, and give it the accumulated
+diff, the project's stated purpose, and nothing else. Ask it three questions:
+
+- **Is this still the project?** Self-selected phases drift. Three tiers down the ladder a run
+  can be building tooling for tooling, and from inside that it looks like progress.
+- **What here is most likely to be wrong?** Not largest — most likely wrong, or most expensive
+  if it is.
+- **What would a person be upset to discover was decided without them?**
+
+This is the one place in the whole skill where spawning genuinely earns its cost. A builder
+reviewing its own work inherits its own rationalisations; a fresh context does not. It is also
+the only mechanism here capable of noticing that the loop has gone somewhere strange, which no
+gate can do from the inside.
+
+### What happens with the result
+
+Write it to `.flow/CHECKPOINT-<n>.md` — always, pass or fail. That file is what a person
+reads in the morning instead of a five-thousand-line diff.
+
+**Continue automatically when:** the suite passes, the build succeeds, every gate is green, and
+the reviewer raises nothing above MINOR. Say in the next report that a checkpoint passed and
+where the file is. Reset the count.
+
+**Stop and ask when any of these is true** — these are the things automation cannot settle:
+
+| Trigger | Why a person |
+|---|---|
+| The build or a gate is red | continuing builds on a broken base |
+| The reviewer raises a BLOCKER or MAJOR | it may be wrong, and it compounds |
+| The reviewer says the work has drifted from the project | only the owner defines the project |
+| Open `by person` criteria exceed 5 | judgement is piling up unjudged |
+| Two checkpoints in a row raise the same finding | the loop cannot see it; stopping is the only signal left |
+
+The distinction is honest: **the audit is automatic, escalation is not.** Everything a machine
+can settle, the machine settles. What is left needs someone, and the run says so plainly
+rather than deciding on their behalf.
+
 ## What must be true of every self-selected phase
 
 The loop is choosing scope with nobody watching, so the trail has to be better than usual,
