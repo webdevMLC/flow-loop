@@ -138,4 +138,7 @@ worktree and merge on completion — but the same rule applies: one merge at a t
 - **Never spawn to look busy.** Three agents on three trivial tasks is slower than doing them
   inline, and costs three times as much.
 - **Never let an agent commit, push, or merge.** The orchestrator owns history.
-- **Never assume a sibling succeeded.** Wait for the report.
+- **Never assume a sibling succeeded.** Wait for the report — and *waiting* is an action, not
+  a state of mind. Spawn with `run_in_background: false`, or take no further step until every
+  completion notification has arrived. **In-flight agents count as "something external
+  pending"** for the pacing table: never arm a wake or commit a wave while one is running.

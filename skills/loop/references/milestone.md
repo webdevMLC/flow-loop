@@ -43,3 +43,11 @@ deciding to, and the interface for the third does not exist" — write that.
 A milestone audit concluding everything is fine has not been performed, it has been narrated.
 The failure here is not missing a defect; it is producing a document that lets everyone feel
 finished.
+
+## A milestone audit is not an ending
+
+It is long, conclusive, and ends on an uncomfortable sentence — everything about writing it
+says the work is over. It is a document, not a decision. File it, say where it is, then arm
+the next wake or fire `stop: true` per the pacing table. Same rule as a green checkpoint, and
+for the same reason: a thorough file is the easiest place in this skill to end a run by
+accident.

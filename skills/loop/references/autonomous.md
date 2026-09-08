@@ -75,7 +75,10 @@ The run ends — and you report — on the first of:
 2. **A hard stop** from the list above.
 3. **Two failed debug cycles** on one defect (guard 4).
 4. **CHECK fails twice** on the same finding. A fix that will not take needs a human.
-5. **Ten tasks completed** without a report. Long runs drift; surface, then continue if the
+5. **Ten tasks completed** without a report. Long runs drift. **Under `/loop` this is a report
+   boundary, not a stop** — write the interim report and keep going; only a listed stop
+   condition ends a run, and one waiting overnight for permission that cannot arrive has
+   stopped for nothing. With a person present: surface, then continue if the
    user says so.
 
 Never end a run silently, and never end one mid-task with an uncommitted working tree.

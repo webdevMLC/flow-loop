@@ -31,7 +31,12 @@ here, so the stop conditions below are not optional garnish — they are what se
 5. **Increment `Wakes since commit` in STATE.md, and reset it to 0 in any commit you make.**
    `SKILL.md` stops the run at 2 and nothing else writes this field, so without this step the
    stop condition can never fire — a loop stuck for hours looks identical to one working.
-6. **Report only what changed since the last wake.** Not a re-summary of the project.
+6. **Report only what changed since the last wake.**
+7. **End the wake with exactly one tool call:** `ScheduleWakeup` at the pacing-table delay,
+   or `stop: true` naming the condition that fired. **A wake that ends with a report and no
+   call has ended the run** — indistinguishable, from the outside, from one that crashed.
+   The host `/loop` with a fixed interval re-fires on the clock and needs nothing from you;
+   self-paced mode does not, and this is the step that keeps it alive. Not a re-summary of the project.
 
 ## Stop conditions — check these before doing any work
 

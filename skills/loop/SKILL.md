@@ -212,6 +212,11 @@ or cannot be undone still stops and asks. See `references/autonomous.md`.
 idle watcher polling for an external event. A Flow loop with an open task list is not idle,
 so **this rule overrides that default**:
 
+**An open `by person` criterion is not something you are waiting on.** Those are prepared and
+left open (`references/uat.md`); they never justify a long delay. Neither does a hard stop —
+that is `stop: true`, not a sleep. This loop never deploys, so "waiting on a deploy" is
+almost never true either.
+
 **"Idle tick" is the tool's phrase, not your situation.** A wake with a phase to frame, a task
 to start, or a finding to act on is *queued work*, however quiet the machine is. One run armed
 1800s with the reason "nothing pending in the background; idle tick to frame Phase 72" — it
@@ -222,7 +227,7 @@ all, this is not an idle tick.
 | Situation | `delaySeconds` |
 |---|---|
 | Tasks remain, nothing external pending | **60** — there is nothing to wait for |
-| Genuinely waiting on CI, a deploy, a queue, a person | match the wait |
+| Genuinely waiting on CI, a queue, or a person you have asked and cannot proceed without | match the wait |
 | A phase just shipped and another is queued or selectable | **60** — an empty task list between phases is not an ending |
 | Task list empty, **no next phase, and non-stop is off** | do not sleep — `stop: true` and report |
 | A genuine stop condition fired | `stop: true` and say which |

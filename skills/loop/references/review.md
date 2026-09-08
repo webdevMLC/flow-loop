@@ -63,7 +63,9 @@ failure mode where every component is correct and the system does not work.
 
 - **Every new module is imported by something reachable.** A module nothing calls is either
   dead or unfinished; both are findings, distinguished by asking who was supposed to call it.
-- **Every new endpoint is called by a surface, or documented as a published API.** An endpoint
+- **Every new endpoint is called by a page a person opens — name the page — or is explicitly
+  declared a published API with its consumer named.** "Called by a surface" is not an answer;
+  another route calling it is not a person reaching it. An endpoint
   with neither is a screen that was never built.
 - **Every new table is read.** See the seeded-data section below.
 - **Every criterion is closed by the evidence its class demands** — `by test`, `by artifact`,

@@ -115,8 +115,10 @@ produces something nobody can use.
 ### Before leaving FRAME: does a person ever see this?
 
 If the goal describes something a **person** does — sees, reviews, submits, is warned by —
-then at least one acceptance criterion must name the surface they do it on, and it must be
-checkable by opening that surface rather than by running a test.
+then at least one acceptance criterion must name **the page or screen — the route a person opens
+in a browser** — never an endpoint, a module, or an "API surface". The word *surface* has
+already lost once here: a finding worded "give the compliance rules a surface" was closed
+with four route files and no page. Do not use it in a criterion.
 
 Do not assume well-written criteria are enough. On the project that motivated this rule the
 criteria were fine — "a manager sees each associate's weighted KPI scorecard", "appears on the
@@ -272,7 +274,9 @@ this.
 
 A second hook gates the commit itself: if `.flow/PROJECT.md` declares `test_fast`, that
 command must pass before a commit containing source changes is allowed. It skips docs-only
-commits, skips the test run for projects with no `test_fast` declared; the STATE.md check still applies, and honours `--no-verify`,
+commits, skips the test run for projects with no `test_fast` declared; the STATE.md check still applies. **The bypasses are for a human at a keyboard —
+a loop never passes `--no-verify`:** a red `test_fast` is a defect to fix or a stop condition
+to report, never a flag to add. And honours `--no-verify`,
 `FLOW_SKIP_VERIFY=1` and `.flow/verify-off`. Never a
 single dump commit at the end — it defeats CHECK and undo.
 
@@ -285,8 +289,11 @@ rescope — that is the user's call.
 ## SHIP
 
 1. Confirm CHECK passed. If it did not, you are not at SHIP.
-2. Commit or open the PR. Do this only when the user asked for it; if on the
-   default branch, branch first.
+2. **Commit. One commit per completed task, unasked** — that is the loop's contract, and the
+   general "only commit when the user asks" default does not apply inside Flow. A run that
+   honours it literally commits nothing and then stops itself at wake two for having made no
+   commits. If on the default branch, branch first.
+   **Never push and never open a PR** — those are hard stops (`references/autonomous.md`).
 3. Append to memory: decisions made, assumptions that held or broke, surprises.
    Facts only — no narration of the session.
 4. Update STATE.md: mark tasks done, archive the section.
@@ -359,4 +366,9 @@ Two forces make this the default rather than an accident, and both need naming:
 
 Neither is a reason to skip UI. They are reasons it needs a check of its own.
 
-Then stop. Do not re-verify, re-read, or re-summarize.
+Then stop **re-checking** — no re-verify, no re-read, no re-summarise.
+
+**"Stop" here means stop re-checking, not stop the run.** Under `/loop`, SHIP is not the end
+of the wake: arm the next wake, or fire `stop: true` and say which condition. This is the
+most-travelled path in an unattended run and the word at the end of it is the one that ends
+runs by accident.
