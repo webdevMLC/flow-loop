@@ -17,7 +17,7 @@ Updated: <YYYY-MM-DD>
 **Gate:** FRAME | BUILD | CHECK | SHIP
 **Mode:** normal | autonomous
 **Wakes since commit:** <0 — only under `/loop`; at 2 the loop stops>
-**Phases since review:** <0 — only in non-stop; at 3 the run pauses to be read>
+**Phases since review:** <0 — only in non-stop; at 3 the run audits itself and, if green, continues>
 
 ### Acceptance criteria
 - [ ] <statement> — `by test`
@@ -31,7 +31,16 @@ Updated: <YYYY-MM-DD>
 - [x] <task> — <commit sha>
 - [ ] <task>
 
-### Analogs
+### Design standard
+
+Only if the project has a user interface. `references/uiaudit.md` verifies screens against
+this section and calls it the authority that "matters more" than any generic rubric — so when
+it is absent that check silently degrades to generic pillars. Record what this project forbids
+and what it already decided: the styling layer, the component library, the palette and type,
+and any rule a screen could break while looking fine ("no user appears in rank order against
+another", "no widget shows location or a ranking mechanic").
+
+## Analogs
 - <new file> mirrors <existing file> — <what is being matched>
 
 ### Assumptions

@@ -15,6 +15,10 @@ wrong problem.
    (test, test_fast, test_one, typecheck, lint, run), the conventions, and the analog map.
    If it exists, read it and skip most of the survey below — that is the point of it. If it
    does not, this is the phase that writes it. See `references/state.md`.
+   **If the project has a user interface, fill the Design standard section.**
+   `references/uiaudit.md` treats it as the authority that matters more than any generic
+   rubric, and silently degrades to generic pillars when it is absent — so a rule like "no user
+   appears in rank order against another" goes unchecked forever because nobody wrote it down.
 
 3. **Survey what the profile does not cover.** One batched pass for the rest:
    existing patterns, the files in play, the test command, the run command.
@@ -287,6 +291,13 @@ rescope — that is the user's call.
    Facts only — no narration of the session.
 4. Update STATE.md: mark tasks done, archive the section.
 5. Report plainly: what was built, what was verified and how, what was skipped and why.
+
+### Record the machine-stage results
+
+Write CHECK stage 0's numbers into the archived phase block: suite counts, whether the build
+succeeded, and each gate's result. `references/review.md` stage 2 compares the next phase
+against them, and without a baseline that comparison silently no-ops — on the one check
+designed to notice a suite that stopped running.
 
 ### Append the manifest entry
 

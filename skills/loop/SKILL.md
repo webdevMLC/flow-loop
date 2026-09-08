@@ -25,6 +25,11 @@ true* — the test command, the conventions, the closest analog file, which dire
 legacy code nobody will retrofit tests for. Record those in `.flow/PROJECT.md` (and legacy
 paths in `.flow/tdd-exempt`) so no later wake re-derives them.
 
+**If `.flow/UAT.md` has open entries and you are talking to a person, run that session
+first** — `references/uat.md`. It is a batch of specific questions with the artefact attached,
+usually ten minutes, and it is the only thing that closes a `by person` criterion. A queue
+that only grows is the failure that file exists to prevent.
+
 ## Triage first — this is where the speed comes from
 
 Not every task deserves four gates. Size the work before starting:
@@ -90,6 +95,10 @@ the loop. Every CHECK and SHIP report ends with the count. See `references/evide
 screen** — and SHIP confirms it renders. Criteria written purely as system behaviour get built
 purely as system behaviour, and the TDD gate compounds it by making modules cheaper to test
 than pages. A run left alone will drift backend-ward until nothing is visible.
+
+**Quick work that touches a screen still gets the capture** — `references/uiaudit.md` — even
+though Quick skips CHECK. A one-file UI tweak is the commonest Quick task and the likeliest to
+touch an interface; skipping the audit there is how the gate becomes optional in practice.
 
 **The TDD and commit gates fire on every task, including Direct and Quick ones.** They are
 harness hooks, not gate ceremony — "no gates" above means no FRAME/CHECK/SHIP, not that a
@@ -178,11 +187,12 @@ Repeated work, not model choice, is what actually burns the budget.
 | Writing acceptance criteria, or closing one | `references/evidence.md` |
 | SHIP, when the phase produced a migration or config | `references/release.md` |
 | Leaving FRAME on a Full phase | `references/planreview.md` |
+| A TDD or commit hook denied a write or a commit | `references/gates.md` |
 | CHECK, when the phase touched a screen | `references/uiaudit.md` |
 | Undoing a shipped phase | `references/reverse.md` |
 | A milestone or roadmap boundary | `references/milestone.md` |
-| Closing a `by person` criterion | `references/uat.md` |
-| The roadmap has no next phase | `references/exhausted.md` |
+| `.flow/UAT.md` has open entries and the user is back | `references/uat.md` |
+| The roadmap has no next phase, or FRAME asks what the last phase left open | `references/exhausted.md` |
 | The user said to keep building past the roadmap | `references/nonstop.md` |
 | State file format, project profile, milestones | `references/state.md` |
 
@@ -213,11 +223,25 @@ all, this is not an idle tick.
 |---|---|
 | Tasks remain, nothing external pending | **60** — there is nothing to wait for |
 | Genuinely waiting on CI, a deploy, a queue, a person | match the wait |
-| Task list empty, or a stop condition fired | do not sleep — `stop: true` and report |
+| A phase just shipped and another is queued or selectable | **60** — an empty task list between phases is not an ending |
+| Task list empty, **no next phase, and non-stop is off** | do not sleep — `stop: true` and report |
+| A genuine stop condition fired | `stop: true` and say which |
+
+**The row above it is the one that has actually gone wrong.** A phase ships, the task list is
+empty for a moment, and "task list empty → stop" reads as true — so a run that had eleven more
+phases available ended itself and wrote a report saying everything passed. Two runs did this on
+one night, one of them saying "green, and stopping anyway". **Empty between phases is not
+empty.** Before stopping on an empty list, check the roadmap and, in non-stop mode, the ladder.
 
 Twenty-five minutes of sleep between two ready tasks is four hours of nothing across a phase,
 and to the person watching it is indistinguishable from a crash. Never give "fallback
 heartbeat" as the reason when nothing is being awaited — that phrase belongs to case two only.
+
+**A green checkpoint is not an ending.** Writing `CHECKPOINT-<n>.md` feels like one — it is a
+document, it is thorough, and the turn wants to stop there. If every gate passed and the
+reviewer raised nothing above MINOR, **arm the next wake in the same turn** and take the next
+phase. A green checkpoint that does not call `ScheduleWakeup` has ended the run exactly as
+surely as `stop: true` would, and left a report saying everything passed.
 
 ### Stop conditions — check these at the top of a wake, before any work
 
@@ -225,7 +249,8 @@ End the loop with `stop: true` and say which one fired:
 
 1. **The roadmap is exhausted.** Before ending, run the sweep in
    `references/exhausted.md` — one bounded pass over work already recorded but not on the
-   roadmap (deferred findings, claims never proven, planning drift). An empty roadmap means
+   roadmap (deferred findings, claims never proven, planning drift), and run
+   `references/milestone.md` — which asks which original requirements were quietly dropped. An empty roadmap means
    the list someone wrote is complete, not that nothing is left. Report what it finds; then
    stop, unless the budget was broader than the roadmap.
    **If the user turned on non-stop mode** — `.flow/nonstop`, or "keep building" in the
