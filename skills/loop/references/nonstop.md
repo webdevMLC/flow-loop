@@ -126,10 +126,39 @@ where the file is. Reset the count.
 | Trigger | Why a person |
 |---|---|
 | The build or a gate is red | continuing builds on a broken base |
-| The reviewer raises a BLOCKER or MAJOR | it may be wrong, and it compounds |
+| The reviewer raises a **BLOCKER** | it breaks a ship by definition |
+| A **MAJOR that needs a decision** — see below | only the owner can choose |
 | The reviewer says the work has drifted from the project | only the owner defines the project |
 | Open `by person` criteria exceed 5 | judgement is piling up unjudged |
 | Two checkpoints in a row raise the same finding | the loop cannot see it; stopping is the only signal left |
+
+### A MAJOR is not automatically a stop
+
+Stopping a night's run for a finding the loop could fix is the opposite of what this mode is
+for, and the checkpoint has already said what to do with findings: *each becomes its own framed
+phase*. So the question is not the severity — it is **whether the fix requires choosing
+something a person owns**.
+
+| The fix is… | Do this |
+|---|---|
+| making the code do what the spec, contract or existing design already says | **frame it as the next phase and continue.** Record it as arising from checkpoint N |
+| deciding what the behaviour *should* be | **stop**, and state the decision in one sentence |
+
+Two real findings from one checkpoint, to show the line:
+
+- *"the reachability gate short-circuits on a bare route prefix, so everything after a dynamic
+  segment is unchecked"* — the gate is meant to check reachability and does not. Nothing to
+  decide. **Frame it and continue.**
+- *"the UI never sends `highStakes`, so four controls can never engage"* — sending the field
+  is trivial, but whether a teacher marks a paper high-stakes *from that screen* is a product
+  decision nobody has made. **Stop and ask.**
+
+When in doubt, stop. A wrongly-continued MAJOR compounds through every phase after it, and a
+wrongly-stopped one costs a message.
+
+**Never frame more than one checkpoint finding at a time**, and re-run the checkpoint after it
+ships. A run that turns four findings into four phases without re-auditing has replaced a
+review with a queue.
 
 The distinction is honest: **the audit is automatic, escalation is not.** Everything a machine
 can settle, the machine settles. What is left needs someone, and the run says so plainly

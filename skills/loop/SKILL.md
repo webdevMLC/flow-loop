@@ -228,8 +228,10 @@ End the loop with `stop: true` and say which one fired:
    **Run a checkpoint audit every 3 self-selected phases** (`Phases since review` in
    STATE.md), and immediately for money, auth or data destruction: full suite, the build,
    every project gate, the cumulative evidence ledger, and one independent reviewer with no
-   memory of building it. **Continue automatically if it passes.** Stop only for what a
-   machine cannot settle — a red build, a BLOCKER, drift from the project, or judgement
+   memory of building it. **Continue automatically if it passes.** A MAJOR is not automatically a
+   stop: if the fix is making the code do what the spec already says, frame it as the next
+   phase and continue; if it requires deciding what the behaviour *should* be, stop and state
+   the decision. Stop also for a red build, a BLOCKER, drift from the project, or judgement
    piling up unjudged.
 2. **A hard stop needs a human** — pushing, deploying, secrets, money, deleting data, a scope
    change, a concurrent writer. Report it; do not wake again to rediscover it.
