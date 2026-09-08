@@ -15,7 +15,9 @@ Updated: <YYYY-MM-DD>
 ## Now
 **Goal:** <one sentence — what done looks like>
 **Gate:** FRAME | BUILD | CHECK | SHIP
-**Mode:** normal | autonomous
+**Next action:** <the literal next thing to do — resume.md and continuous.md both continue from this>
+**Authority:** <the document that decides values here, if any — references/authority.md writes it>
+**Mode:** normal | autonomous | non-stop
 **Wakes since commit:** <0 — only under `/loop`; at 2 the loop stops>
 **Phases since review:** <0 — only in non-stop; at 3 the run audits itself and, if green, continues>
 
@@ -31,16 +33,10 @@ Updated: <YYYY-MM-DD>
 - [x] <task> — <commit sha>
 - [ ] <task>
 
-### Design standard
+### Findings — not acted on, deliberately
+- <what was noticed, why it was left, and what deciding it would need>
 
-Only if the project has a user interface. `references/uiaudit.md` verifies screens against
-this section and calls it the authority that "matters more" than any generic rubric — so when
-it is absent that check silently degrades to generic pillars. Record what this project forbids
-and what it already decided: the styling layer, the component library, the palette and type,
-and any rule a screen could break while looking fine ("no user appears in rank order against
-another", "no widget shows location or a ranking mechanic").
-
-## Analogs
+### Analogs
 - <new file> mirrors <existing file> — <what is being matched>
 
 ### Assumptions
@@ -52,7 +48,8 @@ another", "no widget shows location or a ranking mechanic").
 | <value> | <what it governs> | <authority file:line> | <symbol or path> | [ ] |
 
 ### Threat register
-- **T1 — <what an attacker does>** — impact / mitigation / lives in / proven by
+- **T1 — <what an attacker does>** — likelihood / impact / mitigation / lives in / proven by
+  (`references/threat.md` owns the full block and ranks the register by likelihood)
 - **Accepted:** <risk not mitigated, and why>
 
 ### Debugging
@@ -73,7 +70,8 @@ another", "no widget shows location or a ranking mechanic").
 ## Rules
 
 - **One writer.** STATE.md is updated in the same commit as the work it describes — the
-  commit gate refuses a source commit that leaves it untouched. Not continuously, and not
+  commit gate refuses a source commit that leaves it untouched in this commit or either of
+  the last two. Not continuously, and not
   batched up at the end of a gate.
 - **Absolute dates.** Never "last week" or "yesterday."
 - **No narration.** Facts and decisions, not a session log.
@@ -111,6 +109,14 @@ Updated: <YYYY-MM-DD>
 
 ## Conventions
 - <error handling, naming, module layout, how results are returned — one line each>
+
+## Design standard
+Only if the project has a user interface. `references/uiaudit.md` verifies screens against
+this section and treats it as the authority that matters more than any generic rubric — when
+it is absent, that check silently degrades to generic pillars. Record the styling layer, the
+component library, the palette and type, and any rule a screen could break while still looking
+fine ("no user appears in rank order against another", "no widget shows location or a ranking
+mechanic").
 
 ## Analogs
 - new API endpoint -> <closest existing one>

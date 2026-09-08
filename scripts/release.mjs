@@ -41,11 +41,14 @@ try {
 
 // 2. Version, in all three manifests. They drift silently if bumped by hand.
 step(2, `version -> ${version}`);
-const MANIFESTS = ['package.json', '.claude-plugin/plugin.json', '.codex-plugin/plugin.json'];
+// marketplace.json carries the version TWICE and is what /plugin installs read. It sat at
+// 1.14.0 through twenty-three releases because it was not in this list.
+const MANIFESTS = ['package.json', '.claude-plugin/plugin.json', '.codex-plugin/plugin.json',
+  '.claude-plugin/marketplace.json'];
 for (const f of MANIFESTS) {
   if (!existsSync(f)) die(`missing manifest: ${f}`);
   const src = readFileSync(f, 'utf8');
-  const next = src.replace(/("version"\s*:\s*)"[^"]*"/, `$1"${version}"`);
+  const next = src.replace(/("version"\s*:\s*)"[^"]*"/g, `$1"${version}"`);
   if (next === src) die(`no version field replaced in ${f}`);
   writeFileSync(f, next);
   console.log(`      ${f}`);

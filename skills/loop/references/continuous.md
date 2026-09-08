@@ -28,7 +28,10 @@ here, so the stop conditions below are not optional garnish — they are what se
 4. **Phase shipped, roadmap has more?** Archive it and report. Then FRAME the next one only
    if the budget reaches past this phase; if it does not, that is a stop condition, not a
    formality to skip.
-5. **Report only what changed since the last wake.** Not a re-summary of the project.
+5. **Increment `Wakes since commit` in STATE.md, and reset it to 0 in any commit you make.**
+   `SKILL.md` stops the run at 2 and nothing else writes this field, so without this step the
+   stop condition can never fire — a loop stuck for hours looks identical to one working.
+6. **Report only what changed since the last wake.** Not a re-summary of the project.
 
 ## Stop conditions — check these before doing any work
 
@@ -67,7 +70,7 @@ state file is wrong. Two things make it affordable:
   gates on every task will cost several times what the work is worth.
 
 Prefer a self-paced loop over a short fixed interval. Waking every five minutes on a task
-that takes forty is four wasted context loads.
+that takes forty is eight wasted context loads.
 
 ## Pacing — how long to sleep between wakes
 

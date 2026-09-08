@@ -220,7 +220,7 @@ If you cannot make it fail, you do not yet understand what you are building.
 A PreToolUse hook (`hooks/flow-tdd-gate.mjs`, shipped with this plugin) denies Write/Edit on a guarded
 source file when no test anchored on its name exists anywhere in the project. Guarded
 extensions: ts tsx js jsx mjs cjs py go rb php java cs. Test files, config, generated code,
-migrations, scripts, markup entry points (page/layout/index) and vendored trees are exempt.
+migrations, scripts, markup entry points (index) — **`page` and `layout` are gated**, anchored on their route and vendored trees are exempt.
 
 When the hook denies a write, it is telling you the RED step has not happened. Write the
 test. Do not route around it.
@@ -272,7 +272,7 @@ this.
 
 A second hook gates the commit itself: if `.flow/PROJECT.md` declares `test_fast`, that
 command must pass before a commit containing source changes is allowed. It skips docs-only
-commits, skips projects with no `test_fast` declared, and honours `--no-verify`,
+commits, skips the test run for projects with no `test_fast` declared; the STATE.md check still applies, and honours `--no-verify`,
 `FLOW_SKIP_VERIFY=1` and `.flow/verify-off`. Never a
 single dump commit at the end — it defeats CHECK and undo.
 

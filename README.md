@@ -209,7 +209,7 @@ identical on every platform.
 | CHECK | one verdict report | cheap subagents, parallel | 1 pass + 1 targeted re-verify |
 | SHIP | commit / PR + memory write | inline | 1 pass |
 
-**Protocols load only when you reach them.** One entry in the skill listing, ~195 resident
+**Protocols load only when you reach them.** One entry in the skill listing, ~295 resident
 lines. The gate protocols, the debugging cycle, and the resume procedure sit in reference
 files that are read only when the situation calls for them - a debugging protocol costs
 nothing until there is a bug.
@@ -229,7 +229,7 @@ nothing until there is a bug.
 | the roadmap has no next phase | `references/exhausted.md` |
 | told to keep building past the roadmap | `references/nonstop.md` |
 | many agents at once | `references/fleet.md` |
-| state format, milestones | `references/state.md` |
+| state format, project profile | `references/state.md` |
 
 **Authority reconciliation.** When a contract, specification or playbook already decided
 the rates, thresholds and formulas, FRAME extracts them with citations into a constants
@@ -295,7 +295,8 @@ guarded source file when no test covering it exists.
 Guarded: `ts tsx js jsx mjs cjs py go rb php java cs`.
 
 Exempt: test files themselves, `*.config.*`, `*.d.ts`, `*.stories.*`, generated code, and
-`index` / `types` / `constants` / `setup` / `main` / `app` / `layout` / `page` entry points,
+`index` / `types` / `constants` / `setup` / `main` / `app` entry points — **`page` and
+`layout` are not exempt**; a screen is gated through the route it serves,
 plus `node_modules`, `dist`, `build`, `.next`, `out`, `coverage`, `vendor`, `migrations`,
 `scripts`, `public`, `docker` and generated trees. That approximates the skill's own scope:
 TDD is mandatory for rules, money, auth, transforms, state machines and API contracts, and
@@ -364,7 +365,7 @@ The hooks have a test suite. No dependencies - Node built-ins and the built-in r
 npm test
 ```
 
-48 tests across both gates: what they guard and what they exempt, every way a covering
+78 tests across both gates: what they guard and what they exempt, every way a covering
 test can be recognised (sibling name, shared token, suffixed name, `test/` directory,
 exported symbol), the stub rejection, the false-positive guard for helper-based suites,
 every escape hatch, malformed stdin, and Windows backslash paths.
@@ -609,7 +610,7 @@ rewritten as one protocol:
 |---|---|---|
 | phase-based planning frameworks | the loop, compressed to 4 gates and one state file | dozens of commands, agent fleets, `.planning/` trees |
 | TDD skill libraries | test-first scoped to logic, plus the enforcing hook | the surrounding skill catalogue |
-| multi-agent review tools | the three review lenses as one CHECK pass | the orchestration layer |
+| multi-agent review tools | the four review lenses as one CHECK pass | the orchestration layer |
 | session-memory plugins | two touchpoints: recall at FRAME, write at SHIP | the persistence engine itself |
 | context-saving MCP servers | the token rules, as ambient guidance | the sandbox and the search index |
 
@@ -620,7 +621,7 @@ and uses them when present, and works without them.
 ## Honest limits
 
 - **This is a skill plus one hook, not a framework.** The gates and guards are instructions
-  Claude follows. Only the TDD rule is mechanically enforced; the rest is discipline.
+  Claude follows. Only the TDD and commit gates are mechanically enforced; the rest is discipline.
 - **The gate is heuristic.** See the escape hatches above.
 - **No benchmark.** The structural savings - fewer round trips, a smaller resident skill
   listing, progressive disclosure - are real and mechanical. Whether your work lands faster

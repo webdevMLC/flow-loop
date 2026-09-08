@@ -1,6 +1,6 @@
 # CHECK gate
 
-One pass. Three checkers in parallel. One report. Then done.
+One pass. Four checkers in parallel. One report. Then done.
 
 CHECK is five stages, and **each one gates the next**. The order is by cost: nothing
 model-heavy runs until everything a machine can settle is green, because a reviewer arguing

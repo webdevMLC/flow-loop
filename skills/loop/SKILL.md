@@ -194,7 +194,7 @@ Repeated work, not model choice, is what actually burns the budget.
 | `.flow/UAT.md` has open entries and the user is back | `references/uat.md` |
 | The roadmap has no next phase, or FRAME asks what the last phase left open | `references/exhausted.md` |
 | The user said to keep building past the roadmap | `references/nonstop.md` |
-| State file format, project profile, milestones | `references/state.md` |
+| State file format and project profile | `references/state.md` |
 
 ## Autonomous mode
 
