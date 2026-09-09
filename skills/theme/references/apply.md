@@ -28,7 +28,10 @@ hook denies nearly every one: `components/ui/button.tsx` has no `button.test.tsx
 A colour swap is markup and styling, which is outside TDD scope. Use the first escape hatch in
 `references/gates.md` **in the loop skill**: append the component and route path fragments this
 migration touches to `.flow/tdd-exempt`, one per line, **list those lines verbatim in the
-report** so the user sees exactly what was exempted, and remove them at SHIP.
+report** so the user sees exactly what was exempted, and **delete them at the end of this
+stage — not at SHIP.** SHIP is after stage 4. The gate is a substring matcher with no notion
+of a stage (`hooks/flow-tdd-gate.mjs` does `lower.includes(frag)` then a silent exit 0), so one
+`components/ui` line left in place exempts every component stage 4 must write test-first.
 
 - **Never create `.flow/tdd-off`.** It is project-wide and permanent, and it disarms the
   plugin's main enforcement long after the theme ships.
@@ -36,8 +39,10 @@ report** so the user sees exactly what was exempted, and remove them at SHIP.
 - **Never override colours from a global stylesheet to route around a denial** — that is the
   first refusal in `SKILL.md` arriving through the back door.
 
-Any edit in this migration that changes behaviour rather than appearance leaves the exemption
-and is written test-first like anything else.
+Any edit that changes behaviour rather than appearance leaves the exemption and is written
+test-first like anything else. **The exemption covers this stage only, and expires with it.**
+Stage 4 rebuilds components — states, focus behaviour, ARIA — and that is behaviour: it gets
+tests, and its paths never go in `.flow/tdd-exempt`.
 
 ## Order
 
@@ -73,6 +78,15 @@ same thing repeatedly and eventually deciding it differently.
 emitting inline styles server-side, SVG with baked fills, favicons and OG images. These are
 missed by default and they are what makes a migration look 90% done for a week. List them in
 the survey, fix them here, report any that cannot be reached.
+
+**7. Then stage 4.** First **delete every line this stage added to `.flow/tdd-exempt`**, then
+write one component file and confirm the gate denies it again — a prohibition on *adding* is
+inert while the fragments are already on disk.
+
+Everything above changes what colour things are. If the survey graded any component 0 or 1, the
+screens will still look dated in the new palette — go to `references/components.md` and rebuild
+them. Stopping here is what produces "you only changed the colours", and it is the commonest
+way a finished theme disappoints.
 
 ## The three that go wrong
 
@@ -138,7 +152,8 @@ If the section did not exist, create it, and say so in the report.
 - **Hard-coded values remaining, counted.** Report the number even when zero, and especially
   when it is not. A migration reported as done with 60 values left behind is how the old
   palette comes back.
-- **The `.flow/tdd-exempt` lines added, verbatim, and confirmation they were removed at SHIP.**
+- **The `.flow/tdd-exempt` lines added, verbatim, and confirmation the file was empty of them
+  before stage 4 began.**
 - What could not be reached — the PDF templates, the chart library, the third-party widget.
 - Captures, before and after.
 - The law, and where it now lives.

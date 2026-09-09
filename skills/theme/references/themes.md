@@ -219,6 +219,32 @@ worth picking.
 
 ---
 
+## Three tokens stage 4 needs that the palettes above do not declare
+
+`references/components.md` requires a visible focus ring on every interactive element, a
+modal and a drawer (which need a scrim), and skeletons (which need a shimmer ground). None of
+the seven palettes above declares them, because they are component concerns rather than page
+ones. Add these when the component layer is built:
+
+| | `--ring` | `--overlay` | `--skeleton` |
+|---|---|---|---|
+| **Aurora light** | `#4f5bd5` | `rgba(18,19,26,.45)` | `#eef0f5` |
+| **Aurora dark** | `#7c8cff` | `rgba(0,0,0,.60)` | `#1a1e2a` |
+| **Nordic** | `#1d66d8` | `rgba(17,28,38,.45)` | `#e7edf3` |
+| **Signal** | `#5b2be0` | `rgba(13,13,20,.45)` | `#f0f0f4` |
+| **Meridian** | `#6a48f9` | `rgba(23,20,31,.45)` | `#eeebf6` |
+| **Basalt** | `#f5f3ee` on field · `#0d2e2b` on paper | `rgba(6,22,20,.60)` | `#eae7e0` |
+| **Ember** | `#d9a441` | `rgba(0,0,0,.62)` | `#2b221a` |
+| **Relief** | `#0e5f73` | `rgba(27,26,23,.42)` | `#dcd8d0` |
+
+The ring is each theme's accent, which already clears AA on every ground that theme declares —
+so it is visible wherever it lands. Render it as **2px with a 2px offset, never a glow**, and
+never remove an outline without putting this in its place.
+
+**Basalt is the exception and it follows the law**: on the field the ring is paper, on paper it
+is the field colour — each register's mark is the other register's surface, exactly as its
+buttons work.
+
 ## Adding a counterpart mode
 
 Only Aurora ships both. Adding the other mode to any of the rest is **its own phase**, framed

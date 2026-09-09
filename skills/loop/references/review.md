@@ -102,6 +102,14 @@ failure mode where every component is correct and the system does not work.
   another route calling it is not a person reaching it. An endpoint
   with neither is a screen that was never built.
 - **Every new table is read.** See the seeded-data section below.
+- **If the phase writes anything persistent, trace the flow and read the rows** —
+  `references/dataflow.md`. Everything above this line proves the parts are *wired*; none of it
+  can see a wired, reachable, fully tested flow writing the wrong number. Draw the handoff
+  chain and find the seven process gaps (a state with no exit, a step with no actor, two paths
+  to one state leaving different data...), then drive each write through the product and read
+  the row back — values against the authority, types, side effects, run it twice, drive the
+  reverse. One round trip per thing the phase writes, not `/flow:ultra`'s full matrix. Skip it
+  in one line if the phase writes nothing.
 - **Every criterion is closed by the evidence its class demands** — `by test`, `by artifact`,
   `by person`. Details below.
 - **If the phase touched a user surface, audit the screen** — `references/uiaudit.md`. It

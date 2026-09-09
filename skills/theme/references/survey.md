@@ -99,6 +99,34 @@ Note anything else that will resist: fixed-height rows, absolute positioning tha
 radius, a chart library with its own colour array, PDF or email templates that cannot use CSS
 variables at all.
 
+### Grade every component — this sizes stage 4
+
+Tokens cannot fix a component that was never built. Walk the inventory in
+`references/components.md` and grade each one, because the grades decide the work:
+
+| Grade | Test | Work |
+|---|---|---|
+| **0 native** | it is a bare browser element | build it |
+| **1 painted** | **any** of: no hover, no visible focus, no disabled, no loading, no empty state, no error state, or fewer variants than the screens need | rebuild it |
+| **2 built** | every state above exists, keyboard reaches it, ARIA is right | retoken only |
+| **3 systematic** | grade 2 *and* composed from tokens, identical on every screen | nothing |
+
+**Grade 1 is the trap**, and the 1-versus-2 boundary is where this whole stage is won or lost:
+grade generously and stage 4 evaporates. It looks handled — someone clearly styled it — and it
+is precisely what makes a console feel dated after a theme lands. Grade against the list, not
+by impression. **"It has our colours on it" is grade 1**, and if you cannot name the file and
+line where each state is implemented, it is not grade 2.
+
+Three specific things to count, because they carry most of the perceived quality:
+
+- **Native controls left alone.** `grep` for `<select`, `type="checkbox"`, `type="radio"`,
+  `type="file"`, `type="date"` and count the ones with no styled wrapper. A styled page with a
+  default grey dropdown in it is the loudest tell there is.
+- **Missing states.** For the button, the input and the table row: is there a hover, a focus
+  ring, a disabled and a loading state at all?
+- **Missing empty and loading states.** Every list and table: what renders with no rows, and
+  what renders while fetching? Most screens are seen empty first.
+
 ## 7. Dark mode
 
 Whether it exists, how it is switched (class, `data-` attribute, media query, a state library),
@@ -155,6 +183,10 @@ Type            Inter (Google) 400,500,600 + system fallback
 Palette         #6366f1 primary buttons+links · #10b981 success only · #ef4444 destructive+error
 Status          success #10b981 · warning #f59e0b · error #ef4444 · info #3b82f6 · pending grey
 Components      shadcn/ui (one `primary` slot) + 23 one-off
+Maturity        0 native: select, checkbox, radio, date (4 screens each)
+                1 painted: button (no disabled/loading), table (no hover/empty), card
+                2 built: modal, toast · 3 systematic: none
+                no empty state on 6 of 8 lists; no loading state anywhere
 Dark mode       class strategy, shell only — 9 screens unstyled
 Density         44px rows, 15px base — console, read all day
 Standard        present — "Tailwind is the styling layer; do not introduce a second"

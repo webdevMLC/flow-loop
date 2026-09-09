@@ -60,7 +60,8 @@ warning on every build for fifteen phases while every gate stayed green.
 
 **CHECK is five stages and each gates the next** — machine (build, full suite, every project
 gate), contract (the authority, re-read, not just the criteria), composition (is the new code
-reachable, called, read; does last phase's green still hold), adversarial (the lenses, plus one
+reachable, called, read; do the rows it writes hold the right values; does last phase's green
+still hold), adversarial (the lenses, plus one
 that tries to falsify the SHIP report's own claims), verdict. Nothing model-heavy runs until
 the machine stage is green. A phase ships only when all five pass — that, not the absence of a
 watcher, is what makes an unattended run trustworthy. See `references/review.md`.
@@ -75,6 +76,15 @@ re-frames in one phase means the frame was wrong, not the tasks — stop.
 right work, whether the criteria are checkable, and whether the tasks actually produce them.
 Three gates check the work; this is the only one that checks the plan, and the plan is where
 the expensive failures start.
+
+**A phase that writes anything persistent gets its flow traced and its rows read** — inside
+CHECK, per `references/dataflow.md`. Every other composition check proves the parts are
+*wired*; none can see a wired, reachable, fully tested flow writing the wrong number, and a
+green suite is the loudest reason to believe otherwise. So: draw the handoff chain and find the
+process gaps, then drive each write **through the product** and read the row back — values
+against the authority, side effects, run it twice, drive the reverse. One round trip per write,
+not `/flow:ultra`'s matrix. If it cannot run, the criterion is reported open, never closed
+because the unit tests passed.
 
 **A phase that touched a screen gets the screen audited** — automatically, inside CHECK, not
 by a skill someone remembers. It opens the route, captures it at desktop and 375px, checks the
@@ -194,6 +204,7 @@ Repeated work, not model choice, is what actually burns the budget.
 | Leaving FRAME on a Full phase | `references/planreview.md` |
 | A TDD or commit hook denied a write or a commit | `references/gates.md` |
 | CHECK, when the phase touched a screen | `references/uiaudit.md` |
+| CHECK, when the phase writes anything persistent | `references/dataflow.md` |
 | Undoing a shipped phase | `references/reverse.md` |
 | A milestone or roadmap boundary | `references/milestone.md` |
 | `.flow/UAT.md` has open entries and the user is back | `references/uat.md` |

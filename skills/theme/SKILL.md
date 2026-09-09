@@ -1,25 +1,29 @@
 ---
 name: theme
-description: Survey a project's existing interface, report what a theme would break, then apply one — tokens, components, and the law that keeps it from decaying. Ships seven themes — Aurora, Nordic, Signal, Meridian, Basalt, Ember, Relief. Use when a project has no visual identity, when its screens were built ad hoc and no longer agree with each other, or when the user names one of those themes. Never applies without surveying first, and never applies against the project's own design standard.
+description: Survey a project's existing interface, report what a theme would break, then apply one — tokens, a real component layer, and the law that keeps it from decaying. Rebuilds the components too: native selects and checkboxes, tables with their four states, forms, modals, auth pages. Ships seven themes — Aurora, Nordic, Signal, Meridian, Basalt, Ember, Relief. Use when a project has no visual identity, when its screens look dated or unfinished, when its screens were built ad hoc and no longer agree with each other, or when the user names one of those themes. Never applies without surveying first, and never applies against the project's own design standard.
 ---
 
 # Theme
 
-A theme is not a palette. It is a **law about where colour and depth are allowed to go**, plus
-the tokens that express it. Ship the palette without the law and the theme survives exactly as
-long as nobody adds a screen.
+A theme is three things: a **law about where colour and depth are allowed to go**, the tokens
+that express it, and **the components that law is applied to**. Ship the palette without the
+law and it survives until someone adds a screen. Ship it without the components and you get the
+old interface in better colours — which is the commonest complaint about a finished theme.
 
-Three stages, each gating the next:
+Four stages, each gating the next:
 
 | Stage | Asks | Writes |
 |---|---|---|
-| **1 Survey** | what interface is actually here? | before-captures only |
+| **1 Survey** | what interface is actually here, and how mature is it? | before-captures only |
 | **2 Conflict** | what would this theme break? | nothing |
-| **3 Apply** | tokens, components, and the law | code + `PROJECT.md` |
+| **3 Tokens** | the palette, reaching every screen | code |
+| **4 Components** | the things the tokens are applied *to* | code + `PROJECT.md` |
 
 This is loop work. FRAME it as a phase like any other, triage it Full, and let CHECK and SHIP
-run — stage 3 touches screens, so `references/uiaudit.md` **in the loop skill** fires and the
-criteria close `by artifact`.
+run — it touches screens, so `references/uiaudit.md` **in the loop skill** fires. Name both
+classes at FRAME: the captures close `by artifact`, and stage 4's component behaviour — the
+disabled state, the loading state, the focus trap, the submitted payload — closes `by test`,
+because that stage is written test-first like any other code.
 
 ## Before anything else
 
@@ -37,6 +41,13 @@ to the real work — the survey is most of the work.
 **"A theme" does not mean a palette.** The law is the half that gets dropped, and the law is
 the half that lasts. The table below gives one-line summaries only — `references/themes.md` is
 the authority for both the law and every hex value.
+
+**"Style the components" does not mean recolouring the ones already there.** If the project's
+dropdown is a native `<select>`, its table a bare `<table>` with no hover and no empty state,
+and its button has no disabled or loading state, then tokens produce a dated interface in new
+colours — and that is the failure people actually report after a theme ships. A component that
+merely has your colours on it is **grade 1**, not done. Grade every one in stage 1 and rebuild
+what needs it; `references/components.md` governs this and stage 4 is not optional.
 
 **`PROJECT.md` here is `.flow/PROJECT.md`, the project profile the loop already maintains** —
 not a file this skill invents, and not a README. You are editing one section of it.
@@ -84,29 +95,72 @@ Report before writing. Use CHECK's severities so they mean the same thing everyw
   migration. Nothing errors and no test fails.
 - **MINOR** — cost: hard-coded values, one-off components, screens with no tokens.
 
-**Size it in this report, not later.** Under ~30 hard-coded occurrences is one phase; 30–150 is
-a token phase plus one per screen group; above that, tokens and a single pilot screen first.
-The user agrees to a shape, not just a colour.
+**The component grades belong in this report too**, because they usually dominate the cost.
+Two of them are decisions only the user can make, and both are BLOCKER-level:
+
+- **Adopting a headless primitive library** (Radix, Headless UI, React Aria) for the components
+  graded 0 or 1. It is a dependency, a bundle-size change, and a thing the project lives with
+  — never decided during the build.
+- **A component kit with fewer slots than the theme needs** — one `primary` where Basalt has
+  two registers or Relief a raised/recessed pair.
+
+**Size both halves in this report, not later.** Under ~30 hard-coded occurrences is one token
+phase; 30–150 is a token phase plus one per screen group; above that, tokens and a single pilot
+screen first. Then say separately how many components are graded 0 or 1 — that number, not the
+colour count, is what makes a theme take a fortnight. The user agrees to a shape, not just a
+colour.
 
 Then **stop and ask.** A standing autonomous mode does not cover this: the loop's rule is that
 anything hard to undo stops and asks, and a repaint of every screen is that. "Pick a different
 theme" is cheap before the rewrite and expensive after.
 
-## Stage 3 — Apply
+## Stage 3 — Tokens
 
-Read `references/apply.md`. Tokens, then shared components, then hard-coded values, then what
-CSS cannot reach.
+Read `references/apply.md`. The token layer, then the shared components' colours, then
+hard-coded values grouped by value, then what CSS cannot reach.
 
-**The TDD gate will deny most of these edits.** A colour-only change to a component is markup,
+**This stage is colour only, and the TDD gate will deny most of it.** A colour swap is markup,
 not logic, but the hook is filename-based and does not know that. Clear it the way `apply.md`
-step 0 says — path fragments in `.flow/tdd-exempt`, listed in the report, removed at SHIP.
+step 0 says — path fragments in `.flow/tdd-exempt`, listed in the report, and **deleted at the
+end of stage 3, never at SHIP** (SHIP is after stage 4, which must not be exempt).
 Never `.flow/tdd-off`, never a test written only to unblock a colour swap, and never a
 stylesheet override to route around a denial — that last one is the first refusal above,
 arriving through the back door.
 
-Captures close it, paired against stage 1's before-captures, per `references/evidence.md` **in
-the loop skill**. If a screen cannot be captured at all, the criterion is `by person` and goes
-to `.flow/UAT.md` — never downgrade it to a passing test.
+## Stage 4 — Components
+
+Read `references/components.md`, and `references/themes.md` alongside it — the law there
+decides every appearance question here. **Not optional, and not exempt from TDD.**
+
+Stage 3 decides what colour things are. This decides what they *are*: the native `<select>`
+and checkbox that render in OS chrome and date everything around them, the table with its
+states and right-aligned tabular figures, the label/hint/error unit, the modal, the empty
+states, the auth pages nobody ever styles.
+
+**Delete stage 3's `.flow/tdd-exempt` lines before the first component edit.** The gate matches
+by substring and exits silently, so one leftover `components/ui` line exempts every file this
+stage must write test-first — and **a write that is not denied is not proof RED happened, it
+may be proof the exemption is still there.** After deleting, confirm the gate denies once.
+
+**The submitted value is frozen; the call site is not.** Same values in `FormData`, same
+validation outcomes, same defaults. The props a call site passes may change — migrating those
+call sites and their tests is a task in this phase, not a reason to skip the work. A replaced
+native control must keep its `name` in the payload and re-express `required`; where it cannot,
+keep the native element under a styled wrapper. **Never weaken an existing test to keep it
+green.**
+
+**Never run a component generator here.** `npx shadcn init` rewrites `globals.css` and the
+Tailwind config with its own tokens and overwrites `components/ui/*` — after stage 3 that
+destroys the token layer you just migrated. Adopting one is a stage-2 decision made *before*
+stage 3, never a stage-4 command.
+
+**Stop and show after the table.** The foundations, the button, the native controls and the
+table are enough to tell whether the direction is right. **A standing autonomous mode does not
+cover this stop** — rebuilding every control in the product is hard to undo.
+
+Captures close both stages, paired against stage 1's before-captures, per
+`references/evidence.md` **in the loop skill**. If a screen cannot be captured at all, the
+criterion is `by person` and goes to `.flow/UAT.md` — never downgrade it to a passing test.
 
 **Write the law into `.flow/PROJECT.md` § Design standard.** `references/state.md` **in the
 loop skill** specifies what that section holds; the law and its prohibitions are what this adds

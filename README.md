@@ -39,7 +39,7 @@ Restart the session so the hooks load, then just say what you are building:
 |---|---|---|
 | **`/flow:loop`** | the loop — FRAME, BUILD, CHECK, SHIP | all normal work |
 | **`/flow:ultra`** | inspects the running system, not the diff | before a pilot, or when the suite is green and you are not convinced |
-| **`/flow:theme`** | surveys a project's interface, then applies a theme | screens built ad hoc that no longer agree with each other |
+| **`/flow:theme`** | surveys a project's interface, then applies a theme **and rebuilds the components** | screens that look dated or unfinished, or were built ad hoc and no longer agree |
 | **`/flow:guide`** | writes the user guide from the running system | it is going to real users, or support keeps answering the same question |
 
 ## Triage — not every task deserves four gates
@@ -88,13 +88,13 @@ Signal. Signal fits about 20% fewer rows than Nordic — do not pick it for an a
 
 ### How it runs
 
-Three stages, each gating the next, and **the first two change nothing**:
+Four stages, each gating the next, and **the first two change nothing**:
 
 **1. Survey** — the interface as built, not as documented. The styling layer (projects usually
-have two and admit to one), the real palette measured from code, the status vocabulary, the
-component inventory, dark mode, density, and the count of hard-coded colours, which is what
-actually decides the cost. It ends by capturing every screen it is about to touch — that is
-the only moment a "before" can exist.
+have two and admit to one), the real palette measured from code, the status vocabulary, dark
+mode, density, the count of hard-coded colours — and **a maturity grade for every component**,
+which is what decides whether stage 4 is an afternoon or a fortnight. It ends by capturing
+every screen it is about to touch — the only moment a "before" can exist.
 
 **2. Conflict** — what this theme would break, reported **before a file is touched**, because
 "then pick a different theme" is cheap now and expensive after the rewrite. In CHECK's own
@@ -105,9 +105,40 @@ for cost. Then it stops and asks.
 That MAJOR is the quiet killer. If the project's success green is the theme's brand accent,
 then after the migration every success message reads as a link. Nothing errors, no test fails.
 
-**3. Apply** — tokens, then shared components, then hard-coded values grouped by value rather
-than by file, then what CSS cannot reach: chart arrays, PDF and email templates, baked SVG
-fills. Captures at desktop and 375px close the criteria `by artifact`.
+**3. Tokens** — the token layer, then hard-coded values grouped by value rather than by file,
+then what CSS cannot reach: chart arrays, PDF and email templates, baked SVG fills.
+
+**4. Components** — and this is the stage that decides whether the result looks finished.
+Tokens change what colour things are; they do not change what things *are*. A bare `<table>`
+with a new palette is still a bare `<table>`, and a native `<select>` still renders in OS
+chrome — **a styled page with a default grey dropdown in it is the loudest tell there is.**
+
+So stage 4 rebuilds: the native controls (select, checkbox, radio, date, file), the table with
+its four states and right-aligned tabular figures, the label/hint/error unit, buttons with
+their disabled and loading states, modals, toasts, the empty and loading states most screens
+never got, and the auth pages nobody styles. It adopts a headless primitive library rather than
+hand-rolling focus traps and ARIA — that adoption is reported as a BLOCKER-level conflict in
+stage 2, because it is a dependency the project lives with.
+
+**The submitted value is frozen; the call site is not.** Same values in `FormData`, same
+validation outcomes, same defaults — but a Radix Select is not `<select>`, so the props a call
+site passes may change, and migrating those call sites is a task in the phase rather than a
+reason to skip the work. A replaced native control keeps its `name` in the payload and
+re-expresses `required`; where it cannot, the native element stays under a styled wrapper.
+Tests assert the payload, never the markup, and **an existing test is never weakened to keep it
+green.**
+
+Unlike stage 3, this stage is **not TDD-exempt** — a disabled state, a loading state and a
+focus trap are behaviour and they break silently. Stage 3's `.flow/tdd-exempt` lines are
+deleted at the stage boundary, because the gate is a substring match that exits silently: one
+leftover `components/ui` line would disarm it for exactly the files this stage must write
+test-first. And **no component generator runs here** — `npx shadcn init` rewrites the Tailwind
+config and `globals.css` with its own tokens, which after stage 3 destroys the token layer just
+migrated. Adopting one is a stage-2 decision, made before stage 3.
+
+It stops and shows after the foundations, the button, the controls and the table.
+
+Captures at desktop and 375px close the criteria `by artifact`.
 
 ### What it writes, and why that is the point
 
@@ -440,7 +471,7 @@ exercised on Windows; macOS and Linux are reasoned, not run.
 ## What is inside
 
 **Protocols load only when you reach them** — one entry in the skill listing, ~320 resident
-lines, and 21 reference files read only when the situation calls for them. A debugging
+lines, and 22 reference files read only when the situation calls for them. A debugging
 protocol costs nothing until there is a bug.
 
 | Gate | Produces | Model tier |
@@ -456,6 +487,7 @@ Beyond the loop itself:
 |---|---|
 | **Authority reconciliation** | when a contract already decided the rates and formulas, FRAME extracts them with citations and reconciles against the code before BUILD. Exists because of a real 3.125× payout error that propagated from a research document through the roadmap into fifteen fixtures while every gate passed |
 | **Threat modelling** | phases touching money, identity, other people's data or outside input get a threat register before BUILD; CHECK closes each row against real code and a test that fails without the mitigation |
+| **Process and data flow, per phase** | every other composition check proves the parts are *wired*; none can see a wired, reachable, fully tested flow writing the wrong number. So any phase that writes persistently draws its handoff chain (a state with no exit, a step with no actor, two paths to one state leaving different data) and then drives each write **through the product** and reads the row back — values against the authority, side effects, run it twice, drive the reverse. One round trip per write; `/flow:ultra` still owns the full matrix |
 | **Brainstorm first** | when the goal cannot be stated in one checkable sentence. "Add a dashboard" is not a goal, and framing it anyway produces a confident plan for the wrong problem |
 | **Match before you write** | FRAME names the closest existing analog for every new file |
 | **Eight loop guards** | the expensive failure is repeated work — re-verifying what passed, researching a fact twice, a third silent debug attempt |
