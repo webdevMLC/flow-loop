@@ -8,7 +8,7 @@ So before the loop reports the good ending, it does one bounded sweep for work t
 **already recorded somewhere and simply not on the roadmap**. This is harvesting, not
 inventing. The difference is the whole of this file.
 
-## The sweep — one pass, five places
+## The sweep — one pass, six places
 
 Read only these. Do not survey the codebase, do not re-read source you already know, and do
 not open anything not named here. The whole sweep should cost less than a single task.
@@ -30,6 +30,17 @@ not open anything not named here. The whole sweep should cost less than a single
 5. **The blocked list, read to classify — never to schedule.** Its purpose here is to let you
    say "this one is not engineering" with a reason, so the user is not offered work no agent
    can do.
+6. **`.flow/ULTRA-*.md` — every finding marked `open` or `blocked`, across all reports.** An
+   inspection ran and wrote down what is wrong with concrete failures; those are the
+   best-specified candidates that will ever reach this sweep, each one an acceptance criterion
+   with the outcome flipped. **Read only the status lines.**
+   `fixed`, `wont-fix` and `stale` are settled and never re-proposed. **`blocked` is not
+   settled** — it is the value repair reserves for findings that needed a decision, a
+   credential, a migration or a correction script someone had to run, so re-offer it here with
+   what it is waiting on and let the classification below decide whether that is still true.
+   If a report exists and every finding is `open`, the repair pass never ran: say so, because
+   reporting "the roadmap is exhausted" over an unread inspection is the worst ending this file
+   can produce.
 
 ## Classify every candidate
 
@@ -95,7 +106,7 @@ can make in ten seconds.
   progress.
 - **Never re-sweep on the next wake.** Once is a diagnosis; twice is spinning. Record the
   result under `## Now` so the next session reads it instead of re-deriving it.
-- **Never let the sweep grow into a survey.** Five places, one pass. If it starts costing what
+- **Never let the sweep grow into a survey.** Six places, one pass. If it starts costing what
   a task costs, it has become the thing it was meant to replace.
 
 ## Why this exists

@@ -313,8 +313,13 @@ Honor `<private>` — never persist anything inside those tags.
 
 `/flow:ultra` is a separate, on-demand command that inspects the system **as built** rather
 than a diff: it runs the thing a user runs from a clean checkout, drives real flows against a
-real database and reads the rows, then reviews the code through independent lenses. It reports
-and never fixes — findings come back here as phases.
+real database and reads the rows, then reviews the code through independent lenses.
+
+**It does not fix while inspecting — and that rule ends where the report does.** Once
+`.flow/ULTRA-<date>.md` is sealed on disk, its stage 4 repairs what it found, **on by default**,
+handing each finding back to this loop as a phase with every gate. "It reports, it never fixes"
+was the old rule and is wrong past the seal. Findings needing a person are marked `blocked` and
+come back here as requests; "report only" stops at the report.
 
 Reach for it before a pilot, after a long unattended run, or when the suite is green and nobody
 is convinced. It is expensive and deliberately outside the loop; CHECK still runs per phase.

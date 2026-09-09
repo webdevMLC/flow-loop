@@ -10,6 +10,16 @@ done looks like, in a form someone else could verify? If not, stop and read
 onboarding better" — is not a goal, and framing it anyway produces a confident plan for the
 wrong problem.
 
+0.5 **Is there an unconsumed inspection?** If `.flow/ULTRA-*.md` exists with findings still
+   marked `open`, those are better-specified work than anything you are about to frame — each
+   carries a concrete failure that becomes an acceptance criterion directly. Say so and offer
+   them before framing something new. A BLOCKER sitting unread while the next feature gets
+   built is how a system ships broken with every gate green.
+   **Skip this step when the phase you are framing is itself a repair phase** — it came from
+   that report, and re-reading it here is a loop with no exit.
+   Only the ids and status lines are read: a full re-read of a long report at every FRAME is
+   the survey this gate exists to avoid.
+
 1. **Recall once.** One memory query (see SKILL.md → Memory). Do not query twice.
 2. **Read the profile, or write it.** `.flow/PROJECT.md` holds the stack, the commands
    (test, test_fast, test_one, typecheck, lint, run), the conventions, and the analog map.
@@ -298,6 +308,18 @@ rescope — that is the user's call.
    Facts only — no narration of the session.
 4. Update STATE.md: mark tasks done, archive the section.
 5. Report plainly: what was built, what was verified and how, what was skipped and why.
+
+### If this phase resolved an inspection finding, write its status line
+
+A phase framed from a `.flow/ULTRA-*.md` finding updates that finding's status line **in the
+same commit as the code** — `fixed · phase N · date`, or `blocked · <what it needs, from whom>`.
+Only that one line changes; the rest of the report is the record of what was true at inspection
+time.
+
+Nothing else writes it, and two readers depend on it: FRAME step 0.5 and the roadmap sweep's
+sixth place both decide by status alone. A fix that ships without its status line is a finding
+that gets re-proposed forever. **Never write `wont-fix`** — that is the one value only a person
+decides.
 
 ### Record the machine-stage results
 

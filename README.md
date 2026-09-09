@@ -183,8 +183,22 @@ concurrent, status transition, cross-module), drive it against a disposable data
 **3. What is wrong with the code?** Independent readers, one lens each, no shared context with
 the build. Findings are deduplicated, then given one attempt to be refuted before reporting.
 
-**It reports and never fixes** — findings return to the loop as phases. An inspection that
-repairs as it goes starts agreeing with itself.
+**4. Then it fixes what it found.** Stages 1–3 change nothing — an inspection that repairs as
+it goes starts agreeing with itself. But that rule ends where the report does: once
+`.flow/ULTRA-<date>.md` is sealed on disk, **stage 4 hands each finding to the loop as a phase**
+with every gate it normally runs. Repair is on by default; handing back a document and calling
+it a result is homework. Say **"report only"** to stop at stage 3.
+
+The handoff is cheap because ultra already requires every finding to carry a concrete failure —
+inputs or state → wrong outcome. **That sentence is an acceptance criterion with the outcome
+flipped**, so CHECK proves each fix by construction and the inspection is never re-run per
+finding. BLOCKERs first, batched by root cause rather than worked one-for-one. Findings needing
+a decision, a schema migration, a credential or money stop for you instead of being built, and
+**commits stay local — repair never pushes.**
+
+Each finding carries a status line (`open` / `fixed · phase N` / `blocked` / `wont-fix`) that
+the roadmap sweep reads, so an unrepaired BLOCKER can no longer sit unread while the loop
+reports the roadmap exhausted — and a repaired one is never re-proposed.
 
 It exists because a project here passed every gate it owned — 156 test files, mutation gates
 green, a five-stage CHECK — and the application could not start. Fifteen phases shipped that
