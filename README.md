@@ -146,6 +146,47 @@ the runner, and nobody ever ran the thing a user runs.
 Run it before a pilot, after a long unattended run, or when the suite is green and you are not
 convinced. It is expensive, deliberately outside the loop, and says what it cost.
 
+## /flow:theme — survey the interface, then apply one
+
+```
+/flow:theme
+/flow:theme ember
+```
+
+A theme is not a palette. It is a **law about where colour and depth are allowed to go**, plus
+the tokens that express it. Ship the palette without the law and the theme lasts exactly as
+long as nobody adds a screen.
+
+Three stages, each gating the next, and **the first two write nothing**:
+
+**1. Survey.** The interface as built, not as documented: the styling layer (projects usually
+have two and admit to one), tokens or their absence, the real palette measured from the code,
+the status vocabulary, the component inventory, dark mode, density — and the count of
+hard-coded colours, which is what actually decides the cost.
+
+**2. Conflict.** What this theme would break, reported **before a file is touched** — because
+"then pick a different theme" is a cheap answer before the rewrite and an expensive one after.
+Four kinds: it contradicts the project's own design standard (blocking — the standard wins), it
+needs a layout the project does not have, it wants a colour the project already uses for
+meaning, or it costs more than the user thinks.
+
+That third one is the quiet killer. If the project's success green is the theme's brand accent,
+then after the migration every success message reads as a link and every link reads as a
+success. Nothing errors and no test fails.
+
+**3. Apply.** Tokens, then shared components, then hard-coded values grouped by value rather
+than by file, then the things CSS cannot reach — chart arrays, PDF and email templates, baked
+SVG fills. Captures at desktop and 375px close the criteria `by artifact`.
+
+Seven themes ship with it — Aurora (the only one with both modes), Nordic, Signal, Meridian,
+Basalt, Ember and Relief. Each carries its law: *gold means actionable and pending has no
+colour*; *raised means you can press it*; *the brand colour is the page, not a mark on it*.
+
+**The last step is the point.** It writes that law into `.flow/PROJECT.md` § Design standard —
+the section the UI audit already treats as the authority during every CHECK. Once it is there,
+the gate enforces it on every screen anyone adds afterwards. That is the difference between a
+theme and a repaint.
+
 ## Adopting it in a project that already exists
 
 Installing the plugin changes nothing on its own. **Both gates stay dormant until the project

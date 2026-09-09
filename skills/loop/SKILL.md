@@ -308,6 +308,13 @@ and never fixes — findings come back here as phases.
 Reach for it before a pilot, after a long unattended run, or when the suite is green and nobody
 is convinced. It is expensive and deliberately outside the loop; CHECK still runs per phase.
 
+`/flow:theme` is the other one. It surveys the interface a project actually has, reports what a
+theme would break **before** touching a file, then applies one — tokens, components, and the
+law that keeps it from decaying. Seven themes ship with it. Reach for it when screens were
+built ad hoc and no longer agree with each other, or when a project has no visual identity at
+all. It writes its law into `.flow/PROJECT.md` § Design standard, which is the section
+`references/uiaudit.md` already enforces on every screen afterwards.
+
 ## Scope
 
 Use Flow for real project work. Skip it for a question, a scratch script, or an explanation —
