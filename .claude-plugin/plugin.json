@@ -1,7 +1,7 @@
 {
   "name": "flow",
-  "version": "1.42.1",
-  "description": "One development loop - FRAME, BUILD, CHECK, SHIP - replacing separate memory, planning, context, TDD and review frameworks with a single protocol, hard loop guards, and a TDD gate that is enforced by a hook rather than merely instructed. Ships /flow:ultra, a deep on-demand inspection that runs the system, tests what real flows do to the data, and reviews the code adversarially; and /flow:theme, which surveys the interface a project already has, reports what a theme would break before touching a file, then applies one.",
+  "version": "1.43.0",
+  "description": "One development loop - FRAME, BUILD, CHECK, SHIP - replacing separate memory, planning, context, TDD and review frameworks with a single protocol, hard loop guards, and a TDD gate that is enforced by a hook rather than merely instructed. Ships /flow:ultra, a deep on-demand inspection that runs the system, tests what real flows do to the data, and reviews the code adversarially; /flow:theme, which surveys the interface a project already has, reports what a theme would break before touching a file, then applies one; and /flow:guide, which writes a plain-language user guide from the running system, in the reader's own language.",
   "author": {
     "name": "Micho Calma",
     "url": "https://github.com/webdevMLC"
@@ -22,6 +22,9 @@
     "testing",
     "design-system",
     "ui",
-    "theming"
+    "theming",
+    "documentation",
+    "user-guide",
+    "localization"
   ]
 }

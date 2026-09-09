@@ -308,12 +308,17 @@ and never fixes — findings come back here as phases.
 Reach for it before a pilot, after a long unattended run, or when the suite is green and nobody
 is convinced. It is expensive and deliberately outside the loop; CHECK still runs per phase.
 
-`/flow:theme` is the other one. It surveys the interface a project actually has, reports what a
-theme would break **before** touching a file, then applies one — tokens, components, and the
-law that keeps it from decaying. Seven themes ship with it. Reach for it when screens were
-built ad hoc and no longer agree with each other, or when a project has no visual identity at
-all. It writes its law into `.flow/PROJECT.md` § Design standard, which is the section
-`references/uiaudit.md` already enforces on every screen afterwards.
+`/flow:theme` surveys the interface a project actually has, reports what a theme would break
+**before** touching a file, then applies one — tokens, components, and the law that keeps it
+from decaying. Seven themes ship with it. Reach for it when screens were built ad hoc and no
+longer agree with each other, or when a project has no visual identity at all. It writes its
+law into `.flow/PROJECT.md` § Design standard, which is the section `references/uiaudit.md`
+already enforces on every screen afterwards.
+
+`/flow:guide` writes the user guide — organised by what a person is trying to get done, in
+plain language, in the language they read, from screenshots of the running system rather than
+from the source. Reach for it when a system is going to real users, or when the same question
+keeps being asked. Whatever it could not reach becomes a `by person` entry in `.flow/UAT.md`.
 
 ## Scope
 

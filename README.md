@@ -33,13 +33,14 @@ Restart the session so the hooks load, then just say what you are building:
 **Installing changes nothing on its own.** Both gates stay dormant until a project has a
 `.flow/` directory, so untouched repositories behave exactly as before. Adoption is deliberate.
 
-## The three commands
+## The commands
 
 | | Does | Reach for it |
 |---|---|---|
 | **`/flow:loop`** | the loop — FRAME, BUILD, CHECK, SHIP | all normal work |
 | **`/flow:ultra`** | inspects the running system, not the diff | before a pilot, or when the suite is green and you are not convinced |
 | **`/flow:theme`** | surveys a project's interface, then applies a theme | screens built ad hoc that no longer agree with each other |
+| **`/flow:guide`** | writes the user guide from the running system | it is going to real users, or support keeps answering the same question |
 
 ## Triage — not every task deserves four gates
 
@@ -158,6 +159,70 @@ It exists because a project here passed every gate it owned — 156 test files, 
 green, a five-stage CHECK — and the application could not start. Fifteen phases shipped that
 way. The tests imported modules directly and took their environment from the runner; nobody
 ever ran the thing a user runs.
+
+## `/flow:guide` — the user guide, in the reader's language
+
+```
+/flow:guide
+/flow:guide cebuano, for field associates
+```
+
+A user guide is a claim about how the system behaves, written for someone who does not know
+how it was built and does not want to. It is not the code documented, and it is not the
+feature list in shorter words.
+
+**It walks the running system.** Signs in as each role, does the real jobs end to end, captures
+the screens, and records every label and error message verbatim. A guide assembled from source
+documents what the developer built, including the screens that do not work.
+
+**It is organised by job, not by feature**, and the check is mechanical: *if the guide's table
+of contents matches the app's navigation menu, it is a feature list.* A menu is arranged the
+way the system was built; a guide is arranged the way a person's day runs — "Get paid for a
+booking", not "Commission Module".
+
+**It breaks things on purpose.** The most-read page in any real guide is the error page, and
+you cannot write it from the source — the message a user sees is often not the string in the
+code. So it submits the form empty, enters a duplicate, does the steps out of order, and
+records what actually appears.
+
+### Language and level
+
+Both are asked before anything is written:
+
+| | Options |
+|---|---|
+| **Language** | the interface language · the reader's language with labels kept · bilingual side by side · a separate book per language |
+| **Reading level** | **Simple** (may be new to computers) · **Plain** (anyone — the default) · **Working** (knows the job, not the software) |
+| **Audience** | one guide per role, or one covering all — an admin guide and a field-staff guide are different books |
+
+**UI labels are never translated.** The screen still says `Submit booking`, so a guide telling a
+Cebuano reader to press *Isumite ang booking* describes a product that does not exist. Labels
+stay verbatim with the meaning in parentheses — `Pindota ang **Submit booking** (ipadala ang
+booking)` — and error messages stay verbatim too, because the reader is matching them character
+for character.
+
+A translation is a **`by person`** criterion: no test closes it and a screenshot proves
+nothing, so it goes to `.flow/UAT.md` for a speaker to read before it ships.
+
+### What it produces
+
+```
+docs/guide/
+  README.md                     what this is, who it is for
+  01-getting-started.md
+  02-<a real job>.md            one page per job, named the way a user would say it
+  when-something-goes-wrong.md  every message, what it means, what to do
+  glossary.md                   only the words that survived
+  images/
+  ceb/                          same filenames, same headings
+```
+
+Every job page carries **Before you start**, **What happens next** and **If it does not
+work** — the three sections people actually need, and the three most often missing. The steps
+are the easy part.
+
+Screenshots come from a seeded demo account, never production: guide images are committed and
+ship to users, and a screenshot that leaked a customer list cannot be un-shipped.
 
 ## Adopting a project that already exists
 
