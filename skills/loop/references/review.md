@@ -40,6 +40,40 @@ cheapest stage is the one you never earn the right to skip.
 Red at stage 0 means CHECK is over. Fix and start again; the later stages have nothing useful
 to say about code that does not compile.
 
+### Exit code 0 is not the same as clean output
+
+**Read what these commands print, not only what they return.** A build that exits 0 while
+printing a warning has told you something and been ignored, and the tools that warn are usually
+the ones with the widest view of the system — the package manager sees the dependency graph, the
+bundler sees every import, the migration runner sees the schema.
+
+A real example, found by a user and not by this gate: a build printed
+
+    WARNING  Circular package dependency detected: @bizdev/shared, @bizdev/db
+
+on **every single build for fifteen phases.** The exit code was 0 each time, stage 0 ran the
+build each time, and nobody read the line. It is a genuine architectural defect and no test
+could ever have failed for it.
+
+**A warning that appears on every run is a standing signal, and it gets one of two answers:**
+
+| Answer | What it means |
+|---|---|
+| **Fix it** | it is a defect, and the tool found it for free |
+| **Record it** | write one line in `.flow/PROJECT.md` saying which warning is accepted and why |
+
+There is no third answer. "Known noise" that nobody wrote down is indistinguishable from a
+defect nobody noticed — which is exactly how the one above survived fifteen phases.
+
+**Watch particularly for:** circular or unresolvable dependencies, peer-dependency conflicts,
+deprecations that name a removal version, "N packages may need updating", implicit-any and
+unchecked-cast notices below the error threshold, migrations reporting a skipped or out-of-order
+step, and any warning whose text contains a file path in this repository.
+
+**On the first inspection of a project, list every recurring warning** and settle each one. That
+list is short, it is written once, and after that a *new* warning is visible against a quiet
+background rather than lost in a wall of familiar ones.
+
 ## Stage 1 — the contract
 
 Correctness against the criteria is not correctness. **CHECK verifies the code against the

@@ -53,6 +53,11 @@ exist, who changes the rules it creates, what in the source documents did nothin
 what did the last phase leave open. Each answer becomes a task, a recorded assumption, or a
 blocker — never silence. It reads what the survey already returned; it does not search again.
 
+**Exit code 0 is not clean output.** Read what the machine pass prints, not only what it
+returns. A warning on every build is a standing signal — fix it, or record in
+`.flow/PROJECT.md` that it is accepted and why. One project printed a circular-dependency
+warning on every build for fifteen phases while every gate stayed green.
+
 **CHECK is five stages and each gates the next** — machine (build, full suite, every project
 gate), contract (the authority, re-read, not just the criteria), composition (is the new code
 reachable, called, read; does last phase's green still hold), adversarial (the lenses, plus one
