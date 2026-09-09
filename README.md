@@ -485,7 +485,7 @@ exercised on Windows; macOS and Linux are reasoned, not run.
 ## What is inside
 
 **Protocols load only when you reach them** — one entry in the skill listing, ~320 resident
-lines, and 22 reference files read only when the situation calls for them. A debugging
+lines, and 23 reference files read only when the situation calls for them. A debugging
 protocol costs nothing until there is a bug.
 
 | Gate | Produces | Model tier |
@@ -502,6 +502,7 @@ Beyond the loop itself:
 | **Authority reconciliation** | when a contract already decided the rates and formulas, FRAME extracts them with citations and reconciles against the code before BUILD. Exists because of a real 3.125× payout error that propagated from a research document through the roadmap into fifteen fixtures while every gate passed |
 | **Threat modelling** | phases touching money, identity, other people's data or outside input get a threat register before BUILD; CHECK closes each row against real code and a test that fails without the mitigation |
 | **Process and data flow, per phase** | every other composition check proves the parts are *wired*; none can see a wired, reachable, fully tested flow writing the wrong number. So any phase that writes persistently draws its handoff chain (a state with no exit, a step with no actor, two paths to one state leaving different data) and then drives each write **through the product** and reads the row back — values against the authority, side effects, run it twice, drive the reverse. One round trip per write; `/flow:ultra` still owns the full matrix |
+| **The panel — five experts on the intent** | at a new project, an adoption, or a milestone, FRAME runs a researcher, a system architect, a systems engineer, a dataflow expert and a UI/UX expert concurrently — the same shape as CHECK's adversarial pass, pointed at the thing rather than the diff. Every other gate proves code matches its criteria; **none can see that the criteria were for the wrong product.** It draws the process flow, **shows it to you before it is built**, and puts the shape-changing decisions to you — and those stop and ask even under autonomous mode. Not per phase |
 | **Brainstorm first** | when the goal cannot be stated in one checkable sentence. "Add a dashboard" is not a goal, and framing it anyway produces a confident plan for the wrong problem |
 | **Match before you write** | FRAME names the closest existing analog for every new file |
 | **Eight loop guards** | the expensive failure is repeated work — re-verifying what passed, researching a fact twice, a third silent debug attempt |

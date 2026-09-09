@@ -77,6 +77,16 @@ right work, whether the criteria are checkable, and whether the tasks actually p
 Three gates check the work; this is the only one that checks the plan, and the plan is where
 the expensive failures start.
 
+**At a new project, an adoption, or a milestone, five experts examine the intent first** —
+researcher, system architect, systems engineer, dataflow, UI/UX, concurrently, the same shape
+as CHECK's adversarial pass but pointed at the thing rather than the diff. Every other gate
+here proves code matches its criteria; **none of them can see that the criteria were for the
+wrong product**, which is how a project reaches twenty green phases and disappoints the person
+who asked for it. The panel draws the process flow, **shows it to the user before it is built**,
+and puts the shape-changing decisions to them — and those decisions stop and ask even under a
+standing autonomous mode, because recording one as an assumption is exactly the failure.
+`references/panel.md`. Not per phase.
+
 **A phase that writes anything persistent gets its flow traced and its rows read** — inside
 CHECK, per `references/dataflow.md`. Every other composition check proves the parts are
 *wired*; none can see a wired, reachable, fully tested flow writing the wrong number, and a
@@ -189,6 +199,7 @@ Repeated work, not model choice, is what actually burns the budget.
 | Situation | Read |
 |-----------|------|
 | The goal is not clear enough to state | `references/brainstorm.md` |
+| A new project, an adoption, a milestone — or the result was not what the user wanted | `references/panel.md` |
 | Entering FRAME / BUILD / SHIP | `references/gates.md` |
 | The phase implements something a contract or spec already decided | `references/authority.md` |
 | The phase touches money, auth, PII, or outside input | `references/threat.md` |

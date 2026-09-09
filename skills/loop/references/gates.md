@@ -20,6 +20,13 @@ wrong problem.
    Only the ids and status lines are read: a full re-read of a long report at every FRAME is
    the survey this gate exists to avoid.
 
+0.7 **Is this a moment for the panel?** At a **new project's first FRAME**, when **adopting an
+   existing codebase**, at a **milestone or module boundary**, or when the user says the result
+   is not what they wanted — read `references/panel.md` and run it before writing criteria.
+   Five experts on the *intent* rather than the work: researcher, system architect, systems
+   engineer, dataflow, UI/UX. It draws the process flow, shows it to the user, and puts the
+   shape-changing decisions to them. **Not per phase** — everywhere else, skip straight to 1.
+
 1. **Recall once.** One memory query (see SKILL.md → Memory). Do not query twice.
 2. **Read the profile, or write it.** `.flow/PROJECT.md` holds the stack, the commands
    (test, test_fast, test_one, typecheck, lint, run), the conventions, and the analog map.
