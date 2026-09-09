@@ -108,6 +108,44 @@ before a file write can use them. Field naming differs by platform and both hook
 the known spellings (`file_path`, `path`, `filePath`, `target_file`, `file`; string or
 argv-array commands), failing open on anything unrecognised rather than guessing.
 
+## /flow:ultra — inspecting the system, not the diff
+
+A separate, on-demand command. CHECK looks at a diff every phase; this looks at the whole
+system, and asks three things a diff review cannot.
+
+```
+/flow:ultra
+```
+
+**1. Does it actually run?** From a clean checkout, following only the written instructions —
+install, bring up the dependencies, migrate from empty, build for production, start it, and
+reach a real page and a real endpoint. Every step you have to invent that the instructions do
+not mention is a finding, because a new person will have to invent it too.
+
+**2. What happens to the data?** The stage no gate in the loop performs. Trace the flows where
+being wrong is expensive — money, permissions, anything irreversible, anything with a lifecycle
+— build the matrix for each (positive, negative, boundary, duplicate, concurrent, status
+transition, cross-module, financial, API), drive it against a disposable database, and then
+**read the rows.** A response is not a record. It never creates migrations or alters a schema:
+what the data model cannot express is recorded as a recommendation with its evidence.
+
+**3. What is wrong with the code?** Independent readers, one lens each, no shared context with
+the build — correctness, security, money, concurrency, reachability, and the project's own
+claims against its code. Findings are deduplicated, then given one attempt to be refuted before
+anything is reported.
+
+**It reports and never fixes.** Findings come back to the loop as phases. An inspection that
+repairs as it goes starts agreeing with itself — the thing it re-tests is no longer the thing it
+was inspecting.
+
+**Why it exists.** A project here passed every gate it owned — 156 test files, mutation gates
+green, a five-stage CHECK — and the application could not start. Fifteen phases shipped that
+way. Nothing was lying: the tests imported the modules directly and took their environment from
+the runner, and nobody ever ran the thing a user runs.
+
+Run it before a pilot, after a long unattended run, or when the suite is green and you are not
+convinced. It is expensive, deliberately outside the loop, and says what it cost.
+
 ## Adopting it in a project that already exists
 
 Installing the plugin changes nothing on its own. **Both gates stay dormant until the project

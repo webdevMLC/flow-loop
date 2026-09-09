@@ -293,6 +293,16 @@ At FRAME start, recall once: `claude-mem-cowork:mem-search` if installed, else
 At SHIP, append decisions and surprises worth keeping. Nothing else writes memory.
 Honor `<private>` — never persist anything inside those tags.
 
+## When the loop is not enough
+
+`/flow:ultra` is a separate, on-demand command that inspects the system **as built** rather
+than a diff: it runs the thing a user runs from a clean checkout, drives real flows against a
+real database and reads the rows, then reviews the code through independent lenses. It reports
+and never fixes — findings come back here as phases.
+
+Reach for it before a pilot, after a long unattended run, or when the suite is green and nobody
+is convinced. It is expensive and deliberately outside the loop; CHECK still runs per phase.
+
 ## Scope
 
 Use Flow for real project work. Skip it for a question, a scratch script, or an explanation —
