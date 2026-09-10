@@ -12,7 +12,9 @@ shared staging. If the only reachable system is production, stop and say so.
 
 **Confirm you can capture, before walking.** Use whatever the project and host provide — a
 browser tool, Playwright, a dev server plus a screenshot, the host's own preview. Take one
-capture of the sign-in screen now and confirm the file exists on disk.
+capture of the sign-in screen now and confirm the file exists on disk **and that its pixel width
+is twice the CSS width you asked for.** If it is not, fix the capture setting before walking,
+not after.
 
 **If nothing can produce a capture, stop.** Say so, and let the user decide between a
 text-only guide and getting a capture tool available. Do not walk the whole system and
@@ -21,6 +23,23 @@ discover this at drafting time, and never write an image link for a file that do
 **Capture at the widths the readers use**, from the Devices answer — desktop and 375px if
 both. A mobile reader cannot follow a guide shot at 1440px; the screen they are holding does
 not look like that.
+
+**Capture at device-pixel-ratio 2, and in PNG.** The file must be twice the CSS width you asked
+for — a 1440px screen produces a 2880px file — because stage 4 prints each capture at a fixed
+physical width and needs ~192 DPI there. A 1× capture in a PDF is roughly 96 DPI and looks soft
+beside 10.5pt text. JPEG damages text and thin lines; never use it for an interface. Set it
+before the first shot: Playwright `deviceScaleFactor: 2`, Chrome `--force-device-scale-factor=2`,
+or the host tool's 2× equivalent.
+
+**One frame per class, fixed now.** Choose two capture frames and hold them for every shot: a
+**full-screen** frame and a **detail** frame — say 1440 and 480 CSS px, giving 2880px and 960px
+files. What is *inside* the frame varies; the frame does not. Cropping each shot to its content
+produces forty different widths, and stage 4 prints by class, so mixed widths are visible on
+every facing page.
+
+**None of this can be revised at stage 4.** `references/layout.md` needs 2× files at two fixed
+frames and cannot manufacture them — it has no pixels this walk did not take, and this
+environment will be gone.
 
 **Capture density comes from the reading level**, and it changes what you must photograph:
 

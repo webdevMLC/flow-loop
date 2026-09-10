@@ -86,7 +86,7 @@ This takes about two minutes.
 ## Steps
 
 1. From the menu, choose **Bookings**.
-   ![The Bookings screen](images/bookings-list.png)
+   <img class="shot-full" src="images/bookings-list.png" alt="The Bookings screen">
 
 2. Press **New booking** at the top right.
 
@@ -98,7 +98,7 @@ This takes about two minutes.
 
 5. Press **Submit booking**.
    The booking appears at the top of your list marked **Pending**.
-   ![A pending booking](images/booking-pending.png)
+   <img class="shot-detail" src="images/booking-pending.png" alt="A booking marked Pending">
 
 ## What happens next
 
@@ -137,8 +137,20 @@ A long glossary is a finding about the product, not about the guide. Say so.
 
 ## Screenshots
 
-From the demo account, cropped to what matters, at the widths from §0. **Never write an image
-link for a file that was not captured** — check the file exists on disk before the page ships.
+From the demo account, at the two frames fixed in `references/walk.md` §0.
+
+**Every screenshot carries its class**, because stage 4 prints by class and a bare markdown
+image cannot say which it is. Use the HTML tag — every converter passes it through:
+
+```html
+<img class="shot-full" src="images/bookings-list.png" alt="The Bookings screen">
+<img class="shot-detail" src="images/submit-button.png" alt="The Submit booking button">
+```
+
+`shot-full` prints at the full 134mm measure, `shot-detail` at 80mm. Those are the only two.
+
+**Never write an image link for a file that was not captured** — check the file exists on disk
+before the page ships.
 
 Annotate only when the target is genuinely hard to find; an arrow is an admission that the
 screen is unclear, and worth raising with whoever owns it.

@@ -269,6 +269,22 @@ are the easy part.
 Screenshots come from a seeded demo account, never production: guide images are committed and
 ship to users, and a screenshot that leaked a customer list cannot be un-shipped.
 
+### It is laid out, not just written
+
+The markdown is the source of truth and **the PDF is generated from it, never hand-edited.**
+That matters because the obvious command produces the wrong document every time: pandoc on a
+markdown file gives headings near 32pt (an H1 is 2em of a 16px body), screenshots past the
+margin, and step 4 separated from its picture by a page break.
+
+So the sizes are fixed and normal: **body 10.5pt, page title 18pt**, and nothing on the page
+more than about twice the body size. One left edge for text, headings, screenshots and tables.
+A step never splits from its screenshot; the error table repeats its header on every page; each
+job page starts on a new one. Screenshots are captured at 2x and placed at half size — roughly
+192 DPI, so labels stay readable next to 10.5pt text — cropped, hairline-bordered, and every
+capture of the same kind at the same width.
+
+Then it opens the PDF and pages through it, because a PDF that renders is not a PDF that works.
+
 ## Adopting a project that already exists
 
 ```
