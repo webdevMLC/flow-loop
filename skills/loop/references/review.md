@@ -136,6 +136,24 @@ criteria from STATE.md, and returns findings only.
 Skip a checker whose domain the diff does not touch. A CSS change needs no performance oracle.
 If the diff is <=3 files or <=200 lines, **do not spawn** (guard 5) — run the lenses inline.
 
+### What comes back is findings — do not reflexively verify them
+
+**Read "Verify only when reading will not do" below before spawning a single skeptic.** The
+default is to report the findings, not to debate them, and the tiering there is BLOCKER up to
+three, MAJOR one, MINOR none.
+
+**If you escalate this stage into a Workflow script, that tiering still governs it.** This is
+where it goes wrong, because the skill you read to *write* a workflow documents the opposite
+shape — *"spawn N independent skeptics per finding, kill if ≥majority refute"* — as a quality
+pattern, and it is the more recently read instruction. **Refuse it here.** Uniform N-per-finding
+is exactly what the section below exists to prevent: it pays the same to check a typo as a
+money defect, and at fan-out scale that is the largest avoidable cost in CHECK.
+
+A measured run of this stage, escalated to a workflow on a real project: six lenses returned
+sixteen findings, each got three parallel skeptics, and the verify tier alone was **48 agents
+and about 66M tokens** — on a diff whose findings included a secret committed in plaintext,
+which one grep settles. Tiered, it is roughly a third of that.
+
 ## Stage 4 — the verdict
 
 Report, resolve, and state the evidence ledger. Details in the sections below. A phase ships
