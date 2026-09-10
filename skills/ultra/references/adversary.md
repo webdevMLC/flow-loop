@@ -42,7 +42,7 @@ it is the waste this note exists to prevent.
 "Up to three" is sequential, stopping on the first refutation — does the code say what the
 finding claims, is it already prevented elsewhere, can the failing input be built. Stop on a
 *refutation*, never on how confident a verifier sounded: a confidently-wrong skeptic reports
-certainty, so its confidence is the one signal not worth gating on.  in
+certainty, so its confidence is the one signal not worth gating on. `references/review.md` in
 the loop skill carries the full ordering.
 
 ## The reachability lens earns its place
