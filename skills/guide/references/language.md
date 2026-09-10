@@ -116,9 +116,9 @@ less than an English one, because it reads as machine output.
 **Answer:**
 ```
 
-**One entry per language, not one per page.** `references/nonstop.md` **in the loop skill**
-stops an unattended run once five UAT entries are open, and a guide would otherwise produce
-dozens. Name the pages to start with inside the single entry.
+**One entry per language, not one per page.** Past five open entries in `.flow/UAT.md` an
+unattended run stops and reports (`references/uat.md` **in the loop skill**), and a guide would
+otherwise produce dozens. Name the pages to start with inside the single entry.
 
 **If no speaker is available**, ship the source-language guide and hold the translation
 unreleased with the criterion open. Do not ship an unreviewed translation as though it were

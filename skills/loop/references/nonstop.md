@@ -95,6 +95,11 @@ exactly where drift hides:
 4. **The seeded-data check** from `references/review.md`: tables written and read by nothing.
 5. **The evidence ledger, cumulative.** How many `by person` criteria are now open across all
    phases since the last checkpoint? They decay silently — nobody is reading them.
+   **Past five open entries in `.flow/UAT.md`, stop the run and report.** Not because the work
+   is unsafe, but because judgement piling up unjudged is the same failure as tests nobody
+   runs: every phase after that is built on questions nobody has answered, and the queue only
+   grows. Say how many are open and lead the report with them. One real project reached **ten**
+   — including "does the app open at all" — while the loop kept selecting more work.
 
 ### Then one independent reviewer, and this is the part worth paying for
 

@@ -58,6 +58,7 @@ artifact and predict the severity. It may not decide. A loop that closes its own
 criteria has reinvented the substitution that `references/evidence.md` exists to prevent — the
 only difference is it now happens under a heading that says a person did it.
 
-**A UAT queue that only grows is a signal, not an inbox.** If `.flow/UAT.md` passes five open
-entries, the checkpoint in `references/nonstop.md` stops the run. Judgement piling up unjudged
-is the same failure as tests nobody runs.
+**A UAT queue that only grows is a signal, not an inbox.** Past five open entries in
+`.flow/UAT.md`, an unattended run stops and reports rather than selecting more work — the
+non-stop checkpoint counts them (`references/nonstop.md`, audit item 5). Judgement piling up
+unjudged is the same failure as tests nobody runs.
