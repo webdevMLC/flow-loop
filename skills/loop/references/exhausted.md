@@ -42,6 +42,26 @@ not open anything not named here. The whole sweep should cost less than a single
    reporting "the roadmap is exhausted" over an unread inspection is the worst ending this file
    can produce.
 
+## Re-test every blocker before you classify it
+
+**A recorded blocker is a claim about the world at a past moment, not a fact.** Phases keep
+shipping after it was written, and the commonest way this sweep reports a false ending is by
+reading a stale label and believing it.
+
+So for each blocked item, spend one cheap check on the specific thing it is waiting for: does
+that route exist now, is that function reachable, did a later phase build the screen it needed?
+One grep or one file read each — this is not a re-survey, and guard 2 does not forbid it,
+because you are not researching the same question twice: you are asking whether an old answer
+still holds.
+
+A real instance, from a project that reported itself blocked on a person: a phase halted
+because no manager could resolve a wrongly-merged claim. Four phases later the release function
+shipped **with a route and a form**. Nothing re-checked, the label stayed, and the run reported
+everything remaining as needing a human while the work was sitting there unblocked.
+
+**If the blocker has cleared, it is a task — say which phase cleared it.** If it has not, then
+classify it below.
+
 ## Classify every candidate
 
 Three buckets. The distinction that matters is not "is something missing" but **who can
