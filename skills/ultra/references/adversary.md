@@ -30,9 +30,20 @@ refuted when uncertain. What survives is reported; what does not is dropped sile
 lines are one finding — match on the claim, not on `file:line`, because the same bug is
 routinely reported a few lines apart.
 
-**Tier the effort.** A BLOCKER is worth up to three refutation attempts; a MAJOR one; a MINOR
-none — if a minor is wrong the reader loses five seconds, and paying three agents to argue about
+**Settle the facts by reading first.** A claim about what a file contains — a secret committed
+in plaintext, a page declaring itself cacheable, an export with no caller — is answered by one
+grep, definitively. Only claims about *behaviour* are worth an agent. Do the greps before
+tiering anything; they remove findings from the tier entirely.
+
+**Tier the effort, and short-circuit.** A BLOCKER is worth up to three refutation attempts; a
+MAJOR one; a MINOR none — if a minor is wrong the reader loses five seconds, and paying three agents to argue about
 it is the waste this note exists to prevent.
+
+"Up to three" is sequential, stopping on the first refutation — does the code say what the
+finding claims, is it already prevented elsewhere, can the failing input be built. Stop on a
+*refutation*, never on how confident a verifier sounded: a confidently-wrong skeptic reports
+certainty, so its confidence is the one signal not worth gating on.  in
+the loop skill carries the full ordering.
 
 ## The reachability lens earns its place
 

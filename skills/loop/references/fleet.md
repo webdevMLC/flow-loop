@@ -148,6 +148,17 @@ on a cheaper tier at low effort. Money, auth and invariants never do. Getting th
 either direction is expensive: a cheap tier on money code produces a wrong number, and a full
 tier on a fixture pays a premium for nothing.
 
+**5. Watch the spread, not just the total.** The budget rule above sizes the *fleet*; nothing in
+it stops one agent from wandering. A measured run had a median agent at **1.4M tokens and its
+dearest at 15.7M — eleven times the median** — for the same class of task. That one agent cost
+more than eight of its siblings.
+
+An agent that far above the median has stopped doing its task and started exploring the
+codebase, and the brief is what failed: it named a question without naming where the answer
+lives. So check the spread when a wave lands, and treat **anything past ~3x the median as a
+briefing defect to fix before the next wave**, not as a task that happened to be hard. It is
+also the cheapest thing to catch, because the fix is one paragraph in a prompt.
+
 **5. Decompose before spawning, not after.** Compare file sets first. Two tasks that overlap
 are either different waves or one task. Discovering it at merge time means paying for two
 drafts and keeping neither — the most expensive failure available here.

@@ -195,6 +195,21 @@ Neither is about how important the code is. Money code deserves *careful review*
 not automatically deserve a skeptic panel, because the person who owns a ledger can read a
 ledger finding faster than three agents can debate it.
 
+### First: is this a fact, or an inference?
+
+Before tiering anything, split the findings in two. **A claim about what a file contains is
+settled by reading the file.** "`NEXTAUTH_SECRET` is committed in plaintext", "this page
+declares itself cacheable", "this export has no caller" — one grep answers each, and it answers
+definitively rather than probably. Spawning a skeptic to debate a fact is the single most
+wasteful thing in this section.
+
+Only a claim about **behaviour** — this input produces that wrong outcome, this state is
+reachable, this guard does not hold — is worth an agent, because that is what reading alone
+cannot settle.
+
+Do the greps first. Findings they confirm go straight to the report; findings they refute are
+dropped without a verifier ever running.
+
 ### When you do verify, tier it
 
 Never spend the same on every finding — that costs as much to check a typo as a money defect.
@@ -208,6 +223,26 @@ Never spend the same on every finding — that costs as much to check a typo as 
 Uniform verification is the failure mode to avoid. Thirty-two findings at two skeptics each
 is sixty-four agents, of which the twenty spent on minor findings could not have paid off
 under any outcome — a minor gates nothing, so being wrong about one costs nothing.
+
+**"Up to 3" means sequential, stopping on the first refutation — not three at once.** Run the
+lenses cheapest-discriminator-first, and stop the moment one of them kills the finding:
+
+1. **Does the code say what the finding claims?** Misreading is the commonest false positive
+   and this is the cheapest lens.
+2. **Does something else already prevent it?** A guard upstream, a caller that never passes
+   that input, a type that excludes it, a documented decision.
+3. **Can you construct the failing input?** Most expensive, most conclusive — and most
+   findings never reach it.
+
+Short-circuiting on a *refutation* is safe in a way that short-circuiting on confidence is not.
+A refutation is a positive claim with evidence you can check; "the verifier felt sure" is the
+least reliable signal available, and a confidently-wrong skeptic reports certainty. Never gate
+the next lens on how sure the last one sounded.
+
+This is also stricter than running three in parallel and taking the majority: a finding
+survives only if **no** lens refutes it, rather than surviving one dissent. The cost is that a
+single wrong refutation kills a real finding silently — which is why a BLOCKER, where a miss is
+expensive, may still be worth three independent runs in parallel. Say which you did.
 
 **Deduplicate before verifying, not after.** Two findings on the same defect at nearby lines
 are one finding; verifying both pays twice for one answer. Match on the claim, not on
