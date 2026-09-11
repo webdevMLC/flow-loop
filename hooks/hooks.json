@@ -1,10 +1,16 @@
 {
-  "description": "Flow gates - TDD on Write/Edit, and a fast-test check before git commit.",
+  "description": "Flow gates - PLAN and owner confirmation before code, TDD on writes, citations and fast tests before a commit, and no push without the owner. Wired on Write, Edit, Bash and PowerShell.",
   "hooks": {
     "PreToolUse": [
       {
         "matcher": "Write|Edit",
         "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/flow-plan-gate.mjs\"",
+            "timeout": 10,
+            "statusMessage": "Flow plan gate"
+          },
           {
             "type": "command",
             "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/flow-tdd-gate.mjs\"",
@@ -14,8 +20,14 @@
         ]
       },
       {
-        "matcher": "Bash",
+        "matcher": "Bash|PowerShell",
         "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/flow-plan-gate.mjs\"",
+            "timeout": 10,
+            "statusMessage": "Flow push gate"
+          },
           {
             "type": "command",
             "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/flow-commit-gate.mjs\"",

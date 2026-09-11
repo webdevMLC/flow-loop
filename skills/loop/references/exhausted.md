@@ -30,8 +30,11 @@ not open anything not named here. The whole sweep should cost less than a single
 5. **The blocked list, read to classify — never to schedule.** Its purpose here is to let you
    say "this one is not engineering" with a reason, so the user is not offered work no agent
    can do.
-6. **`.flow/ULTRA-*.md` — every finding marked `open` or `blocked`, across all reports.** An
-   inspection ran and wrote down what is wrong with concrete failures; those are the
+6. **Any sealed inspection report — every finding marked `open` or `blocked`, across all of
+   them.** `.flow/ULTRA-*.md` (`/flow:ultra`), `.flow/DATATEST-*.md` (`/flow:datatest`),
+   `.flow/SECURITY-*.md` (`/flow:security`), `.flow/UIUX-*.md` (`/flow:uiux`). An inspection
+   ran and wrote down what is wrong with concrete failures — and for datatest and security a
+   failing test is already committed, so the suite is red until it closes. Those are the
    best-specified candidates that will ever reach this sweep, each one an acceptance criterion
    with the outcome flipped. **Read only the status lines.**
    `fixed`, `wont-fix` and `stale` are settled and never re-proposed. **`blocked` is not

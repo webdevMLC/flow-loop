@@ -1,26 +1,27 @@
 # Flow
 
-One development loop. Four gates, hard loop guards, and a TDD rule.
+One development loop. PLAN once per project, then four stages per phase; hard loop guards; and the rules that matter enforced by hooks where the host allows.
 
 This file is the portable form of the protocol, for any tool that reads `AGENTS.md` —
 Codex, Cursor, Zed, Aider, Gemini CLI and others. Claude Code users get the same thing as
 a skill (`skills/loop/SKILL.md`); the content is the same protocol either way.
 
 **To use Flow in your own project:** copy this file to your project root as `AGENTS.md`
-(or append it to the one you have), and copy `skills/loop/references/` alongside it. The
-gate protocols are loaded from there on demand.
+(or append it to the one you have), and copy `skills/loop/references/` and `skills/plan/`
+alongside it. The gate protocols are loaded from there on demand; PLAN is read from
+`skills/plan/SKILL.md` where `/flow:plan` cannot be invoked.
 
 ---
 
 ## Triage first — this is where the speed comes from
 
-Not every task deserves four gates. Size the work before starting:
+Not every task deserves the full loop. Size the work before starting:
 
 | Size | Looks like | Path |
 |------|-----------|------|
-| **Direct** | a question, a typo, a rename, a one-line fix | just do it — no gates, no state file |
+| **Direct** | a question, a typo, a rename, a one-line fix | just do it — no stages, no state file |
 | **Quick** | one file, requirement already clear, no new interface | BUILD → SHIP; still test-first if it is logic |
-| **Full** | several files, a new interface, money/auth/data | all four gates |
+| **Full** | several files, a new interface, money/auth/data | FRAME → BUILD → CHECK → SHIP, against a project skill PLAN wrote |
 
 Running the Full loop on Direct work is the most expensive mistake available here. When
 torn between two sizes, take the smaller and escalate if you were wrong.
@@ -31,17 +32,20 @@ the goal is not ready to build against **at any size** — read `references/brai
 ## The loop
 
 ```
-FRAME  ->  BUILD  ->  CHECK  ->  SHIP
-  ^                     |
-  +--- only on a CHECK failure that changes the goal
+PLAN  ────────────────────────────────────────────┐   once per project, and at milestones
+   FRAME  ->  BUILD  ->  CHECK  ->  SHIP  ────────┘   per phase
+     ^                     │          │
+     └─────────────────────┴──────────┘
+       a failure that changes the goal re-frames; one that shows the plan was wrong re-plans
 ```
 
-| Gate | Produces | Budget |
+| Stage | Produces | Budget |
 |------|----------|--------|
-| FRAME | goal + task list in `.flow/STATE.md` | 1 recall + 1 survey + 1 question batch |
+| PLAN | the project skill at `.claude/skills/<project>/SKILL.md`, confirmed by the owner — five experts on the intent, the process flow shown before anything is built | once per project or milestone, never per phase |
+| FRAME | audit of the skill for this slice, then goal + cited criteria + tasks in `.flow/STATE.md` | 1 recall + 1 survey + 1 question batch |
 | BUILD | working code + tests | no research; assumptions already fixed |
 | CHECK | one verdict report | 1 pass + 1 targeted re-verify |
-| SHIP | commit / PR + memory write | 1 pass |
+| SHIP | the skill's flows driven end to end on a disposable DB, then commit + memory write | 1 pass |
 
 **No code is written outside BUILD.** No research is done inside BUILD. A failed check that
 does not change the goal is fixed inside CHECK, not by re-framing.
@@ -89,6 +93,7 @@ Repeated work, not model choice, is what burns the budget.
 | Situation | Read |
 |-----------|------|
 | The goal is not clear enough to state | `references/brainstorm.md` |
+| No project skill exists; an adoption; a milestone; or the result was not what the owner wanted | `references/plan.md` |
 | Entering FRAME / BUILD / SHIP | `references/gates.md` |
 | The phase implements something a contract or spec already decided | `references/authority.md` |
 | The phase touches money, auth, PII, or outside input | `references/threat.md` |
@@ -123,16 +128,20 @@ conventions and analogs so FRAME stops re-deriving them. Format: `references/sta
 
 ## Enforcement
 
-Flow ships two hooks that make the TDD rule and a green-tests-before-commit rule
-mechanical rather than advisory. Hook support is platform-specific:
+Flow ships three hooks that make the rules an agent most reliably fails to follow when they
+are only written down mechanical instead: no code until PLAN has produced a project skill and
+the owner has confirmed it (a file the agent is denied from writing); every acceptance criterion
+cites the plan or the commit is refused; test-first on logic; the state file keeps up with the
+commits; no push unless the owner opens the door; and no code while more than five judgement
+questions sit unanswered. Hook support is platform-specific:
 
-- **Claude Code** — both hooks are wired by the plugin and enforce automatically.
+- **Claude Code** — all three hooks are wired by the plugin and enforce automatically.
 - **Codex** — a `.codex-plugin/` manifest is provided; the hooks accept Codex's payload
   shapes, but this path has not been verified against a live Codex install.
 - **Everywhere else** — no hook layer. The protocol above still applies in full; the TDD
   rule is then discipline, exactly as it was before any of this was enforceable.
 
-The hooks are plain Node with no dependencies (`hooks/flow-tdd-gate.mjs`,
-`hooks/flow-commit-gate.mjs`) and read a `{tool_name, tool_input}` envelope on stdin,
+The hooks are plain Node with no dependencies (`hooks/flow-plan-gate.mjs`,
+`hooks/flow-tdd-gate.mjs`, `hooks/flow-commit-gate.mjs`) and read a `{tool_name, tool_input}` envelope on stdin,
 printing JSON only when denying. Any host that can run a command before a file write can
 use them.

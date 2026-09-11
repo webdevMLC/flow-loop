@@ -1,10 +1,16 @@
 {
-  "description": "Flow gates for Codex - TDD before a file write, fast tests before a commit.",
+  "description": "Flow gates for Codex - PLAN before code, TDD before a file write, citations and fast tests before a commit, no push without the owner.",
   "hooks": {
     "PreToolUse": [
       {
         "matcher": "apply_patch|Edit|Write|edit_file|write_file|create_file",
         "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${PLUGIN_ROOT}/hooks/flow-plan-gate.mjs\"",
+            "timeout": 10,
+            "statusMessage": "Flow plan gate"
+          },
           {
             "type": "command",
             "command": "node \"${PLUGIN_ROOT}/hooks/flow-tdd-gate.mjs\"",
@@ -14,8 +20,14 @@
         ]
       },
       {
-        "matcher": "local_shell|shell|shell_command|exec_command|Bash",
+        "matcher": "local_shell|shell|shell_command|exec_command|Bash|PowerShell|run_command",
         "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${PLUGIN_ROOT}/hooks/flow-plan-gate.mjs\"",
+            "timeout": 10,
+            "statusMessage": "Flow push gate"
+          },
           {
             "type": "command",
             "command": "node \"${PLUGIN_ROOT}/hooks/flow-commit-gate.mjs\"",

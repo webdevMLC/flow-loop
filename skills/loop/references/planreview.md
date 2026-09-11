@@ -1,6 +1,6 @@
 # Reviewing the plan, before any of it is built
 
-Flow has four gates and three of them check the work. Nothing checked the plan — and the plan
+Flow has five stages and three of them check the work. PLAN decides the product and FRAME audits that; this review checks the phase plan — and the plan
 is where the expensive failures start.
 
 Every serious defect on the projects that shaped this skill originated in FRAME, then was

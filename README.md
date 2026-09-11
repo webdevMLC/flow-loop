@@ -2,8 +2,8 @@
 
 [![version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FwebdevMLC%2Fflow-loop%2Fmain%2F.claude-plugin%2Fplugin.json&query=%24.version&label=version&color=blue)](https://github.com/webdevMLC/flow-loop/blob/main/.claude-plugin/plugin.json)
 
-One development loop for Claude Code. Four gates, hard loop guards, and a TDD rule enforced by
-a hook instead of politely suggested.
+One development loop for Claude Code. PLAN once per project, four stages per phase, hard loop
+guards — and **the rules that matter enforced by hooks**, not politely suggested.
 
 It replaces the practice of stacking separate memory, planning, context, TDD and review
 plugins on top of each other — expensive twice over: every plugin's skill listing loads into
@@ -11,9 +11,11 @@ every session, and every extra command is another round trip in a conversation t
 itself each turn.
 
 ```
-FRAME  ->  BUILD  ->  CHECK  ->  SHIP
-  ^                     |
-  +--- only on a CHECK failure that changes the goal
+PLAN  ────────────────────────────────────────────┐   once per project, and at milestones
+   FRAME  ->  BUILD  ->  CHECK  ->  SHIP  ────────┘   per phase
+     ^                     │          │
+     └─────────────────────┴──────────┘
+       a failure that changes the goal re-frames; one that shows the plan was wrong re-plans
 ```
 
 ## Install
@@ -30,8 +32,9 @@ Restart the session so the hooks load, then say what you are building:
 /flow:loop add refund handling to the ledger
 ```
 
-**Installing changes nothing on its own.** Both gates stay dormant until a project has a
-`.flow/` directory, so untouched repositories behave exactly as before.
+**Installing changes nothing on its own.** All three hooks stay dormant until a project has a
+`.flow/` directory, so untouched repositories behave exactly as before. They are wired on
+Write, Edit, Bash and PowerShell.
 
 ---
 
@@ -41,10 +44,14 @@ Restart the session so the hooks load, then say what you are building:
 
 | | Does | Reach for it |
 |---|---|---|
-| **`/flow:loop`** | the loop — FRAME, BUILD, CHECK, SHIP | all normal work · [detail](#flowloop) |
+| **`/flow:plan`** | five experts on the intent, the flows drawn, the screens wireframed, the project skill written — **you confirm from the pictures** | a new project, an adoption, a milestone, or "this is not what I wanted" · [detail](#flowloop) |
+| **`/flow:loop`** | the loop — FRAME, BUILD, CHECK, SHIP, against the plan | all normal work · [detail](#flowloop) |
 | **`/flow:ultra`** | inspects the running system, then repairs what it finds | before a pilot; when the suite is green and you are not convinced · [detail](#flowultra) |
 | **`/flow:theme`** | applies a theme **and rebuilds the components** | screens that look dated, or were built ad hoc · [detail](#flowtheme) |
 | **`/flow:guide`** | writes the user guide from the running system | it is going to real users · [detail](#flowguide) |
+| **`/flow:datatest`** | seven QA testers drive every flow, leave a failing test per defect | data looks wrong; before a pilot; the suite is green and the product is not |
+| **`/flow:uiux`** | a design architect redesigns the screens — wireframes shown first | screens look dated or amateur; "make it modern" |
+| **`/flow:security`** | six specialists attack the running system and prove each hole | before exposing it to real users or the internet |
 
 ## Running it unattended
 
@@ -77,66 +84,93 @@ written for you.
 | `nonstop` | **switch** | keep building past the roadmap |
 | `fleet` | **switch** | many agents at once |
 | `tdd-exempt` | **switch** | one path fragment per line — code genuinely outside TDD |
-| `tdd-off` | **switch** | suspend the TDD gate project-wide |
-| `verify-off` | **switch** | suspend the commit gate |
+| `plan-confirmed` | **owner only** | the hash of the project skill you read and approved — the loop is denied from writing it |
+| `allow-push` | **owner only** | opens the push gate for a session — the loop is denied from writing it |
+| `plan-off` · `cite-off` · `tdd-off` · `verify-off` · `uat-ceiling` | **owner only** | every escape hatch — the loop is denied from creating any of them, by any tool |
 | `UAT.md` | written | `by person` questions waiting for you |
-| `ULTRA-<date>.md` | written | an inspection, its findings and their status |
+| `ULTRA-<date>.md` · `DATATEST-` · `SECURITY-` · `UIUX-` | written | a sealed inspection, its findings and their status — the roadmap sweep picks up any still open |
 | `MANIFEST.md` · `ARCHIVE.md` | written | what each phase shipped; how to revert it |
 | `evidence/<phase>/` | written | screen captures that close a criterion |
 
-Per-command escape hatches: `FLOW_TDD_OFF=1` (one command; PowerShell `$env:FLOW_TDD_OFF="1"`),
-`--no-verify` or `FLOW_SKIP_VERIFY=1` for the commit gate.
+Per-command escape hatches: `FLOW_TDD_OFF=1`, `FLOW_PLAN_OFF=1`, `FLOW_CITE_OFF=1` (one command;
+PowerShell `$env:FLOW_TDD_OFF="1"`), `--no-verify` or `FLOW_SKIP_VERIFY=1` for the commit gate.
+Nothing suspends the push gate or the owner-only files.
 
 ---
 
 # The loop
 
-## Triage — not every task deserves four gates
+## Triage — not every task deserves the full loop
 
 The first thing Flow does is size the work. This is where most of the speed comes from.
 
 | Size | Looks like | Path |
 |------|-----------|------|
-| **Direct** | a question, a typo, a rename, a one-line fix | just do it — no gates, no state file |
+| **Direct** | a question, a typo, a rename, a one-line fix | just do it — no stages, no state file |
 | **Quick** | one file, clear requirement, no new interface | BUILD then SHIP; still test-first if it is logic |
-| **Full** | several files, a new interface, money/auth/data | all four gates |
+| **Full** | several files, a new interface, money/auth/data | FRAME → BUILD → CHECK → SHIP, against the project skill PLAN wrote |
 
 Running the full loop on a typo is the most expensive mistake available.
 
 ## `/flow:loop`
 
-**FRAME** writes the goal, criteria and task list. **BUILD** writes code, test-first for logic.
-**CHECK** is five gated stages — machine, contract, composition, adversarial, verdict. **SHIP**
-commits and records.
+### What is enforced, and what is only written down
 
-Three things happen at FRAME that are worth knowing:
+An instruction an agent may not read at the right moment is not a rule. These are hooks — they
+deny the action, and no prose can talk past them:
 
-**The panel, at a new project, an adoption or a milestone.** Five experts on the *intent* —
-researcher, system architect, systems engineer, dataflow, UI/UX — concurrently, the same shape
-as CHECK's adversarial pass but pointed at the thing rather than the diff. Every other gate
-proves code matches its criteria; **none can see the criteria were for the wrong product.** It
-draws the process flow, **shows it to you before it is built**, and puts the shape-changing
-decisions to you — those stop and ask even under autonomous mode. Not per phase.
+| Enforced | How |
+|---|---|
+| **No code until PLAN has produced a project skill** | a write to source is denied while the project has `.flow/` and no `.claude/skills/*/SKILL.md` carries `flow-project-skill: true` — including writes via a heredoc, `sed -i`, `tee`, `cp` or `Set-Content` |
+| **No code until you confirmed the plan** | denied until `.flow/plan-confirmed` holds the skill's hash. **The loop is denied from writing that file.** You do, after reading the flows — the gate prints the exact command |
+| **Every acceptance criterion cites the plan** | `git commit` is denied if any criterion in the current phase lacks `from:` |
+| **Test-first on logic** | a guarded source file with no covering test is denied |
+| **The state file keeps up** | `git commit` is denied if source changed and `STATE.md` did not, three commits running — `-a`, a pathspec and `--amend` included |
+| **Never push** | `git push` is denied unless `.flow/allow-push` exists — another file the loop cannot create. Catches `bash -c`, `git.exe`, `git -C`, `gh pr create`, and a dry-run chained to a real one |
+| **Judgement does not pile up** | source writes are denied past 5 open `by person` questions in `.flow/UAT.md` |
 
-**Authority reconciliation.** When a contract already decided the rates and formulas, FRAME
-extracts them with citations and reconciles against the code before BUILD. Exists because of a
-real 3.125× payout error that propagated from a research document through the roadmap into
-fifteen fixtures while every gate passed.
+Everything else is discipline — written to be read at the moment it applies, and honest about
+being discipline.
 
-**Threat modelling** for phases touching money, identity, other people's data or outside input.
-CHECK closes each row against real code and a test that fails without the mitigation.
+### The five stages
 
-And two inside CHECK:
+**PLAN — once per project, and at milestones.** Five experts on the *intent* — researcher,
+system architect, systems engineer, dataflow and process specialist, UI/UX — concurrently, the
+same shape as CHECK's adversarial pass but pointed at what you asked for rather than at a diff.
+It starts with your words, quoted verbatim, before any research. It draws the process flow —
+who does what, in what order, and where they see the result — and **shows it to you before
+anything is built.** It puts the three-to-seven shape-changing decisions to you, and those stop
+and ask even under autonomous mode. Then it writes **the project skill** —
+`.claude/skills/<project>/SKILL.md`, a real skill every later session auto-loads — **and
+publishes an artifact: every flow as a diagram, every screen a job lands on as a grey
+wireframe, every entity as a state diagram, the confirm command at the bottom.** You confirm
+from the pictures. Invoke it directly with `/flow:plan`. Every other stage proves code matches its criteria; **this is the only one that can
+see the criteria were for the wrong product.** It exists because two projects shipped
+twenty-plus green phases each with not one recorded sentence of what the owner asked for.
 
-**Process and data flow, per phase.** Every other composition check proves the parts are
-*wired*; none can see a wired, reachable, fully tested flow writing the wrong number. So any
-phase that writes persistently draws its handoff chain — looking for a state with no exit, a
-step with no actor, two paths to one state leaving different data — then drives each write
-**through the product** and reads the row back: values against the authority, side effects, run
-it twice, drive the reverse.
+**FRAME — audit the plan, then frame the phase.** FRAME no longer decides what the product is.
+It audits the project skill for this phase's slice — a create with no read surface, a
+"mirrors X" never enumerated job by job, a state with no exit, a value only a migration can
+change — then frames against it. Every criterion cites the skill section it serves, and the
+commit gate refuses a phase whose criteria cite nothing. Plus the authority register (a real
+3.125× payout error propagated from a research doc through fifteen fixtures while every gate
+passed), the threat model, the analogs, the gap pass and the plan review.
 
-**Screen audit** when the phase touched a UI: captures at desktop and 375px, the five states,
-and the project's own design standard, which matters more than any generic rubric.
+**BUILD.** Against the frame, test-first for logic. The standard is a list the agent can fail,
+not a persona: it matches the analog, every branch a criterion names has a test observed red
+first, no value the authority decides is typed by hand, every write has a read, errors reach a
+person in words they can act on, nothing the frame did not ask for.
+
+**CHECK — five gated stages.** Machine (and read what it prints; exit 0 is not clean output),
+contract, composition — including **process and data flow per phase**: the handoff chain, then
+every write driven through the product and the row read back — adversarial, verdict. The
+screen audit fires on any phase that touched a UI.
+
+**SHIP — the data pass, then hand over.** Before the closing commit: **drive the project skill's
+core flows end to end against a disposable database and read the rows.** Not this phase's
+writes — CHECK did that. The *product's* flows, to prove this phase did not break the thing you
+are about to test. A failure sends it back to BUILD. Then commit, manifest, release note,
+memory. Committing locally is the boundary, and the push gate makes that mechanical.
 
 ## `/flow:ultra`
 
@@ -485,9 +519,22 @@ times before this was automated, and `autoUpdate: true` does not close the gap o
 
 # Honest limits
 
-- **This is a skill plus two hooks, not a framework.** The gates and guards are instructions
-  Claude follows; only the TDD and commit gates are mechanically enforced. The rest is discipline.
-- **The gate is heuristic.** See the escape hatches above.
+- **Seven rules are hooks. Everything else is an instruction Claude follows.** The seven are
+  listed above and each has 121 tests behind it. Everything else in this README — the panel's
+  decisions stopping under autonomous mode, re-testing a stale blocker, reading a build's
+  warnings, enumerating a "mirrors X", the adversarial pass, the SHIP data pass actually
+  running — is discipline. Some of it could become a hook later; none of it is one today.
+- **Every enforced rule has an owner-controlled escape**, and the loop is denied from creating
+  any of them: `.flow/plan-off`, `cite-off`, `tdd-off`, `verify-off`, `allow-push`,
+  `uat-ceiling`. That is deliberate — a gate with no escape gets the whole plugin uninstalled
+  — but it means the enforcement is exactly as strong as your willingness not to create those
+  files on the loop's behalf.
+- **The hooks see the tools they are wired to.** Write, Edit, Bash and PowerShell today, plus
+  Codex's shell spellings. A host that writes files through a tool none of those names would
+  not be gated; if you adopt one, say so and the matchers need widening.
+- **The gates are heuristic.** The TDD gate matches on names and symbols; the plan gate
+  identifies shell write-targets by parsing the command. Both are deliberately loose — one
+  that blocks legitimate work gets switched off entirely, which enforces nothing.
 - **No benchmark.** The structural savings — fewer round trips, a smaller resident listing,
   progressive disclosure — are real and mechanical. Whether *your* work lands faster is not
   something this README can honestly claim.

@@ -2,60 +2,47 @@
 
 ## FRAME
 
-Goal: know what "done" means and what the tasks are. **No code.**
+Goal: know what "done" means for this phase and what the tasks are, **against the project
+skill PLAN wrote and the owner confirmed.** No code.
 
-**0.0. Write down what was asked for — in their words, before you decide anything.** The
-first thing FRAME writes is the intent record, at the top of STATE.md, and it is the only
-part of the frame that is not yours:
+**0. The project skill is the authority.** Read `.claude/skills/<project>/SKILL.md` — the one
+whose frontmatter carries `flow-project-skill: true`. It holds the intent in the owner's words,
+the jobs, the process flows, what the product is not, and the milestones. **If it does not
+exist, this is not FRAME yet — it is PLAN.** The plan gate will deny source writes until it
+exists and the owner has confirmed it; do not frame around that, run **`/flow:plan`**.
 
-```markdown
-## Intent
-> [the request, quoted verbatim — not paraphrased, not improved]
+**0.1. Audit the skill for this phase's slice before framing against it.** PLAN wrote the
+skill once; phases find what it missed. For the jobs and flows this phase touches, look for:
 
-**What they want to be able to do:** <one line per job, as they would say it at work>
-**What they said it must not be or do:** <or "nothing stated">
-**What was not said, and is therefore a question:** <not an assumption — a question>
-**Confirmed by the user:** not yet
-```
+- **A create with no read.** A job that makes something and no line saying where the person
+  sees it afterwards. The commonest gap, and the one that shipped a tournament nobody could
+  find after creating it.
+- **A "mirrors X" that was never enumerated.** If the skill says the new thing is like an
+  existing one, every job a person can do in X is either a criterion here or an exclusion the
+  owner has seen. The word cannot be borrowed to sound safe.
+- **A state with no exit, a step with no actor, a handoff with no notification.**
+- **A value the business owns that only a migration can change.**
+- **A milestone described as a mechanism rather than as jobs delivered.**
 
-Every acceptance criterion written later **cites the intent line it serves.** A criterion
-that cites none is one you invented, and it gets flagged in the plan review, not built. This
-is the mechanism that stops a correct product being the wrong product: two real projects
-shipped twenty-plus green phases each with **not one recorded sentence of what the owner
-asked for**, and every criterion traced to research the agent had written for itself.
+A gap that changes the product's shape goes to the owner — one question batch, and it stops
+even under autonomous mode, because it is a PLAN decision arriving late. Every other gap is
+corrected in the skill with the date, which changes its hash, which means **the owner
+re-confirms** before the plan gate lets code through. That is by design: the skill is theirs.
 
-**Research is not a frame, and it does not settle the goal.** If you need to understand the
-domain before framing — and for a new subsystem you usually do — the output of that research
-is **questions for the user and candidate jobs to confirm**, never a data model, a module
-layout or a roadmap. A structural analysis "written before FRAME" that says the goal below is
-settled has settled it on the agent's authority, and the person who asked has not seen it.
-Write the intent record first; research second; and put the questions research produced
-into the intent record's last line before anything is derived from them.
+**0.2. Is the goal even clear?** Can you state what done looks like for this phase in one
+sentence someone else could verify? If not, `references/brainstorm.md` — with the owner.
+"Sounds clear enough" is the judgement that fails: the agent fills the gaps fluently, and
+nothing marks where the request ended and the invention began.
 
-**0. Is the goal even clear?** Before step 1, check: can you state in one sentence what
-done looks like, in a form someone else could verify? If not, stop and read
-`references/brainstorm.md`. A request that *sounds* specific — "add a dashboard", "add
-tournament mode", "make onboarding better" — is not a goal, and framing it anyway produces a
-confident plan for the wrong problem. **"Sounds clear enough to skip brainstorm" is the exact
-judgement that fails**: the agent fills the gaps itself, fluently, and nothing marks where the
-request ended and the invention began. The intent record is what marks it.
-
-0.5 **Is there an unconsumed inspection?** If `.flow/ULTRA-*.md` exists with findings still
+0.5 **Is there an unconsumed inspection?** If any `.flow/{ULTRA,DATATEST,SECURITY,UIUX}-*.md` exists with findings still
    marked `open`, those are better-specified work than anything you are about to frame — each
    carries a concrete failure that becomes an acceptance criterion directly. Say so and offer
    them before framing something new. A BLOCKER sitting unread while the next feature gets
    built is how a system ships broken with every gate green.
    **Skip this step when the phase you are framing is itself a repair phase** — it came from
    that report, and re-reading it here is a loop with no exit.
-   Only the ids and status lines are read: a full re-read of a long report at every FRAME is
-   the survey this gate exists to avoid.
+   Only the ids and status lines are read.
 
-0.7 **Is this a moment for the panel?** At a **new project's first FRAME**, when **adopting an
-   existing codebase**, at a **milestone or module boundary**, or when the user says the result
-   is not what they wanted — read `references/panel.md` and run it before writing criteria.
-   Five experts on the *intent* rather than the work: researcher, system architect, systems
-   engineer, dataflow, UI/UX. It draws the process flow, shows it to the user, and puts the
-   shape-changing decisions to them. **Not per phase** — everywhere else, skip straight to 1.
 
 1. **Recall once.** One memory query (see SKILL.md → Memory). Do not query twice.
 2. **Read the profile, or write it.** `.flow/PROJECT.md` holds the stack, the commands
@@ -84,8 +71,10 @@ request ended and the invention began. The intent record is what marks it.
 
    Three rules govern the criteria, and each exists because of a shipped failure:
 
-   **Every criterion cites its intent line.** From step 0.0. One that cites none is invented;
-   it goes to the plan review as a question, not into the build.
+   **Every criterion cites the project skill.** `· from: <skill section>` or `· from: intent`
+   at the end of the line — the commit gate refuses a phase whose criteria cite nothing. One
+   that cites none is invented; it goes to the plan review as a question, not into the build.
+   Format in `references/state.md`.
 
    **"Mirrors X" is a criterion generator, not a description.** If the frame says the new thing
    is *like* an existing one — "tournaments mirror OpenPlay" — that is a claim of equivalence,
@@ -207,6 +196,29 @@ Goal: working code. **This is the only gate that spends frontier reasoning.**
 No research here. If a fact is missing, use the assumption recorded in FRAME.
 If no assumption covers it, that is a FRAME defect — record it, pick the option
 most consistent with the surrounding code, and keep building.
+
+### The standard is a set of checks, not a persona
+
+"Build as the best engineer would" changes nothing an agent does; it is already trying. What
+changes the output is a list it can fail. Before a task is marked done, each of these is true
+or the task is not done:
+
+- **It matches the analog.** FRAME named the closest existing file. The new one follows its
+  error handling, its naming, its module layout and its test shape. A file that looks like
+  nothing else in the repository is rewritten later by whoever finds it.
+- **Every branch a criterion names has a test that fails without it.** Not a test that passes
+  — one that was observed red first. The TDD gate enforces the file; this enforces the branch.
+- **No value the authority decides is typed by hand.** A rate, a threshold, a window comes
+  from the constants register or the configuration the business owns. One project typed
+  `0.0625` where the contract said 2%, and every gate stayed green for fifteen phases.
+- **Every write a person can perform has a read where they see the result.** From the frame's
+  criteria, and checked again here because it is the gap most often built past.
+- **Errors reach a person in words they can act on.** Not a stack trace, not `error.message`
+  from a dependency, not a generic "something went wrong". What happened, and what to do.
+- **Nothing the frame did not ask for.** Guard 8. The extra abstraction, the helper for a
+  second caller that does not exist, the refactor of the neighbour — none of it.
+- **The commit says what changed and why**, in one line a person will read in `git log`
+  six months from now.
 
 ### When the frame turns out to be wrong
 
@@ -355,12 +367,38 @@ rescope — that is the user's call.
 
 ## SHIP
 
-1. Confirm CHECK passed. If it did not, you are not at SHIP.
+### The data pass — the product's flows, not this phase's diff
+
+CHECK's composition stage drove *this phase's* writes and read the rows back. This is
+different: **drive the process flows the project skill names — the core jobs, end to end —
+against a disposable database, and read the rows.** The question is not "did this phase's
+code work" but "does the product the owner is about to test still work after it."
+
+- The flows come from the skill's `## The process flows` section. Every flow it lists; the
+  skill is the authority on what "core" means.
+- Through the product — the endpoint or the UI — never by calling the writer directly.
+- Read the rows after each flow, and again after driving the reverse where one exists.
+- **Never production.** The same disposable database the tests use.
+- If it cannot run — no database, no way to drive a flow — the criterion is reported open
+  with what it needs. Never closed because the suite passed.
+
+**A failure here sends the phase back to BUILD.** It does not ship. This is the gate that
+would have caught an associate's first tap producing a board that says "no leads yet" over a
+claim that succeeded — with 209 green tests, because the tests mocked the API client.
+
+Say what was driven and what was read. A data pass that reports "passed" with no flows named
+is the substitution this stage exists to prevent.
+
+### Then, in order
+
+1. Confirm CHECK passed and the data pass passed. If either did not, you are not at SHIP.
 2. **Commit. One commit per completed task, unasked** — that is the loop's contract, and the
    general "only commit when the user asks" default does not apply inside Flow. A run that
    honours it literally commits nothing and then stops itself at wake two for having made no
    commits. If on the default branch, branch first.
-   **Never push and never open a PR** — those are hard stops (`references/autonomous.md`).
+   **Never push and never open a PR.** The push gate denies `git push` unless the owner has
+   created `.flow/allow-push`, a file the loop is denied from writing — so this is
+   mechanical, not a reminder.
 3. Append to memory: decisions made, assumptions that held or broke, surprises.
    Facts only — no narration of the session.
 4. Update STATE.md: mark tasks done, archive the section.
@@ -368,7 +406,7 @@ rescope — that is the user's call.
 
 ### If this phase resolved an inspection finding, write its status line
 
-A phase framed from a `.flow/ULTRA-*.md` finding updates that finding's status line **in the
+A phase framed from any sealed inspection report (`.flow/ULTRA-*.md`, `DATATEST`, `SECURITY`, `UIUX`) finding updates that finding's status line **in the
 same commit as the code** — `fixed · phase N · date`, or `blocked · <what it needs, from whom>`.
 Only that one line changes; the rest of the report is the record of what was true at inspection
 time.

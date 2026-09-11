@@ -283,3 +283,61 @@ describe('test_fast written the way the rest of the profile is written', () => {
     assert.doesNotMatch(v.reason, /not recognized|not found/i);
   });
 });
+
+describe('the citation gate - every criterion says where it came from', () => {
+  const SKILL = '---\nname: acme\nflow-project-skill: true\n---\n# Acme\n';
+  const cited = '# s\n\n## Now\n**Gate:** BUILD\n\n### Acceptance criteria\n' +
+    '- **A1** a thing works · by test · from: the jobs\n' +
+    '- **A2** it is visible · by artifact · from: intent\n\n### Tasks\n- [ ] T1\n';
+  const uncited = '# s\n\n## Now\n**Gate:** BUILD\n\n### Acceptance criteria\n' +
+    '- **A1** a thing works · by test · from: the jobs\n' +
+    '- **A2** something the agent decided mattered · by test\n\n### Tasks\n- [ ] T1\n';
+
+  /** A planned repo (skill present) with staged source AND the state file staged. */
+  function plannedRepo(state, extra = {}) {
+    const d = gitFixture({
+      '.flow/PROJECT.md': PASSING,
+      '.flow/STATE.md': state,
+      'src/thing.ts': SRC,
+      ...extra,
+    });
+    execSync('git add -A && git commit -q -m "initial"', { cwd: d, stdio: 'ignore' });
+    writeFileSync(join(d, 'src', 'thing.ts'), SRC + 'export const y = 2;\n');
+    writeFileSync(join(d, '.flow', 'STATE.md'), state + '- [x] T1 done\n');
+    gitAdd(d, 'src/thing.ts', '.flow/STATE.md');
+    return d;
+  }
+
+  test('an uncited criterion refuses the commit and names it', () => {
+    const d = plannedRepo(uncited, { '.claude/skills/acme/SKILL.md': SKILL });
+    const v = commitVerdict(d, 'git commit -m "x"');
+    assert.equal(v.allowed, false);
+    assert.match(v.reason, /must name where they came from/);
+    assert.match(v.reason, /1 criteria cite nothing/);
+    assert.match(v.reason, /something the agent decided mattered/);
+  });
+
+  test('fully cited criteria go through', () => {
+    const d = plannedRepo(cited, { '.claude/skills/acme/SKILL.md': SKILL });
+    assert.equal(commitVerdict(d, 'git commit -m "x"').allowed, true);
+  });
+
+  test('without a project skill the citation gate stays dormant', () => {
+    const d = plannedRepo(uncited);
+    assert.equal(commitVerdict(d, 'git commit -m "x"').allowed, true);
+  });
+
+  test('only the current phase is checked, not the archive below it', () => {
+    const state = cited + '\n## Archive\n\n### Acceptance criteria\n- **Z9** an old uncited one · by test\n';
+    const d = plannedRepo(state, { '.claude/skills/acme/SKILL.md': SKILL });
+    assert.equal(commitVerdict(d, 'git commit -m "x"').allowed, true);
+  });
+
+  test('.flow/cite-off and FLOW_CITE_OFF=1 suspend it', () => {
+    const d1 = plannedRepo(uncited, { '.claude/skills/acme/SKILL.md': SKILL, '.flow/cite-off': '' });
+    assert.equal(commitVerdict(d1, 'git commit -m "x"').allowed, true);
+    const d2 = plannedRepo(uncited, { '.claude/skills/acme/SKILL.md': SKILL });
+    const v = runHook(COMMIT_GATE, { tool_name: 'Bash', tool_input: { command: 'git commit -m "x"' }, cwd: d2 }, { FLOW_CITE_OFF: '1' });
+    assert.equal(v.allowed, true);
+  });
+});

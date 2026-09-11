@@ -1,7 +1,7 @@
 # What counts as proof
 
 Every gate in this skill was built to accept one kind of evidence: a command that exited 0.
-That is why a system can pass all four gates and still be unusable — when a claim cannot be
+That is why a system can pass every gate and still be unusable — when a claim cannot be
 settled by a command, the loop reaches for the nearest command that can, and closes the claim
 with it. "A manager sees the scorecard" becomes a passing test of `computeScorecard`, and
 nothing anywhere is a lie.
