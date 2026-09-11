@@ -21,6 +21,7 @@ they deny the action, and no prose can talk past them:
 | **No code until PLAN has produced a project skill** | Write/Edit to source is denied while `.flow/STATE.md` exists and no `.claude/skills/*/SKILL.md` carries `flow-project-skill: true` |
 | **No code until the owner confirmed the plan** | denied until `.flow/plan-confirmed` holds the skill's hash. **The loop is denied from writing that file.** The owner does, after reading the flows |
 | **PLAN drew what you confirmed** | source writes are denied until `.flow/plan/index.html` exists, and `.flow/plan-confirmed` certifies **both** the skill and the drawing — redraw a screen and the confirmation goes stale |
+| **A redesign is applied only after the owner saw it** | while `.flow/uiux/pending` names a capture set the owner has not confirmed in `.flow/uiux-confirmed`, source writes are denied and the marker cannot be deleted — `/flow:uiux` shows the designed screens as images, before and after, and waits |
 | **Every acceptance criterion cites the plan** | `git commit` is denied if any criterion in the current phase lacks `from:` |
 | **Test-first on logic** | Write/Edit to a guarded source file with no covering test is denied |
 | **The state file keeps up** | `git commit` is denied if source changed and `STATE.md` did not, three commits running |
@@ -32,7 +33,7 @@ they deny the action, and no prose can talk past them:
 
 Everything else in this file and its references is **discipline** — followed because it is
 read, and it is written to be read at the moment it applies. Where a rule below is discipline,
-it says so. The eleven above are not.
+it says so. The twelve above are not.
 
 **They constrain actions, not judgement.** A hook can stop a file being written. It cannot stop
 the *wrong* file being written: the citation gate checks that `from:` resolves to a real
@@ -343,8 +344,9 @@ cross-module, money — reads the rows, and **leaves a failing test per confirme
 it cannot come back silently. Then the loop repairs them.
 
 **`/flow:uiux`** is a design-architect audit: six specialists critique the screens as built
-against concrete failing conditions, then wireframe what each should become and **show you
-before applying.** It decides what the screens *are*; `/flow:theme` decides how they look.
+against concrete failing conditions, then **design what each should become, capture it as an
+image beside what is there now, and wait for you to confirm** — the gate holds source closed
+until you have. It decides what the screens *are*; `/flow:theme` decides how they look.
 
 **`/flow:security`** attacks the running system with six specialists — auth, access control,
 injection, secrets, business logic, supply chain — **proves each hole with a working exploit**

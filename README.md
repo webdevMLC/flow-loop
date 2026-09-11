@@ -50,7 +50,7 @@ Write, Edit, Bash and PowerShell.
 | **`/flow:theme`** | applies a theme **and rebuilds the components** | screens that look dated, or were built ad hoc · [detail](#flowtheme) |
 | **`/flow:guide`** | writes the user guide from the running system | it is going to real users · [detail](#flowguide) |
 | **`/flow:datatest`** | seven QA testers drive every flow, leave a failing test per defect | data looks wrong; before a pilot; the suite is green and the product is not |
-| **`/flow:uiux`** | a design architect redesigns the screens — wireframes shown first | screens look dated or amateur; "make it modern" |
+| **`/flow:uiux`** | a design architect redesigns the screens — **designed and captured as images, before and after, and you confirm before anything is applied** | screens look dated or amateur; "make it modern" |
 | **`/flow:security`** | six specialists attack the running system and prove each hole | before exposing it to real users or the internet |
 | **`/flow:ops`** | runbook, health checks, alerts, a proven rollback and restore, a load limit | before a pilot; when nobody can answer "who runs this at 2am" |
 
@@ -87,7 +87,7 @@ written for you.
 | `tdd-exempt` | **switch** | one path fragment per line — code genuinely outside TDD |
 | `plan-confirmed` | **owner only** | the hash of the project skill you read and approved — the loop is denied from writing it |
 | `allow-push` | **owner only** | opens the push gate for a session — the loop is denied from writing it |
-| `plan-off` · `cite-off` · `tdd-off` · `verify-off` · `evidence-off` · `fanout-off` · `uat-ceiling` | **owner only** | every escape hatch — the loop is denied from creating any of them, by any tool |
+| `plan-off` · `cite-off` · `tdd-off` · `verify-off` · `evidence-off` · `fanout-off` · `uiux-confirmed` · `uat-ceiling` | **owner only** | every escape hatch — the loop is denied from creating any of them, by any tool |
 | `UAT.md` | written | `by person` questions waiting for you |
 | `ULTRA-<date>.md` · `DATATEST-` · `SECURITY-` · `UIUX-` · `OPS-` | written | a sealed inspection, its findings and their status — the roadmap sweep picks up any still open |
 | `MANIFEST.md` · `ARCHIVE.md` | written | what each phase shipped; how to revert it |
@@ -124,7 +124,8 @@ deny the action, and no prose can talk past them:
 |---|---|
 | **No code until PLAN has produced a project skill** | a write to source is denied while the project has `.flow/` and no `.claude/skills/*/SKILL.md` carries `flow-project-skill: true` — including writes via a heredoc, `sed -i`, `tee`, `cp` or `Set-Content` |
 | **No code until you confirmed the plan** | denied until `.flow/plan-confirmed` holds the skill's hash. **The loop is denied from writing that file.** You do, after reading the flows — the gate prints the exact command |
-| **PLAN drew what you confirmed** | a write to source is denied until `.flow/plan/index.html` exists — the flows, and a wireframe of every screen a job lands on. The confirmation is the hash of **both** that page and the skill, so what you approved is the pictures you actually looked at |
+| **PLAN drew what you confirmed** | a write to source is denied until `.flow/plan/index.html` exists — the flows, and every screen a job lands on designed and captured as a PNG. The confirmation hashes the page **and every capture**, so what you approved is the pictures you actually looked at |
+| **A redesign is applied only after you saw it** | `/flow:uiux` designs every screen as it will ship, captures it as an image beside the current one, and writes `.flow/uiux/pending`. From then on source writes are denied — and the marker cannot be deleted — until `.flow/uiux-confirmed` carries the hash of the captures you looked at |
 | **Every acceptance criterion cites the plan** | `git commit` is denied if any criterion in the current phase lacks `from:` |
 | **Test-first on logic** | a guarded source file with no covering test is denied |
 | **The state file keeps up** | `git commit` is denied if source changed and `STATE.md` did not, three commits running — `-a`, a pathspec and `--amend` included |
@@ -526,7 +527,7 @@ times before this was automated, and `autoUpdate: true` does not close the gap o
 
 # Honest limits
 
-- **Eleven rules are hooks. Everything else is an instruction Claude follows.** The eleven are
+- **Twelve rules are hooks. Everything else is an instruction Claude follows.** The twelve are
   listed above, and each one has tests in `test/` that a release will not ship without. Everything else in this README — the panel's
   decisions stopping under autonomous mode, re-testing a stale blocker, reading a build's
   warnings, enumerating a "mirrors X", the adversarial pass — is discipline. Some of it could

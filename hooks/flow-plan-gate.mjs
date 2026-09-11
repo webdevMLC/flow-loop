@@ -53,7 +53,7 @@ const SHELL_TOOLS = new Set(['Bash', 'PowerShell', 'local_shell', 'shell', 'shel
 // Every file whose existence is a statement by the owner. The loop never writes any of them.
 const OWNER_ONLY = ['.flow/plan-confirmed', '.flow/allow-push', '.flow/plan-off',
   '.flow/cite-off', '.flow/tdd-off', '.flow/verify-off', '.flow/evidence-off',
-  '.flow/fanout-off', '.flow/uat-ceiling'];
+  '.flow/fanout-off', '.flow/uiux-confirmed', '.flow/uat-ceiling'];
 
 const norm = (s) => String(s).split(BACKSLASH).join('/');
 
@@ -136,8 +136,8 @@ const skillHash = (path) => {
   } catch { return null; }
 };
 
-const confirmedHash = (root) => {
-  const f = join(root, '.flow', 'plan-confirmed');
+const confirmedHash = (root, name = 'plan-confirmed') => {
+  const f = join(root, '.flow', name);
   if (!existsSync(f)) return null;
   try {
     const buf = readFileSync(f);
@@ -168,6 +168,37 @@ const uatCeiling = (root) => {
 // =====================================================================================
 // The three checks, applied to any identified write target
 // =====================================================================================
+// ---------- a redesign waiting for the owner ----------
+// /flow:uiux stage 3 designs every screen, captures it, and writes .flow/uiux/pending naming
+// the capture directory. From then until the owner confirms the captures, source is closed.
+// "Show the owner before applying" was a sentence; this is the mechanism.
+const uiuxPending = (root) => {
+  const marker = join(root, '.flow', 'uiux', 'pending');
+  if (!existsSync(marker)) return null;
+  let dir = '';
+  try { dir = readFileSync(marker, 'utf8').split(/\r?\n/)[0].trim(); } catch { return null; }
+  if (!dir) return { dir: '', shots: [], hash: null };
+  const screens = join(root, '.flow', 'uiux', dir, 'screens');
+  let shots = [];
+  try {
+    shots = readdirSync(screens).filter((f) => /\.(png|jpe?g|webp|avif)$/i.test(f)).sort();
+  } catch { shots = []; }
+  const list = shots.map((f) => {
+    let size = 0;
+    try { size = statSync(join(screens, f)).size; } catch { /* 0 */ }
+    return f + ':' + size;
+  }).join('|');
+  const hash = shots.length
+    ? createHash('sha256').update(dir + '|' + list, 'utf8').digest('hex').slice(0, 12)
+    : null;
+  return { dir, shots, hash };
+};
+const uiuxConfirmed = (root, pending) => {
+  if (!pending || !pending.hash) return false;
+  const have = confirmedHash(root, 'uiux-confirmed');
+  return Boolean(have && have.includes(pending.hash));
+};
+
 const checkWrite = (targetPath, via) => {
   if (isOwnerOnly(targetPath)) {
     deny(
@@ -274,6 +305,31 @@ const checkWrite = (targetPath, via) => {
     );
   }
 
+  // ---- a redesign is waiting for the owner ----
+  const pending = uiuxPending(root);
+  if (pending && !uiuxConfirmed(root, pending)) {
+    if (!pending.shots.length) {
+      deny(
+        'Flow plan gate: a redesign is pending (.flow/uiux/pending) but has no captures in' + NL +
+        '.flow/uiux/' + (pending.dir || '<date>') + '/screens/.' + NL + NL +
+        '/flow:uiux stage 3 designs every screen as it will ship and captures it as a PNG at' + NL +
+        'desktop and 375px, beside the capture of what is there now. The owner decides from' + NL +
+        'those pictures whether to rebuild the screens. Produce them, then ask.' + NL + NL +
+        'Only the owner can suspend this (.flow/plan-off).'
+      );
+    }
+    deny(
+      'Flow plan gate: a redesign is waiting for the owner to look at it.' + NL + NL +
+      pending.shots.length + ' captures in .flow/uiux/' + pending.dir + '/screens/. Nothing is applied' + NL +
+      'until they have seen them and said so. Ask them to open the artifact - before and' + NL +
+      'after, every screen - and, if that is what they want built, run:' + NL + NL +
+      '    echo ' + pending.hash + ' > .flow/uiux-confirmed' + NL + NL +
+      'The loop never writes that file, and never removes .flow/uiux/pending before it exists.' + NL +
+      'If they change a screen instead, the captures change, the hash changes, and they' + NL +
+      'confirm the corrected version.'
+    );
+  }
+
   const open = openUat(root);
   const ceiling = uatCeiling(root);
   if (open > ceiling) {
@@ -339,6 +395,14 @@ if (SHELL_TOOLS.has(toolName) || (rawCmd && !filePath)) {
     const PROTECTED = new Set(['.flow', '.flow/state.md', '.flow/project.md', '.flow/uat.md',
       '.flow/archive.md', '.flow/memory.md']);
     if (dskill) PROTECTED.add(dskill.rel.toLowerCase());
+    // The pending-redesign marker is what holds the gate closed; removing it before the
+    // owner confirmed would be the bypass. Once confirmed, it may go.
+    const dpending = droot ? uiuxPending(droot) : null;
+    if (dpending && !uiuxConfirmed(droot, dpending)) {
+      PROTECTED.add('.flow/uiux/pending');
+      PROTECTED.add('.flow/uiux');
+      if (dpending.dir) PROTECTED.add(('.flow/uiux/' + dpending.dir).toLowerCase());
+    }
     // Tokens, with quotes, a leading `./` and a trailing slash removed.
     const tokens = c.split(/[\s;&|()<>]+/)
       .map((t) => t.replace(/^['"]+|['"]+$/g, '').replace(/^\.\//, '').replace(/\/+$/, '').toLowerCase())

@@ -1,6 +1,6 @@
 ---
 name: uiux
-description: A design audit and redesign of a product as built, by a design architect — not a theme. It captures every screen, critiques the information architecture, hierarchy, interaction patterns, states, density and accessibility against current professional practice, wireframes what each screen should become, shows the owner before touching anything, then applies the redesign through the loop and hands the visual layer to /flow:theme. Use when screens look dated or amateur, when the product works but nobody enjoys using it, when the UI was built ad hoc across many phases, or when the owner says "make it modern". Never applies a redesign the owner has not seen.
+description: A design audit and redesign of a product as built, by a design architect — not a theme. It captures every screen, critiques the information architecture, hierarchy, interaction patterns, states, density and accessibility against current professional practice, designs what each screen should become and captures it as an image, shows the owner before touching anything — and the gate holds until they have looked, then applies the redesign through the loop and hands the visual layer to /flow:theme. Use when screens look dated or amateur, when the product works but nobody enjoys using it, when the UI was built ad hoc across many phases, or when the owner says "make it modern". Never applies a redesign the owner has not seen.
 ---
 
 # UI/UX
@@ -15,7 +15,7 @@ something that never stepped back to look at all of them together.
 |---|---|---|
 | **1 Capture** | what does every screen actually look like, in every state? | captures only |
 | **2 Critique** | six specialists — what is wrong, against what standard, and why does it matter to the person using it? | nothing |
-| **3 Redesign** | what should each screen become — wireframed, as an artifact the owner reviews | the artifact |
+| **3 Redesign** | what should each screen become — designed, captured as images, before/after, as an artifact the owner reviews | the artifact, and `.flow/uiux/pending` |
 | **4 Apply** | through the loop, one phase per screen group; the visual layer to `/flow:theme` | code |
 
 ## Before anything else
@@ -36,8 +36,9 @@ in every state — loading, empty, error, partial, unauthorised — at desktop a
 critique from the source code is a critique of what the developer intended, not what a person
 sees.
 
-**Never apply a redesign the owner has not seen.** Stage 3 produces wireframes as an artifact,
-and stage 4 does not start until the owner has looked at them. A redesign is the most
+**Never apply a redesign the owner has not seen.** Stage 3 produces designed screens, captured
+as images, before and after — and writes `.flow/uiux/pending`, which makes the plan gate deny
+every source write until the owner confirms the captures. Stage 4 cannot start early. A redesign is the most
 expensive change to reverse in a product, and the owner is the only person who can say "that
 is not how we work."
 
@@ -67,10 +68,12 @@ has four causes.
 
 ## Stage 3 — Redesign
 
-Read `references/redesign.md`. For each screen group: the wireframe of what it should
-become — grey, unstyled, real labels, every state — with a one-paragraph rationale naming the
-findings it resolves. Published as an artifact the way `/flow:plan` does, with before-and-
-after side by side, and **the owner reviews it before anything is applied.**
+Read `references/redesign.md`. For each screen group: **the screen as it will ship** — the
+theme applied, real components, real data, every state — **rendered and captured as a PNG at
+desktop and 375px**, beside the stage-1 capture of what is there now, with a one-paragraph
+rationale naming the findings it resolves. Published as an artifact the way `/flow:plan`
+does, with the confirm command at the bottom. **The owner sees the pictures before anything
+is applied, and the gate makes sure of it.**
 
 The shape-changing decisions — a navigation restructured, a screen merged or split, a job
 moved to a different role — go to the owner as one question batch, and stop even under
@@ -88,7 +91,8 @@ The report is `.flow/UIUX-<date>.md` with a status line per finding.
 
 - **Never capture production data.** Demo account, always.
 - **Never redesign from source.** From captures, in every state.
-- **Never apply before the owner has seen the wireframes.**
+- **Never apply before the owner has confirmed the captures.** `.flow/uiux/pending` holds the
+  gate closed until `.flow/uiux-confirmed` carries their hash.
 - **Never add a component or pattern the job does not need** to look current. That is the
   generated-design tell this command exists to remove.
 - **Never let the critique be taste.** Every finding has a failing condition from the lens

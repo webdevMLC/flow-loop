@@ -3,7 +3,7 @@ import { test, describe, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { readFileSync, writeFileSync, readdirSync, statSync } from 'node:fs';
+import { readFileSync, writeFileSync, readdirSync, statSync, mkdirSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { fixture, runHook, cleanup } from './helpers.mjs';
 
@@ -466,5 +466,86 @@ describe('the plan has to show the product, not describe it', () => {
     const dir = fixture(base);
     assert.equal(write(dir, SHOT).allowed, true);
     assert.equal(write(dir, '.flow/plan/screens/entrant-list.png').allowed, true);
+  });
+});
+
+
+describe('a redesign is waiting for the owner - /flow:uiux cannot apply what nobody has seen', () => {
+  // A confirmed plan, so only the redesign stands between the loop and source.
+  const planned = () => {
+    const dir = fixture({ '.flow/STATE.md': STATE, '.claude/skills/acme/SKILL.md': SKILL, [ART]: PLAN, [SHOT]: PIXELS });
+    writeFileSync(join(dir, '.flow/plan-confirmed'), confirm(dir));
+    return dir;
+  };
+  const pend = (dir) => {
+    mkdirSync(join(dir, '.flow/uiux/2026-09-11/screens'), { recursive: true });
+    writeFileSync(join(dir, '.flow/uiux/pending'), '2026-09-11\n');
+  };
+  const AFTER = '.flow/uiux/2026-09-11/screens/leads-board.png';
+  const AFTER_M = '.flow/uiux/2026-09-11/screens/leads-board-mobile.png';
+  const uiuxHash = (dir) => {
+    const screens = join(dir, '.flow/uiux/2026-09-11/screens');
+    const list = readdirSync(screens).filter((f) => /\.(png|jpe?g|webp|avif)$/i.test(f)).sort()
+      .map((f) => f + ':' + statSync(join(screens, f)).size).join('|');
+    return createHash('sha256').update('2026-09-11|' + list, 'utf8').digest('hex').slice(0, 12);
+  };
+
+  test('with no redesign pending, nothing changes', () => {
+    assert.equal(write(planned(), 'src/ledger.ts').allowed, true);
+  });
+
+  test('pending with captures: source is closed, and the message carries the confirm command', () => {
+    const dir = planned();
+    pend(dir);
+    writeFileSync(join(dir, AFTER), PIXELS);
+    const r = write(dir, 'src/ledger.ts');
+    assert.equal(r.allowed, false);
+    assert.match(r.reason, /a redesign is waiting for the owner/);
+    assert.match(r.reason, new RegExp('echo ' + uiuxHash(dir) + ' > .flow/uiux-confirmed'));
+  });
+
+  test('pending with NO captures is denied differently - produce the pictures first', () => {
+    const dir = planned();
+    pend(dir);                                        // the directory exists; nothing is in it
+    const r = write(dir, 'src/ledger.ts');
+    assert.equal(r.allowed, false);
+    assert.match(r.reason, /has no captures/);
+  });
+
+  test('the owner confirms the captures and the loop may apply', () => {
+    const dir = planned();
+    pend(dir);
+    writeFileSync(join(dir, AFTER), PIXELS);
+    writeFileSync(join(dir, '.flow/uiux-confirmed'), uiuxHash(dir) + '\n');
+    assert.equal(write(dir, 'src/ledger.ts').allowed, true);
+  });
+
+  test('a screen redrawn after confirmation reopens the gate', () => {
+    const dir = planned();
+    pend(dir);
+    writeFileSync(join(dir, AFTER), PIXELS);
+    writeFileSync(join(dir, '.flow/uiux-confirmed'), uiuxHash(dir));
+    assert.equal(write(dir, 'src/ledger.ts').allowed, true);
+    writeFileSync(join(dir, AFTER_M), PIXELS);         // one more screen nobody approved
+    assert.equal(write(dir, 'src/ledger.ts').allowed, false);
+  });
+
+  test('the loop cannot write the confirmation, and cannot delete the marker to get past it', () => {
+    const dir = planned();
+    pend(dir);
+    writeFileSync(join(dir, AFTER), PIXELS);
+    assert.equal(write(dir, '.flow/uiux-confirmed').allowed, false);
+    assert.equal(bash(dir, 'rm .flow/uiux/pending').allowed, false);
+    assert.equal(bash(dir, 'rm -rf .flow/uiux').allowed, false);
+    assert.equal(bash(dir, 'rm -rf .flow/uiux/2026-09-11').allowed, false);
+    // Once confirmed, the marker may be cleaned up.
+    writeFileSync(join(dir, '.flow/uiux-confirmed'), uiuxHash(dir));
+    assert.equal(bash(dir, 'rm .flow/uiux/pending').allowed, true);
+  });
+
+  test('stage 3 can still write its own captures and the marker', () => {
+    const dir = planned();
+    assert.equal(write(dir, AFTER).allowed, true);
+    assert.equal(write(dir, '.flow/uiux/pending').allowed, true);
   });
 });
