@@ -44,7 +44,7 @@ Write, Edit, Bash and PowerShell.
 
 | | Does | Reach for it |
 |---|---|---|
-| **`/flow:plan`** | five experts on the intent, the flows drawn, the screens wireframed, the project skill written — **you confirm from the pictures** | a new project, an adoption, a milestone, or "this is not what I wanted" · [detail](#flowloop) |
+| **`/flow:plan`** | five experts on the intent, the flows drawn, **every screen designed and captured as an image**, the project skill written — **you confirm from the pictures** | a new project, an adoption, a milestone, or "this is not what I wanted" · [detail](#flowloop) |
 | **`/flow:loop`** | the loop — FRAME, BUILD, CHECK, SHIP, against the plan | all normal work · [detail](#flowloop) |
 | **`/flow:ultra`** | inspects the running system, then repairs what it finds — **and owns the full suite, the adversarial lenses and the whole-product data pass that CHECK no longer runs every phase** | before a pilot; at a milestone; when the suite is green and you are not convinced · [detail](#flowultra) |
 | **`/flow:theme`** | applies a theme **and rebuilds the components** | screens that look dated, or were built ad hoc · [detail](#flowtheme) |
@@ -147,9 +147,11 @@ who does what, in what order, and where they see the result — and **shows it t
 anything is built.** It puts the three-to-seven shape-changing decisions to you, and those stop
 and ask even under autonomous mode. Then it writes **the project skill** —
 `.claude/skills/<project>/SKILL.md`, a real skill every later session auto-loads — **and
-publishes an artifact: every flow as a diagram, every screen a job lands on as a grey
-wireframe, every entity as a state diagram, the confirm command at the bottom.** You confirm
-from the pictures. Invoke it directly with `/flow:plan`. Every other stage proves code matches its criteria; **this is the only one that can
+publishes an artifact: every flow as a diagram, **every screen a job lands on designed in the
+project theme with real content and captured as a PNG** at desktop and 375px, every entity as a
+state diagram, the confirm command at the bottom.** You confirm from the pictures — and the
+gate refuses to accept a confirmation until the images are there, so "you confirm from the
+pictures" is a mechanism now, not a sentence. Invoke it directly with `/flow:plan`. Every other stage proves code matches its criteria; **this is the only one that can
 see the criteria were for the wrong product.** It exists because two projects shipped
 twenty-plus green phases each with not one recorded sentence of what the owner asked for.
 
@@ -533,7 +535,7 @@ times before this was automated, and `autoUpdate: true` does not close the gap o
   cannot stop the *wrong* file being written. The citation gate checks that `from:` resolves to
   a real heading in the plan — never that the criterion actually serves it. The evidence gate
   checks that a capture exists — never that it shows a working screen. Every gate proves a step
-  happened; none proves it was right. That is why PLAN ends with you looking at wireframes.
+  happened; none proves it was right. That is why PLAN ends with you looking at the screens.
 - **Every enforced rule has an owner-controlled escape**, and the loop is denied from creating
   any of them: `.flow/plan-off`, `cite-off`, `tdd-off`, `verify-off`, `allow-push`,
   `uat-ceiling`. That is deliberate — a gate with no escape gets the whole plugin uninstalled

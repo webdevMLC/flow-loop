@@ -3,7 +3,7 @@ import { test, describe, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { readFileSync, writeFileSync } from 'node:fs';
+import { readFileSync, writeFileSync, readdirSync, statSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { fixture, runHook, cleanup } from './helpers.mjs';
 
@@ -22,10 +22,21 @@ const hashOf = (dir, rel) => createHash('sha256')
   .update(readFileSync(join(dir, rel), 'utf8').split(CRLF).join(LF).trimEnd(), 'utf8')
   .digest('hex').slice(0, 12);
 
-const PLAN = '<h1>Acme plan</h1><p>the flows, and a wireframe of every screen</p>';
+const SHOT = '.flow/plan/screens/create-tournament.png';
+const SHOT2 = '.flow/plan/screens/create-tournament-mobile.png';
+// Not a real PNG; the gate reads the name and the byte length, never the pixels.
+const PIXELS = 'PNG-bytes-standing-in-for-a-designed-screen';
+const drawnHash = (dir) => {
+  const names = readdirSync(join(dir, '.flow/plan/screens'))
+    .filter((f) => /\.(png|jpe?g|webp|avif)$/i.test(f)).sort()
+    .map((f) => f + ':' + statSync(join(dir, '.flow/plan/screens', f)).size).join('|');
+  return createHash('sha256').update(hashOf(dir, ART) + '|' + names, 'utf8')
+    .digest('hex').slice(0, 12);
+};
+const PLAN = '<h1>Acme plan</h1><p>the flows, and every screen designed</p>';
 const ART = '.flow/plan/index.html';
 // The confirmation certifies both the skill and the drawing the owner actually looked at.
-const confirm = (dir) => hashOf(dir, '.claude/skills/acme/SKILL.md') + '-' + hashOf(dir, ART);
+const confirm = (dir) => hashOf(dir, '.claude/skills/acme/SKILL.md') + '-' + drawnHash(dir);
 const SKILL = '---\nname: acme\ndescription: Specification for Acme\nflow-project-skill: true\n---\n# Acme\n';
 const STATE = '# Acme - Flow state\n## Now\n**Goal:** ship\n**Gate:** BUILD\n**Triage:** Full\n';
 
@@ -87,7 +98,7 @@ describe('the plan gate - no code until PLAN has run', () => {
 
 describe('the confirmation gate - no code until the owner said yes', () => {
   test('a skill with no confirmation is denied, and the message carries the exact command', () => {
-    const dir = fixture({ '.flow/STATE.md': STATE, '.claude/skills/acme/SKILL.md': SKILL, [ART]: PLAN });
+    const dir = fixture({ '.flow/STATE.md': STATE, '.claude/skills/acme/SKILL.md': SKILL, [ART]: PLAN, [SHOT]: PIXELS });
     const r = write(dir, 'src/ledger.ts');
     assert.equal(r.allowed, false);
     assert.match(r.reason, /not been confirmed by the owner/);
@@ -95,20 +106,20 @@ describe('the confirmation gate - no code until the owner said yes', () => {
   });
 
   test('the right hash allows the write', () => {
-    const dir = fixture({ '.flow/STATE.md': STATE, '.claude/skills/acme/SKILL.md': SKILL, [ART]: PLAN });
+    const dir = fixture({ '.flow/STATE.md': STATE, '.claude/skills/acme/SKILL.md': SKILL, [ART]: PLAN, [SHOT]: PIXELS });
     writeFileSync(join(dir, '.flow/plan-confirmed'), confirm(dir) + '\n');
     assert.equal(write(dir, 'src/ledger.ts').allowed, true);
   });
 
   test('a confirmation written by PowerShell (UTF-16 with BOM) still counts', () => {
-    const dir = fixture({ '.flow/STATE.md': STATE, '.claude/skills/acme/SKILL.md': SKILL, [ART]: PLAN });
+    const dir = fixture({ '.flow/STATE.md': STATE, '.claude/skills/acme/SKILL.md': SKILL, [ART]: PLAN, [SHOT]: PIXELS });
     const h = confirm(dir);
     writeFileSync(join(dir, '.flow/plan-confirmed'), Buffer.concat([Buffer.from([0xff, 0xfe]), Buffer.from(h + '\r\n', 'utf16le')]));
     assert.equal(write(dir, 'src/ledger.ts').allowed, true);
   });
 
   test('changing the skill after confirmation makes the confirmation stale', () => {
-    const dir = fixture({ '.flow/STATE.md': STATE, '.claude/skills/acme/SKILL.md': SKILL, [ART]: PLAN });
+    const dir = fixture({ '.flow/STATE.md': STATE, '.claude/skills/acme/SKILL.md': SKILL, [ART]: PLAN, [SHOT]: PIXELS });
     writeFileSync(join(dir, '.flow/plan-confirmed'), confirm(dir));
     writeFileSync(join(dir, '.claude/skills/acme/SKILL.md'), SKILL + '\n## A new section the owner has not seen\n');
     const r = write(dir, 'src/ledger.ts');
@@ -124,7 +135,7 @@ describe('the confirmation gate - no code until the owner said yes', () => {
   });
 
   test('a Windows path is handled', () => {
-    const dir = fixture({ '.flow/STATE.md': STATE, '.claude/skills/acme/SKILL.md': SKILL, [ART]: PLAN });
+    const dir = fixture({ '.flow/STATE.md': STATE, '.claude/skills/acme/SKILL.md': SKILL, [ART]: PLAN, [SHOT]: PIXELS });
     writeFileSync(join(dir, '.flow/plan-confirmed'), confirm(dir));
     const winPath = join(dir, 'src', 'ledger.ts').split('/').join(String.fromCharCode(92));
     const r = runHook(PLAN_GATE, { tool_name: 'Edit', tool_input: { file_path: winPath } });
@@ -140,7 +151,7 @@ describe('the UAT ceiling - judgement does not pile up unjudged', () => {
     return s;
   };
   const planned = (extra) => {
-    const dir = fixture({ '.flow/STATE.md': STATE, '.claude/skills/acme/SKILL.md': SKILL, [ART]: PLAN, ...extra });
+    const dir = fixture({ '.flow/STATE.md': STATE, '.claude/skills/acme/SKILL.md': SKILL, [ART]: PLAN, [SHOT]: PIXELS, ...extra });
     writeFileSync(join(dir, '.flow/plan-confirmed'), confirm(dir));
     return dir;
   };
@@ -224,7 +235,7 @@ describe('robustness', () => {
 
 describe('bypasses found by the v2 audit - each verified, each now closed', () => {
   const planned = (extra = {}) => {
-    const dir = fixture({ '.flow/STATE.md': STATE, '.claude/skills/acme/SKILL.md': SKILL, [ART]: PLAN, ...extra });
+    const dir = fixture({ '.flow/STATE.md': STATE, '.claude/skills/acme/SKILL.md': SKILL, [ART]: PLAN, [SHOT]: PIXELS, ...extra });
     writeFileSync(join(dir, '.flow/plan-confirmed'), confirm(dir));
     return dir;
   };
@@ -318,7 +329,7 @@ describe('NotebookEdit - found while explaining the limits', () => {
 });
 
 describe('the record cannot be deleted - rm -rf .flow disarmed four rules', () => {
-  const F = () => fixture({ '.flow/STATE.md': STATE, '.claude/skills/acme/SKILL.md': SKILL, [ART]: PLAN });
+  const F = () => fixture({ '.flow/STATE.md': STATE, '.claude/skills/acme/SKILL.md': SKILL, [ART]: PLAN, [SHOT]: PIXELS });
 
   test('the state file and the record directory are protected, in every spelling', () => {
     const dir = F();
@@ -374,12 +385,12 @@ describe('PLAN drew nothing - the owner confirmed a hash of prose', () => {
   });
 
   test('the drawing alone is not enough - it still needs confirming', () => {
-    const dir = fixture({ '.flow/STATE.md': STATE, '.claude/skills/acme/SKILL.md': SKILL, [ART]: PLAN });
+    const dir = fixture({ '.flow/STATE.md': STATE, '.claude/skills/acme/SKILL.md': SKILL, [ART]: PLAN, [SHOT]: PIXELS });
     assert.equal(write(dir, 'src/ledger.ts').allowed, false);
   });
 
   test('the confirmation certifies the drawing too, so changing it goes stale', () => {
-    const dir = fixture({ '.flow/STATE.md': STATE, '.claude/skills/acme/SKILL.md': SKILL, [ART]: PLAN });
+    const dir = fixture({ '.flow/STATE.md': STATE, '.claude/skills/acme/SKILL.md': SKILL, [ART]: PLAN, [SHOT]: PIXELS });
     writeFileSync(join(dir, '.flow/plan-confirmed'), confirm(dir));
     assert.equal(write(dir, 'src/ledger.ts').allowed, true);
 
@@ -391,7 +402,7 @@ describe('PLAN drew nothing - the owner confirmed a hash of prose', () => {
   });
 
   test('a confirmation naming only the skill is refused', () => {
-    const dir = fixture({ '.flow/STATE.md': STATE, '.claude/skills/acme/SKILL.md': SKILL, [ART]: PLAN });
+    const dir = fixture({ '.flow/STATE.md': STATE, '.claude/skills/acme/SKILL.md': SKILL, [ART]: PLAN, [SHOT]: PIXELS });
     writeFileSync(join(dir, '.flow/plan-confirmed'), hashOf(dir, '.claude/skills/acme/SKILL.md'));
     assert.equal(write(dir, 'src/ledger.ts').allowed, false);
   });
@@ -408,5 +419,52 @@ describe('PLAN drew nothing - the owner confirmed a hash of prose', () => {
     const dir = fixture();
     assert.equal(write(dir, '.flow/fanout-off').allowed, false);
     assert.equal(bash(dir, 'echo x > .flow/fanout-off').allowed, false);
+  });
+});
+
+
+describe('the plan has to show the product, not describe it', () => {
+  const base = { '.flow/STATE.md': STATE, '.claude/skills/acme/SKILL.md': SKILL, [ART]: PLAN };
+
+  test('a page with no captured screen is denied', () => {
+    const r = write(fixture(base), 'src/ledger.ts');
+    assert.equal(r.allowed, false);
+    assert.match(r.reason, /no picture of the product/);
+    assert.match(r.reason, new RegExp('\\.flow/plan/screens'));
+  });
+
+  test('one capture satisfies it; the message names desktop and 375px', () => {
+    const dir = fixture({ ...base, [SHOT]: PIXELS });
+    writeFileSync(join(dir, '.flow/plan-confirmed'), confirm(dir));
+    assert.equal(write(dir, 'src/ledger.ts').allowed, true);
+  });
+
+  test('a non-image in the screens directory does not count', () => {
+    const dir = fixture({ ...base, '.flow/plan/screens/notes.md': 'I will draw it later' });
+    assert.equal(write(dir, 'src/ledger.ts').allowed, false);
+  });
+
+  test('redrawing a screen after approval makes the confirmation stale', () => {
+    const dir = fixture({ ...base, [SHOT]: PIXELS });
+    writeFileSync(join(dir, '.flow/plan-confirmed'), confirm(dir));
+    assert.equal(write(dir, 'src/ledger.ts').allowed, true);
+
+    writeFileSync(join(dir, SHOT), PIXELS + ' - redesigned after they said yes');
+    const r = write(dir, 'src/ledger.ts');
+    assert.equal(r.allowed, false, 'a redrawn screen is not the one they approved');
+    assert.match(r.reason, /plan artifact changed/);
+  });
+
+  test('adding a screen after approval makes it stale too', () => {
+    const dir = fixture({ ...base, [SHOT]: PIXELS });
+    writeFileSync(join(dir, '.flow/plan-confirmed'), confirm(dir));
+    writeFileSync(join(dir, SHOT2), PIXELS);
+    assert.equal(write(dir, 'src/ledger.ts').allowed, false);
+  });
+
+  test('PLAN can still write its own captures - only the confirmation is owner-only', () => {
+    const dir = fixture(base);
+    assert.equal(write(dir, SHOT).allowed, true);
+    assert.equal(write(dir, '.flow/plan/screens/entrant-list.png').allowed, true);
   });
 });

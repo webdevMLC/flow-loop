@@ -1,6 +1,7 @@
 # The plan artifact — pictures the owner reviews before anything is built
 
-One page. Every flow drawn, every screen wireframed, every lifecycle as a state diagram. This
+One page. Every flow drawn, **every screen designed and captured as an image**, every
+lifecycle as a state diagram. This
 is the review surface; the project skill is the record. The owner looks at *this*, and the
 confirm command is at the bottom of it.
 
@@ -39,19 +40,50 @@ Every write node is a cylinder; every screen node is a rectangle with the role i
 cylinder has no rectangle after it, say so under the diagram** rather than fixing it silently
 — it is a finding for the owner.
 
-**3. The screens — a wireframe per job.** Deliberately low-fidelity: grey boxes, real labels,
-no colour, no typeface choice, a single system font. Each wireframe is the screen a person
-lands on *after* the job's action, because that is the one that was missing. Show:
+**3. The screens — designed, and captured as images.**
 
-- the real navigation labels, so the owner can say "we would never call it that"
-- the real field names on any form, so a missing field is visible
-- the empty state — what the screen says when there is nothing yet — because most screens
-  are first seen empty
-- the list or detail the created thing appears in
+This is the part of the plan the owner actually judges, so it is not a wireframe. **Design each
+screen as it is meant to ship** — the chosen theme applied, real components, real content — and
+**capture it to a PNG**, so what they review is a picture of the product, not a description of
+one.
 
-Plain HTML and CSS, one `<section>` per screen, a caption naming the job it serves. Keep them
-grey on purpose: **the moment a wireframe carries a palette, the owner reviews the look
-instead of the workflow.** The look is `/flow:theme`'s job, later.
+Every screen a job lands on, and every screen the job passes through. The one after the action
+matters most: it is the screen that was missing when a tournament could be created and then
+appear nowhere.
+
+Each screen shows:
+
+- **the real navigation**, with the real labels, so the owner can say "we would never call it that"
+- **the real fields** on any form, so a missing one is visible before it is built
+- **realistic content** — actual names, amounts, dates from the domain. Never lorem, never
+  `Item 1`: a table of placeholder rows hides every column that is wrong
+- **the empty state**, as its own capture, because most screens are first seen empty
+- **the list or detail the created thing lands in**
+
+### Pick the theme first
+
+The screens cannot be designed without one. Either the project already has a design standard
+in `.flow/PROJECT.md` — use it — or choose from the seven in `references/themes.md` **in the
+theme skill** and say which, in one line, as a decision the owner can overturn. Getting this
+wrong is cheap here and expensive after forty screens are built.
+
+### Then capture them
+
+Write each screen as a standalone HTML file under `.flow/plan/screens/`, styled with the
+theme's tokens, then **render it and capture a PNG**:
+
+- **Desktop and 375px**, both, for any screen a person reaches on a phone
+- Into `.flow/plan/screens/` as `<slug>.png` and `<slug>-mobile.png`
+- Use whatever the host provides — the browser tool, Playwright, headless Chrome. Same
+  discipline as `references/walk.md` **in the guide skill** §1
+
+**The plan gate requires at least one image there.** A plan with no picture of the product is
+the plan that shipped a board saying "no leads yet", and the owner confirmed it having seen
+nothing. The page embeds the captures; the captures are what the confirmation covers.
+
+**It is a design, and it is disposable.** It will be wrong in places — that is the point of
+showing it before forty screens exist. The owner says "not that" once, here, instead of after
+BUILD.
 
 **4. Entities and lifecycles — a state diagram each.**
 
@@ -91,7 +123,7 @@ the same value the plan gate prints when it denies. Compute it after the skill i
 
 - **Every screen in the artifact appears in the skill's jobs, and every job has a screen.** A
   mismatch is a gap the artifact just found; fix the skill, not the picture.
-- **No screen that the plan does not deliver.** A wireframe of something in "what it is not"
+- **No screen that the plan does not deliver.** A design of something in "what it is not"
   is a promise the owner will remember.
 - **Say what the experts disagreed on**, in the decisions section, rather than showing one
   clean answer. The owner chose; the artifact shows what they chose between.

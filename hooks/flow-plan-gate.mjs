@@ -20,7 +20,7 @@
 // confirmation gates, FLOW_PLAN_OFF=1 suspends them for one command. The loop is denied
 // from creating either. Nothing suspends the push gate.
 
-import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { dirname, basename, extname, join } from 'node:path';
 import { createHash } from 'node:crypto';
 
@@ -221,8 +221,41 @@ const checkWrite = (targetPath, via) => {
     );
   }
 
+  // The pictures, not just the page. "It produced an artifact" was satisfiable by a page with
+  // nothing on it; what the owner asked for is a picture of the product. The screens are
+  // rendered designs captured to PNG, and the confirmation covers them - redraw one and it
+  // goes stale, because what was approved was the image.
+  const SCREENS = join(root, '.flow', 'plan', 'screens');
+  const shots = (() => {
+    try {
+      return readdirSync(SCREENS).filter((f) => /\.(png|jpe?g|webp|avif)$/i.test(f)).sort();
+    } catch { return []; }
+  })();
+  if (!shots.length) {
+    deny(
+      'Flow plan gate: the plan has no picture of the product - no image in .flow/plan/screens/.' + NL + NL +
+      'PLAN designs every screen a job lands on, in the project theme, with real content, and' + NL +
+      'captures each one:' + NL + NL +
+      '    .flow/plan/screens/<screen>.png          desktop' + NL +
+      '    .flow/plan/screens/<screen>-mobile.png   375px' + NL + NL +
+      'A page of prose and grey boxes is not something an owner can judge. The screens they' + NL +
+      'will actually get, before the code exists, is the whole point of the stage - and the' + NL +
+      'reason the last two projects shipped screens nobody had seen.' + NL + NL +
+      'Only the owner can suspend this (.flow/plan-off).' +
+      (via ? NL + '(target: ' + norm(targetPath) + ', via ' + via + ')' : '')
+    );
+  }
+
   const want = skillHash(skill.path);
-  const drawn = skillHash(planArt);
+  // The drawing is the page plus every capture on it: name and byte length of each, so a
+  // redrawn screen invalidates an approval given for the old one.
+  const shotList = shots.map((f) => {
+    let size = 0;
+    try { size = statSync(join(SCREENS, f)).size; } catch { /* counted as 0 */ }
+    return f + ":" + size;
+  }).join("|");
+  const drawn = createHash("sha256")
+    .update(skillHash(planArt) + "|" + shotList, "utf8").digest("hex").slice(0, 12);
   const have = confirmedHash(root);
   if (want && (!have || !have.includes(want) || (drawn && !have.includes(drawn)))) {
     deny(

@@ -37,7 +37,7 @@ it says so. The eleven above are not.
 **They constrain actions, not judgement.** A hook can stop a file being written. It cannot stop
 the *wrong* file being written: the citation gate checks that `from:` resolves to a real
 heading, never that the criterion actually serves it. That is why PLAN ends with the owner
-looking at wireframes rather than a hook checking the plan.
+looking at pictures of the screens rather than a hook checking the plan.
 
 ## Before anything else
 
@@ -114,7 +114,8 @@ owner before anything is built.** It puts the three-to-seven shape-changing deci
 and those stop and ask **even under a standing autonomous mode.** Then it writes the project
 skill, and the owner confirms it. The plan gate holds every source write until they have.
 
-It draws every flow and wireframes every screen a job lands on, publishes them as an artifact,
+It draws every flow, **designs every screen a job lands on and captures it as an image** —
+in the project theme, with real content, not grey boxes — publishes them as an artifact,
 and the owner confirms from *that* — the picture that would have shown a tournament with
 nowhere to appear. Runs at a new project, an adoption, a milestone or module boundary — a
 feature large enough to get its own research document is one — or when the owner says the

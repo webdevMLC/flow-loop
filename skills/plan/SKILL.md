@@ -1,6 +1,6 @@
 ---
 name: plan
-description: The first stage of Flow, once per project and at milestones — five experts on the intent (researcher, system architect, systems engineer, dataflow and process specialist, UI/UX), the process flows drawn and the screens wireframed as an artifact the owner reviews before anything is built, the shape-changing decisions put to them, and the project skill written and confirmed. Use at a new project, when adopting an existing codebase, at a module or milestone boundary, when a feature is big enough to need its own research, or when the owner says the result is not what they wanted. The plan gate denies source writes until this has run and the owner has confirmed its output.
+description: The first stage of Flow, once per project and at milestones — five experts on the intent (researcher, system architect, systems engineer, dataflow and process specialist, UI/UX), the process flows drawn and every screen designed and captured as an image the owner reviews before anything is built, the shape-changing decisions put to them, and the project skill written and confirmed. Use at a new project, when adopting an existing codebase, at a module or milestone boundary, when a feature is big enough to need its own research, or when the owner says the result is not what they wanted. The plan gate denies source writes until this has run and the owner has confirmed its output.
 ---
 
 # PLAN
@@ -146,9 +146,11 @@ decisions taken, with who took them · open questions, never assumptions.
 artifact — or write `.flow/plan/index.html` where no artifact tool exists — that shows:
 
 - **every process flow as a diagram**, the same flows as step 3, drawn
-- **a wireframe of every screen a job lands on** — deliberately grey and unstyled, so it reads
-  as *what is there*, not *how it looks*. This is the picture that would have shown a
-  tournament with nowhere to appear after it was created
+- **a designed picture of every screen a job lands on** — the theme applied, real components,
+  real content, **captured as a PNG into `.flow/plan/screens/`** at desktop and 375px. Not a
+  wireframe — the owner judges the product from these, and grey boxes are not a product. This
+  is the picture that would have shown a tournament with nowhere to appear after it was
+  created, and the obsolete-looking screens nobody saw until after they were built
 - **every entity's lifecycle as a state diagram**
 - **the boundaries** as one diagram
 - **what it is not**, and **the decisions** with what was chosen
@@ -182,12 +184,16 @@ reformat — produces the same lockout for no reason, so do not make one.
 2 forbids researching twice. PLAN reads the intent, the inputs and — in existing mode — the
 code. It does not go looking beyond them.
 
-**Not a design document.** Its outputs are flows, wireframes, a question batch and a skill. A
-forty-page analysis is a way of avoiding the question.
+**Not a design document.** Its outputs are flows, designed screens as images, a question batch
+and a skill. A forty-page analysis is a way of avoiding the question.
 
-**Not a design.** The wireframes are grey boxes with real labels. The moment they carry a
-palette or a typeface, the owner reviews the look instead of the workflow, and `/flow:theme`
-exists for the look.
+**It is a design, and it is meant to be judged.** The screens are drawn as they are meant to
+ship, in the theme, with real content, and captured as images. They will be wrong in places —
+that is why they are shown before anything is built. What PLAN does not do is *build* them.
+
+**Not a brand exercise.** Choose one of the seven themes, apply it, move on. PLAN shows the
+product in a credible skin so the owner can judge it; it does not design a visual identity, and
+it does not iterate on one. `/flow:theme` owns the look, `/flow:uiux` owns the screens as built.
 
 **Not a substitute for the owner.** Five experts agreeing with each other is not
 confirmation. Self-consistency is what the failed projects had in abundance.
