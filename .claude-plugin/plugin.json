@@ -1,6 +1,6 @@
 {
   "name": "flow",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "One development loop - PLAN once per project, then FRAME, BUILD, CHECK, SHIP per phase - replacing separate memory, planning, context, TDD and review frameworks with a single protocol. The rules that matter are hooks, not instructions: no code until PLAN has produced a project skill the owner confirmed, every acceptance criterion cites that plan or the commit is refused, test-first on logic, no push without the owner, and no code while judgement questions sit unanswered. Ships /flow:plan, which runs the first stage on demand and publishes the flows and screens as an artifact the owner confirms from; /flow:ultra, which inspects the running system then repairs what it found; /flow:theme, which applies a theme and rebuilds the components; /flow:guide, which writes a plain-language user guide from the running system, laid out for print; /flow:datatest, exhaustive QA that drives every flow through the UI and leaves a failing test per defect; /flow:uiux, a design-architect audit that redesigns the screens and shows you wireframes first; and /flow:security, an offensive assessment that attacks the running system, proves each hole, and locks it with a regression test.",
   "author": {
     "name": "Micho Calma",

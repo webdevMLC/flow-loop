@@ -3,7 +3,7 @@
   "hooks": {
     "PreToolUse": [
       {
-        "matcher": "apply_patch|Edit|Write|edit_file|write_file|create_file",
+        "matcher": "apply_patch|Edit|Write|edit_file|write_file|create_file|NotebookEdit",
         "hooks": [
           {
             "type": "command",

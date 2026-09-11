@@ -232,7 +232,7 @@ let rawCmd = ti.command ?? ti.cmd ?? ti.script ?? '';
 if (Array.isArray(rawCmd)) rawCmd = rawCmd.join(' ');
 rawCmd = typeof rawCmd === 'string' ? rawCmd : '';
 
-const filePath = ti.file_path ?? ti.path ?? ti.filePath ?? ti.target_file ?? ti.file ?? null;
+const filePath = ti.file_path ?? ti.path ?? ti.filePath ?? ti.target_file ?? ti.file ?? ti.notebook_path ?? null;
 
 if (SHELL_TOOLS.has(toolName) || (rawCmd && !filePath)) {
   if (!rawCmd) ok();

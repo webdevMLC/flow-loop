@@ -31,7 +31,7 @@ try { input = JSON.parse(raw || '{}'); } catch { ok(); }
 // apply_patch and friends with its own spelling. Accept the known ones and fail open
 // on anything unrecognised rather than guessing at a path.
 const ti = input?.tool_input ?? {};
-const filePath = ti.file_path ?? ti.path ?? ti.filePath ?? ti.target_file ?? ti.file ?? null;
+const filePath = ti.file_path ?? ti.path ?? ti.filePath ?? ti.target_file ?? ti.file ?? ti.notebook_path ?? null;
 if (!filePath || typeof filePath !== 'string') ok();
 
 const p = filePath.split(BACKSLASH).join('/');

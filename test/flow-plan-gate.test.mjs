@@ -302,3 +302,12 @@ describe('bypasses found by the v2 audit - each verified, each now closed', () =
     assert.equal(write(dir, 'src/ledger.ts').allowed, true);
   });
 });
+
+describe('NotebookEdit - found while explaining the limits', () => {
+  test('a notebook is a write, and is gated like any other source', () => {
+    const dir = fixture({ '.flow/STATE.md': STATE });
+    const r = runHook(PLAN_GATE, { tool_name: 'NotebookEdit', tool_input: { notebook_path: join(dir, 'model.ipynb') } });
+    assert.equal(r.allowed, false);
+    assert.match(r.reason, /PLAN has not run/);
+  });
+});
