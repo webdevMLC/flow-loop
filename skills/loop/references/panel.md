@@ -18,7 +18,10 @@ Rarely and deliberately. This is not a per-phase pass.
 - **A new project, at the first FRAME**, before the roadmap is written.
 - **Adopting an existing codebase**, before the first phase is framed.
 - **At a milestone or module boundary** — a new subsystem, a new kind of user, a new
-  money or identity flow.
+  money or identity flow. **A feature large enough to get its own research document is a
+  module boundary.** "Tournament mode" inside a booking app is one; so is anything described
+  as "mirrors <existing feature>", because that claim is exactly what the panel's UI/UX lens
+  exists to check job by job.
 - **When the user asks**, or says the result is not what they wanted.
 
 **Never per phase.** A phase is too small a unit to have an intent worth five experts, and

@@ -4,11 +4,41 @@
 
 Goal: know what "done" means and what the tasks are. **No code.**
 
+**0.0. Write down what was asked for — in their words, before you decide anything.** The
+first thing FRAME writes is the intent record, at the top of STATE.md, and it is the only
+part of the frame that is not yours:
+
+```markdown
+## Intent
+> [the request, quoted verbatim — not paraphrased, not improved]
+
+**What they want to be able to do:** <one line per job, as they would say it at work>
+**What they said it must not be or do:** <or "nothing stated">
+**What was not said, and is therefore a question:** <not an assumption — a question>
+**Confirmed by the user:** not yet
+```
+
+Every acceptance criterion written later **cites the intent line it serves.** A criterion
+that cites none is one you invented, and it gets flagged in the plan review, not built. This
+is the mechanism that stops a correct product being the wrong product: two real projects
+shipped twenty-plus green phases each with **not one recorded sentence of what the owner
+asked for**, and every criterion traced to research the agent had written for itself.
+
+**Research is not a frame, and it does not settle the goal.** If you need to understand the
+domain before framing — and for a new subsystem you usually do — the output of that research
+is **questions for the user and candidate jobs to confirm**, never a data model, a module
+layout or a roadmap. A structural analysis "written before FRAME" that says the goal below is
+settled has settled it on the agent's authority, and the person who asked has not seen it.
+Write the intent record first; research second; and put the questions research produced
+into the intent record's last line before anything is derived from them.
+
 **0. Is the goal even clear?** Before step 1, check: can you state in one sentence what
 done looks like, in a form someone else could verify? If not, stop and read
-`references/brainstorm.md`. A request that *sounds* specific — "add a dashboard", "make
-onboarding better" — is not a goal, and framing it anyway produces a confident plan for the
-wrong problem.
+`references/brainstorm.md`. A request that *sounds* specific — "add a dashboard", "add
+tournament mode", "make onboarding better" — is not a goal, and framing it anyway produces a
+confident plan for the wrong problem. **"Sounds clear enough to skip brainstorm" is the exact
+judgement that fails**: the agent fills the gaps itself, fluently, and nothing marks where the
+request ended and the invention began. The intent record is what marks it.
 
 0.5 **Is there an unconsumed inspection?** If `.flow/ULTRA-*.md` exists with findings still
    marked `open`, those are better-specified work than anything you are about to frame — each
@@ -51,6 +81,26 @@ wrong problem.
    is worth one sentence of deliberate choice rather than an accident.
 4. **Write STATE.md.** Goal, acceptance criteria, task list, and every assumption
    you are proceeding on. This file is the plan. There is no separate plan document.
+
+   Three rules govern the criteria, and each exists because of a shipped failure:
+
+   **Every criterion cites its intent line.** From step 0.0. One that cites none is invented;
+   it goes to the plan review as a question, not into the build.
+
+   **"Mirrors X" is a criterion generator, not a description.** If the frame says the new thing
+   is *like* an existing one — "tournaments mirror OpenPlay" — that is a claim of equivalence,
+   and the person hearing it will rely on it. So walk X's surfaces, enumerate every job a person
+   can do there, and make each one a criterion for the new thing or an explicit exclusion the
+   user has seen. A frame that said "mirrors OpenPlay" and then let an organiser create a
+   tournament with nowhere to see it afterwards did not mirror anything; it borrowed the
+   word to sound safe.
+
+   **Every job that creates something has a criterion for where the person sees it.** Create →
+   see what you created is the most basic contract an interface has, and it is the one most
+   often missing, because the write is the interesting part to build. A create with no read
+   surface is not a job, it is a form that swallows input. If a criterion says "an organiser
+   can create a tournament", the next criterion says where it appears — or the first one is
+   not done.
 5. **Ask once.** If different readings of the request lead to materially different
    work, batch every open question into a single AskUserQuestion. Otherwise decide
    like a careful colleague, record the call as an assumption, and continue.

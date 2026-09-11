@@ -12,8 +12,16 @@ by archiving finished work to `.flow/ARCHIVE.md`.
 # <project> — Flow state
 Updated: <YYYY-MM-DD>
 
+## Intent
+> <the request, quoted verbatim — the user's own words, not a paraphrase>
+
+**What they want to be able to do:** <one line per job, as they would say it>
+**What they said it must not be or do:** <or "nothing stated">
+**Not said, therefore a question:** <each one — these are never assumptions>
+**Confirmed by the user:** <date, or "not yet">
+
 ## Now
-**Goal:** <one sentence — what done looks like>
+**Goal:** <one sentence — what done looks like, and it must be derivable from Intent>
 **Gate:** FRAME | BUILD | CHECK | SHIP
 **Next action:** <the literal next thing to do — resume.md and continuous.md both continue from this>
 **Authority:** <the document that decides values here, if any — references/authority.md writes it>

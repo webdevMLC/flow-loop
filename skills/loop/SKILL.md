@@ -18,6 +18,17 @@ restoration step — goal, task list, decisions, assumptions, what was deliberat
 It applies to a new request as much as to an obvious resume; a request that feels like fresh
 work is exactly when the prior decisions get re-derived at full cost.
 
+**Before any research, any survey, any structure — write down what was asked for, in their
+words.** The first thing FRAME produces is the intent record at the top of STATE.md: the
+request quoted verbatim, the jobs they want to be able to do, what they said it must not be,
+and what was *not* said and is therefore a question. **Research does not settle the goal.**
+Two real projects each shipped twenty-plus green phases with not one recorded sentence of what
+the owner asked for — on one, an 18KB structural analysis "written before FRAME" declared the
+goal settled on the agent's authority, and the owner found out when they created a tournament
+and had nowhere to see it. Every criterion cites an intent line; one that cites none was
+invented. And **"mirrors X" is a claim someone will rely on** — it means every job a person can
+do in X becomes a criterion, or an exclusion they have seen. `references/gates.md` step 0.0.
+
 **If there is no `.flow/` directory, the project has not adopted Flow.** Nothing is enforced
 until it does — both gates stay dormant. On a Full task, FRAME creates it. Adopting a codebase
 that already builds is not designing from scratch: FRAME's survey is about what is *already
