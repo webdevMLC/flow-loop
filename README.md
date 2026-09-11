@@ -52,6 +52,7 @@ Write, Edit, Bash and PowerShell.
 | **`/flow:datatest`** | seven QA testers drive every flow, leave a failing test per defect | data looks wrong; before a pilot; the suite is green and the product is not |
 | **`/flow:uiux`** | a design architect redesigns the screens — wireframes shown first | screens look dated or amateur; "make it modern" |
 | **`/flow:security`** | six specialists attack the running system and prove each hole | before exposing it to real users or the internet |
+| **`/flow:ops`** | runbook, health checks, alerts, a proven rollback and restore, a load limit | before a pilot; when nobody can answer "who runs this at 2am" |
 
 ## Running it unattended
 
@@ -86,9 +87,9 @@ written for you.
 | `tdd-exempt` | **switch** | one path fragment per line — code genuinely outside TDD |
 | `plan-confirmed` | **owner only** | the hash of the project skill you read and approved — the loop is denied from writing it |
 | `allow-push` | **owner only** | opens the push gate for a session — the loop is denied from writing it |
-| `plan-off` · `cite-off` · `tdd-off` · `verify-off` · `uat-ceiling` | **owner only** | every escape hatch — the loop is denied from creating any of them, by any tool |
+| `plan-off` · `cite-off` · `tdd-off` · `verify-off` · `evidence-off` · `uat-ceiling` | **owner only** | every escape hatch — the loop is denied from creating any of them, by any tool |
 | `UAT.md` | written | `by person` questions waiting for you |
-| `ULTRA-<date>.md` · `DATATEST-` · `SECURITY-` · `UIUX-` | written | a sealed inspection, its findings and their status — the roadmap sweep picks up any still open |
+| `ULTRA-<date>.md` · `DATATEST-` · `SECURITY-` · `UIUX-` · `OPS-` | written | a sealed inspection, its findings and their status — the roadmap sweep picks up any still open |
 | `MANIFEST.md` · `ARCHIVE.md` | written | what each phase shipped; how to revert it |
 | `evidence/<phase>/` | written | screen captures that close a criterion |
 
@@ -128,6 +129,8 @@ deny the action, and no prose can talk past them:
 | **The state file keeps up** | `git commit` is denied if source changed and `STATE.md` did not, three commits running — `-a`, a pathspec and `--amend` included |
 | **Never push** | `git push` is denied unless `.flow/allow-push` exists — another file the loop cannot create. Catches `bash -c`, `git.exe`, `git -C`, `gh pr create`, and a dry-run chained to a real one |
 | **Judgement does not pile up** | source writes are denied past 5 open `by person` questions in `.flow/UAT.md` |
+| **A closed `by artifact` criterion has its artifact** | `git commit` is denied when a criterion ticked done and classed `by artifact` names a file that is not on disk. This is what makes SHIP’s data pass and the screen audit mechanical rather than hoped-for |
+| **The record cannot be deleted** | `rm -rf .flow`, `rm .flow/STATE.md`, a `git clean -fdx` that would take it, and the same in PowerShell or `git rm`, are all denied — and so is deleting the project skill. Removing the record used to disarm four rules at once, silently. Nothing suspends this one |
 
 Everything else is discipline — written to be read at the moment it applies, and honest about
 being discipline.
@@ -519,11 +522,16 @@ times before this was automated, and `autoUpdate: true` does not close the gap o
 
 # Honest limits
 
-- **Seven rules are hooks. Everything else is an instruction Claude follows.** The seven are
-  listed above and each has 121 tests behind it. Everything else in this README — the panel's
+- **Nine rules are hooks. Everything else is an instruction Claude follows.** The nine are
+  listed above, and each one has tests in `test/` that a release will not ship without. Everything else in this README — the panel's
   decisions stopping under autonomous mode, re-testing a stale blocker, reading a build's
-  warnings, enumerating a "mirrors X", the adversarial pass, the SHIP data pass actually
-  running — is discipline. Some of it could become a hook later; none of it is one today.
+  warnings, enumerating a "mirrors X", the adversarial pass — is discipline. Some of it could
+  become a hook later; none of it is one today.
+- **The hooks constrain actions, not judgement.** They can stop a file being written. They
+  cannot stop the *wrong* file being written. The citation gate checks that `from:` resolves to
+  a real heading in the plan — never that the criterion actually serves it. The evidence gate
+  checks that a capture exists — never that it shows a working screen. Every gate proves a step
+  happened; none proves it was right. That is why PLAN ends with you looking at wireframes.
 - **Every enforced rule has an owner-controlled escape**, and the loop is denied from creating
   any of them: `.flow/plan-off`, `cite-off`, `tdd-off`, `verify-off`, `allow-push`,
   `uat-ceiling`. That is deliberate — a gate with no escape gets the whole plugin uninstalled

@@ -101,7 +101,7 @@ movement, deleting data, a scope change. On top of those, **these are framed but
 - **It requires correcting data already written.** Fixing the code is a repair phase; rewriting
   rows that already exist is not. **A backfill is not a schema migration, so the rule above does
   not catch it — and it is neither a delete nor a spend, so no hard stop in
-  `references/autonomous.md` fires either. This line is the only thing that stops it.** Write
+  `references/autonomous.md` **in the loop skill** fires either. This line is the only thing that stops it.** Write
   the correction as a script with its query, its row count and its evidence, and stop for the
   user to run it. **Stage 4 writes source, never rows.** A row count in a finding is the size of
   the damage, not repairable state.

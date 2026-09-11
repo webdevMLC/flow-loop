@@ -25,10 +25,17 @@ they deny the action, and no prose can talk past them:
 | **The state file keeps up** | `git commit` is denied if source changed and `STATE.md` did not, three commits running |
 | **Never push** | `git push` is denied unless `.flow/allow-push` exists — another file the loop cannot create |
 | **Judgement does not pile up** | source writes are denied past 5 open `by person` entries in `.flow/UAT.md` |
+| **A closed `by artifact` criterion has its artifact** | `git commit` is denied when a criterion ticked done and classed `by artifact` names a file that is not on disk — this is what makes SHIP’s data pass and the screen audit mechanical |
+| **The record cannot be deleted** | `rm -rf .flow`, `rm .flow/STATE.md`, `git clean -fdx` and their PowerShell and `git rm` spellings are denied — deleting the record does not suspend the rules, it makes four of them fall silent |
 
 Everything else in this file and its references is **discipline** — followed because it is
 read, and it is written to be read at the moment it applies. Where a rule below is discipline,
-it says so. The seven above are not.
+it says so. The nine above are not.
+
+**They constrain actions, not judgement.** A hook can stop a file being written. It cannot stop
+the *wrong* file being written: the citation gate checks that `from:` resolves to a real
+heading, never that the criterion actually serves it. That is why PLAN ends with the owner
+looking at wireframes rather than a hook checking the plan.
 
 ## Before anything else
 
@@ -225,6 +232,7 @@ Repeated work, not model choice, is what burns the budget.
 | CHECK, when the phase writes anything persistent | `references/dataflow.md` |
 | Undoing a shipped phase | `references/reverse.md` |
 | A milestone or roadmap boundary | `references/milestone.md` |
+| Before a pilot, or nobody can say who runs this at 2am | **`/flow:ops`** |
 | `.flow/UAT.md` has open entries and the user is back | `references/uat.md` |
 | The roadmap has no next phase, or FRAME asks what the last phase left open | `references/exhausted.md` |
 | The user said to keep building past the roadmap | `references/nonstop.md` |
@@ -334,8 +342,15 @@ injection, secrets, business logic, supply chain — **proves each hole with a w
 against a disposable copy, locks it with a regression test, then the loop fixes it. Never
 production, never exfiltrates.
 
-These four seal a report and repair through the loop, on by default; "report only" stops at
-the report. All run against a disposable environment, never production.
+**`/flow:ops`** makes the system runnable by someone other than its author: the runbook written
+from symptoms and **verified by following it**, a health check that checks something, three to
+six alerts that each have an owner and a procedure, a deploy **and a rollback both performed**,
+a backup **restored and the rows read**, and a load test that finds the limit. The loop never
+deploys, so everything after the commit used to be outside it — this is that half.
+
+All five — `ultra`, `datatest`, `uiux`, `security`, `ops` — seal a report first and repair
+through the loop afterwards, on by default; "report only" stops at the report. All run against
+a disposable environment, never production, and none of them deploys.
 
 ## Scope
 

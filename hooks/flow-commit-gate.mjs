@@ -201,6 +201,61 @@ if (projectSkill && existsSync(join(root, '.flow', 'STATE.md'))
   }
 }
 
+// ---------- a ticked `by artifact` criterion must have its artifact ----------
+// The eighth rule, and the one that catches "closed by assertion". A criterion marked done
+// and classed `by artifact` names a file a person can open; if that file is not on disk,
+// the claim was made and not met. This is what makes the SHIP data pass and the screen
+// audit mechanical: both close criteria this way, and neither can now be skipped quietly.
+if (existsSync(join(root, '.flow', 'STATE.md'))
+    && process.env.FLOW_EVIDENCE_OFF !== '1' && !existsSync(join(root, '.flow', 'evidence-off'))) {
+  let state = '';
+  try { state = readFileSync(join(root, '.flow', 'STATE.md'), 'utf8'); } catch { state = ''; }
+  const lines = state.split(NL);
+  const start = lines.findIndex((l) => /^#{2,4}\s+(acceptance\s+)?criteria\b/i.test(l.trim()));
+  const missing = [];
+  if (start >= 0) {
+    let bullet = null;
+    const check = () => {
+      if (!bullet) return;
+      const text = bullet.replace(/\s+/g, ' ').trim();
+      bullet = null;
+      if (!/^[-*]\s*\[x\]/i.test(text)) return;          // only criteria claimed done
+      if (!/`?by artifact`?/i.test(text)) return;
+      // The path is the first token that looks like one: a/b, a/b.png, .flow/evidence/12/
+      const m = text.match(/((?:\.?[\w.@-]+\/)+[\w.@-]*)/);
+      if (!m) {
+        missing.push([text.slice(0, 90), 'names no path - say where the artifact is saved']);
+        return;
+      }
+      const rel = m[1].replace(/[),.]+$/, '');
+      const abs = join(root, rel);
+      const there = existsSync(abs)
+        || (rel.endsWith('/') && existsSync(abs.replace(/\/$/, '')));
+      if (!there) missing.push([text.slice(0, 90), rel + ' is not on disk']);
+    };
+    for (let i = start + 1; i < lines.length; i++) {
+      const l = lines[i];
+      if (/^#{1,4}\s/.test(l)) break;
+      if (/^\s*[-*]\s/.test(l)) { check(); bullet = l; continue; }
+      if (bullet && /^\s+\S/.test(l)) { bullet += ' ' + l; continue; }
+      check();
+    }
+    check();
+  }
+  if (missing.length) {
+    deny(
+      'Flow evidence gate: ' + missing.length + ' criteria are ticked `by artifact` with no artifact.' + NL + NL +
+      missing.map(([t, why]) => '  ' + t + NL + '    -> ' + why).join(NL) + NL + NL +
+      'A `by artifact` criterion is closed by the file existing and showing the thing - not by' + NL +
+      'the work having been done carefully. A screen capture, a rendered PDF page, a data-pass' + NL +
+      'record: produce it, or untick the criterion and say what could not be reached.' + NL +
+      'That is the difference between verified and asserted, and it is the failure that shipped' + NL +
+      'a board saying "no leads yet" under 209 green tests.' + NL + NL +
+      'Bypass once: FLOW_EVIDENCE_OFF=1   Suspend for the project: .flow/evidence-off'
+    );
+  }
+}
+
 // ---------- escape hatches, for the test run only ----------
 // These suspend running the suite. They deliberately do NOT suspend the state-file or
 // citation checks above: those are the loop's own bookkeeping, and an agent that can turn

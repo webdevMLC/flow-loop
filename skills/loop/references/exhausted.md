@@ -32,7 +32,8 @@ not open anything not named here. The whole sweep should cost less than a single
    can do.
 6. **Any sealed inspection report — every finding marked `open` or `blocked`, across all of
    them.** `.flow/ULTRA-*.md` (`/flow:ultra`), `.flow/DATATEST-*.md` (`/flow:datatest`),
-   `.flow/SECURITY-*.md` (`/flow:security`), `.flow/UIUX-*.md` (`/flow:uiux`). An inspection
+   `.flow/SECURITY-*.md` (`/flow:security`), `.flow/UIUX-*.md` (`/flow:uiux`), `.flow/OPS-*.md`
+   (`/flow:ops`). An inspection
    ran and wrote down what is wrong with concrete failures — and for datatest and security a
    failing test is already committed, so the suite is red until it closes. Those are the
    best-specified candidates that will ever reach this sweep, each one an acceptance criterion

@@ -251,7 +251,8 @@ describe('bypasses found by the v2 audit - each verified, each now closed', () =
 
   test('a shell redirect cannot create any owner-only switch', () => {
     const dir = fixture();
-    for (const f of ['plan-confirmed', 'allow-push', 'plan-off', 'cite-off', 'tdd-off', 'verify-off']) {
+    for (const f of ['plan-confirmed', 'allow-push', 'plan-off', 'cite-off', 'tdd-off', 'verify-off',
+                      'evidence-off', 'uat-ceiling']) {
       assert.equal(shell(dir, 'Bash', 'echo x > .flow/' + f).allowed, false, f);
       assert.equal(write(dir, '.flow/' + f).allowed, false, f + ' via Write');
     }
@@ -309,5 +310,50 @@ describe('NotebookEdit - found while explaining the limits', () => {
     const r = runHook(PLAN_GATE, { tool_name: 'NotebookEdit', tool_input: { notebook_path: join(dir, 'model.ipynb') } });
     assert.equal(r.allowed, false);
     assert.match(r.reason, /PLAN has not run/);
+  });
+});
+
+describe('the record cannot be deleted - rm -rf .flow disarmed four rules', () => {
+  const F = () => fixture({ '.flow/STATE.md': STATE, '.claude/skills/acme/SKILL.md': SKILL });
+
+  test('the state file and the record directory are protected, in every spelling', () => {
+    const dir = F();
+    for (const c of ['rm .flow/STATE.md', 'rm -rf .flow', 'rm -rf .flow/', 'rm ./.flow/STATE.md',
+                     'rm -f .flow/PROJECT.md', 'del .flow/STATE.md', 'Remove-Item -Recurse -Force .flow',
+                     'git rm .flow/STATE.md', 'mv .flow/STATE.md /tmp/x',
+                     'rm .flow/UAT.md', 'rm .flow/ARCHIVE.md']) {
+      assert.equal(bash(dir, c).allowed, false, c);
+    }
+  });
+
+  test('the project skill is protected too - deleting it disarms the plan gate', () => {
+    const dir = F();
+    assert.equal(bash(dir, 'rm .claude/skills/acme/SKILL.md').allowed, false);
+  });
+
+  test('git clean would take an untracked .flow with it', () => {
+    const dir = F();
+    assert.equal(bash(dir, 'git clean -fdx').allowed, false);
+    assert.equal(bash(dir, 'git clean -fd').allowed, false);
+    // An explicit exclusion is the documented way through, and must not be read as a target.
+    assert.equal(bash(dir, 'git clean -fdx -e .flow').allowed, true);
+    assert.equal(bash(dir, 'git clean -fdx --exclude=.flow').allowed, true);
+    // Without -d or -x it cannot reach a directory of untracked files.
+    assert.equal(bash(dir, 'git clean -f').allowed, true);
+  });
+
+  test('the denial names the file and offers no escape', () => {
+    const r = bash(F(), 'rm -rf .flow');
+    assert.match(r.reason, /\.flow/);
+    assert.match(r.reason, /Nothing suspends this gate/);
+  });
+
+  test('it does not fire on ordinary deletions', () => {
+    const dir = F();
+    for (const c of ['rm -rf node_modules', 'rm dist/bundle.js', 'npm run build',
+                     'rm .flow/evidence/12/stale.png', 'ls .flow', 'cat .flow/STATE.md',
+                     'git commit -m "remove the rm flag"']) {
+      assert.equal(bash(dir, c).allowed, true, c);
+    }
   });
 });

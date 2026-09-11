@@ -25,8 +25,8 @@ describes, and be observed failing before it is committed.
 
 ## Where it goes
 
-`test/datatest/<id>-<slug>.test.<ext>`, or wherever the project's `references/state.md`
-profile says integration tests live. Under the project's real test runner, against the
+`test/datatest/<id>-<slug>.test.<ext>`, or wherever the project profile says integration
+tests live — the profile format is `references/state.md` **in the loop skill**. Under the project's real test runner, against the
 disposable database the tests already use. **Never a mocked API client** — the whole finding
 is that the mock hid it.
 
@@ -43,6 +43,13 @@ Committing red tests will fail CI and fail `test_fast` if they are in its scope.
   should not block the commit that adds them.
 - **Say in the report that the full suite is now red, by how many, and why.** A red suite
   with named causes is a to-do list. A red suite nobody explained is a broken build.
+
+**If they cannot be kept out of `test_fast`** — a single-suite project, a runner that globs
+everything — the commit gate will refuse this commit, correctly: the suite is red. Commit it
+once with `FLOW_SKIP_VERIFY=1`, and say in the commit body that the red tests are deliberate
+and which report lists them. **Never `.flow/verify-off`**, which suspends the gate for the
+project and leaves every later commit unchecked. And **never make a test pass to get past the
+gate** — that is the one move this whole command exists to prevent.
 
 The loop's repair phases turn them green one root cause at a time, and each green test is
 the phase's acceptance criterion — no separate criterion needs writing.

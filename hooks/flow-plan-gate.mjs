@@ -52,7 +52,8 @@ const SHELL_TOOLS = new Set(['Bash', 'PowerShell', 'local_shell', 'shell', 'shel
 
 // Every file whose existence is a statement by the owner. The loop never writes any of them.
 const OWNER_ONLY = ['.flow/plan-confirmed', '.flow/allow-push', '.flow/plan-off',
-  '.flow/cite-off', '.flow/tdd-off', '.flow/verify-off', '.flow/uat-ceiling'];
+  '.flow/cite-off', '.flow/tdd-off', '.flow/verify-off', '.flow/evidence-off',
+  '.flow/uat-ceiling'];
 
 const norm = (s) => String(s).split(BACKSLASH).join('/');
 
@@ -98,6 +99,9 @@ const isSource = (pathRaw) => {
   if (isTestPath(p)) return false;                 // RED must always be possible
   return true;
 };
+
+const cwdOf = (ti, input) =>
+  norm(typeof ti?.cwd === 'string' ? ti.cwd : (input?.cwd || process.cwd()));
 
 const isOwnerOnly = (pathRaw) => {
   const lower = norm(pathRaw).toLowerCase();
@@ -262,6 +266,48 @@ if (SHELL_TOOLS.has(toolName) || (rawCmd && !filePath)) {
           'this gate.'
         );
       }
+    }
+  }
+
+  // ---- the loop's own record cannot be deleted ----
+  // Every rule below the push check reads a file. The citation gate and the evidence gate
+  // both open `.flow/STATE.md` and both fall silent when it is not there; the plan gate
+  // itself keys on `.flow/` existing. So `rm -rf .flow` disarmed four rules at once, in one
+  // command, with no denial - the exact shape of "a rule the agent can decide not to follow"
+  // that this plugin exists to remove. Deleting the record is the owner's action.
+  const DELETES = /(^|[\s;&|(])(rm|rmdir|unlink|del|erase|rd|Remove-Item|ri)\b|\bgit\s+(rm|clean)\b|\B-delete\b|(^|[\s;&|(])(mv|move|Move-Item|Rename-Item|ren)\b/i;
+  if (DELETES.test(c)) {
+    const droot = findRoot(join(cwdOf(ti, input), 'x'));
+    const dskill = droot ? findProjectSkill(droot) : null;
+    const PROTECTED = new Set(['.flow', '.flow/state.md', '.flow/project.md', '.flow/uat.md',
+      '.flow/archive.md', '.flow/memory.md']);
+    if (dskill) PROTECTED.add(dskill.rel.toLowerCase());
+    // Tokens, with quotes, a leading `./` and a trailing slash removed.
+    const tokens = c.split(/[\s;&|()<>]+/)
+      .map((t) => t.replace(/^['"]+|['"]+$/g, '').replace(/^\.\//, '').replace(/\/+$/, '').toLowerCase())
+      .filter(Boolean);
+    // A path named as an exclusion is being protected, not deleted: `git clean -fdx -e .flow`.
+    const hit = tokens.find((t, i) => PROTECTED.has(t) && !/^(-e|--exclude)$/i.test(tokens[i - 1] || ''));
+    if (hit) {
+      deny(
+        'Flow plan gate: ' + hit + ' is the loop\'s record, and deleting it is the owner\'s' + NL +
+        'action, not the loop\'s.' + NL + NL +
+        'Four rules read that file. Removing it does not suspend them honestly - it makes' + NL +
+        'them fall silent, which looks identical to passing. If the phase is wrong, rewrite' + NL +
+        'the entries. If the project is being abandoned, the owner deletes it.' + NL + NL +
+        'Nothing suspends this gate.'
+      );
+    }
+    // `git clean` carries no path token and would still take an untracked .flow with it.
+    if (/\bgit\s+clean\b/i.test(c) && /\s-{1,2}[A-Za-z]*[dxX]/.test(c)
+        && !/(-e|--exclude)(=|\s+)['"]?\.?\/?\.flow/i.test(c)) {
+      deny(
+        'Flow plan gate: git clean with -d or -x removes an untracked .flow/, and .flow/ is' + NL +
+        'the loop\'s record - four rules read it.' + NL + NL +
+        'Exclude it explicitly:' + NL +
+        '    git clean -fdx -e .flow' + NL + NL +
+        'Nothing suspends this gate.'
+      );
     }
   }
 

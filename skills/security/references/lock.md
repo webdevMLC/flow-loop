@@ -39,6 +39,12 @@ bundle or the repo — it does not embed the secret to check for it.
 block the commit that adds them — the commit gate runs `test_fast`. Say in the report that the
 suite now has N red security tests and why.
 
+**If the project's fast suite globs them anyway**, the gate will refuse the commit — correctly,
+the suite is red. Commit once with `FLOW_SKIP_VERIFY=1` and say in the commit body that the red
+tests are deliberate. **Never `.flow/verify-off`** — it suspends the gate for the project, and
+an unchecked suite is a worse outcome than the holes you just found. And never weaken a test to
+make it pass.
+
 If the project has no harness that can drive an authenticated request against a running
 instance, that is the first finding, and the tests are written against the harness the
 specialists used with a note that it must join the suite.

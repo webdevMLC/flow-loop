@@ -48,6 +48,28 @@ whatever the project and host actually provide — a browser tool, Playwright, `
 file, the host's own preview. **If nothing can produce it, the criterion is `by person`, not
 `by test`.** Silently downgrading to a unit test is the failure this file exists to prevent.
 
+### The path goes in the criterion, and a hook checks it
+
+**Write the artifact's path into the criterion itself**, so closing it is checkable:
+
+```markdown
+- [x] **A3** /scorecard renders §42's seven columns · `by artifact` ·
+      .flow/evidence/12/scorecard-desktop.png · from: Scorecard
+```
+
+The commit gate reads every criterion ticked `[x]` and classed `by artifact`, takes the first
+path-shaped string in the line, and **refuses the commit if that file is not on disk.** A
+criterion with no path in it is refused too — "produced an artifact" was the easiest sentence
+in this file to write without producing one, and it is now the only class that cannot be closed
+by typing.
+
+It checks that the file exists, never that it shows a working screen. A blank capture passes
+the hook and fails CHECK; the gate buys you the thing to look at, not the judgement.
+
+Escape, for a criterion whose evidence genuinely lives outside the repo: `FLOW_EVIDENCE_OFF=1`
+on the one commit, or `.flow/evidence-off` for the project — both owner-only files the loop is
+denied from creating.
+
 An artifact proves the thing exists and renders. It does not prove the thing is good — that is
 the next class, and the two are not interchangeable.
 

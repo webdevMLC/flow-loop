@@ -351,13 +351,39 @@ update for that task in the same commit**. Checking a task off later is how a ru
 unexpectedly leaves work that looks unfinished and gets redone. The commit gate enforces
 this.
 
-A second hook gates the commit itself: if `.flow/PROJECT.md` declares `test_fast`, that
-command must pass before a commit containing source changes is allowed. It skips docs-only
-commits, skips the test run for projects with no `test_fast` declared; the STATE.md check still applies. **The bypasses are for a human at a keyboard —
-a loop never passes `--no-verify`:** a red `test_fast` is a defect to fix or a stop condition
-to report, never a flag to add. And honours `--no-verify`,
-`FLOW_SKIP_VERIFY=1` and `.flow/verify-off`. Never a
-single dump commit at the end — it defeats CHECK and undo.
+A second hook gates the commit itself, and it checks four things. Each denial names which one
+fired; the recovery differs, and reaching for the wrong one is how a gate becomes decorative.
+
+| It denies when | Because | What to do |
+|---|---|---|
+| **A completed task is not checked off in `.flow/STATE.md`** | a run that ends unexpectedly leaves work that looks unfinished and gets redone | stage the STATE.md update into the same commit — never a later one |
+| **A criterion cites nothing**, or cites a heading the project skill does not have | a correct phase built against the wrong criteria is the expensive failure | fix the `from:` to a real heading, or fix the criterion. Escape: `.flow/cite-off` |
+| **A criterion ticked `[x]` and classed `by artifact` names a file that is not there** | "produced an artifact" was the easiest claim in the file to make without producing one | produce the artifact, or move the tick back. Escape: `FLOW_EVIDENCE_OFF=1` |
+| **`test_fast` fails**, when `.flow/PROJECT.md` declares one | evidence before assertions, applied to your own commit | fix the failure. Escapes: `FLOW_SKIP_VERIFY=1`, `.flow/verify-off` |
+
+Docs-only commits skip the test run. Projects with no `test_fast` skip it too — the other
+three still apply.
+
+**The bypasses are for a human at a keyboard — a loop never passes `--no-verify`:** a red
+`test_fast` is a defect to fix or a stop condition to report, never a flag to add. The one
+legitimate use inside the loop is a commit that is *deliberately* red — `/flow:datatest` and
+`/flow:security` commit failing tests on purpose — and those skills say so at the moment they
+commit. Everywhere else, a bypass means the gate found something.
+
+Never a single dump commit at the end — it defeats CHECK and undo.
+
+### When a gate is in the way
+
+The record itself is protected: `rm -rf .flow`, `rm .flow/STATE.md`, `git rm` on it, a
+`git clean -fdx` that would take it, and the same spellings in PowerShell are all denied,
+as is deleting the project skill. This is not there to stop tidying up — it is there
+because four of the rules above read `.flow/STATE.md` and **fall silent when it is
+missing**, which looks exactly like passing. If the phase is wrong, rewrite the entries.
+If the project is being abandoned, the owner deletes it. Nothing suspends that gate.
+
+For every other denial: the message names the rule and its escape. The escapes are the
+owner's, not yours. Reaching for one is a decision to report, not a step to take quietly —
+and five of them are files the loop is denied from creating at all.
 
 ### Deviation
 

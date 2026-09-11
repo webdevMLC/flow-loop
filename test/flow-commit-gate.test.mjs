@@ -341,3 +341,55 @@ describe('the citation gate - every criterion says where it came from', () => {
     assert.equal(v.allowed, true);
   });
 });
+
+describe('the evidence gate - a ticked by-artifact criterion has its artifact', () => {
+  const withCriteria = (crit, extra = {}) => {
+    const state = '# s\n\n## Now\n**Gate:** SHIP\n\n### Acceptance criteria\n' + crit + '\n\n### Tasks\n- [x] T1\n';
+    const d = gitFixture({ '.flow/PROJECT.md': PASSING, '.flow/STATE.md': state, 'src/thing.ts': SRC, ...extra });
+    execSync('git add -A && git commit -q -m "initial"', { cwd: d, stdio: 'ignore' });
+    writeFileSync(join(d, 'src', 'thing.ts'), SRC + 'export const y = 2;\n');
+    writeFileSync(join(d, '.flow', 'STATE.md'), state + '\n- [x] T2 done\n');
+    gitAdd(d, 'src/thing.ts', '.flow/STATE.md');
+    return d;
+  };
+
+  test('a ticked by-artifact criterion with no file on disk is refused', () => {
+    const d = withCriteria('- [x] **A1** the board renders · `by artifact`: .flow/evidence/12/board.png · from: intent');
+    const v = commitVerdict(d, 'git commit -m "x"');
+    assert.equal(v.allowed, false);
+    assert.match(v.reason, /1 criteria are ticked `by artifact` with no artifact/);
+    assert.match(v.reason, /board\.png is not on disk/);
+  });
+
+  test('the same criterion passes once the artifact exists', () => {
+    const d = withCriteria('- [x] **A1** the board renders · `by artifact`: .flow/evidence/12/board.png · from: intent',
+      { '.flow/evidence/12/board.png': 'PNG' });
+    assert.equal(commitVerdict(d, 'git commit -m "x"').allowed, true);
+  });
+
+  test('an unticked by-artifact criterion is not checked - it is not claimed yet', () => {
+    const d = withCriteria('- [ ] **A1** the board renders · `by artifact`: .flow/evidence/12/board.png · from: intent');
+    assert.equal(commitVerdict(d, 'git commit -m "x"').allowed, true);
+  });
+
+  test('by test and by person criteria are untouched', () => {
+    const d = withCriteria('- [x] **A1** it computes · `by test` · from: intent\n- [ ] **A2** it reads well · `by person` · from: intent');
+    assert.equal(commitVerdict(d, 'git commit -m "x"').allowed, true);
+  });
+
+  test('a by-artifact criterion that names no path at all is refused', () => {
+    const d = withCriteria('- [x] **A1** the board renders · `by artifact` · from: intent');
+    const v = commitVerdict(d, 'git commit -m "x"');
+    assert.equal(v.allowed, false);
+    assert.match(v.reason, /names no path/);
+  });
+
+  test('.flow/evidence-off and FLOW_EVIDENCE_OFF=1 suspend it', () => {
+    const crit = '- [x] **A1** the board renders · `by artifact`: .flow/evidence/12/board.png · from: intent';
+    const d1 = withCriteria(crit, { '.flow/evidence-off': '' });
+    assert.equal(commitVerdict(d1, 'git commit -m "x"').allowed, true);
+    const d2 = withCriteria(crit);
+    const v = runHook(COMMIT_GATE, { tool_name: 'Bash', tool_input: { command: 'git commit -m "x"' }, cwd: d2 }, { FLOW_EVIDENCE_OFF: '1' });
+    assert.equal(v.allowed, true);
+  });
+});

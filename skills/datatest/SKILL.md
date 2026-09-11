@@ -1,6 +1,6 @@
 ---
 name: datatest
-description: Exhaustive data testing of a system as built — QA testers who each own one dimension of the matrix (boundary, adversarial input, concurrency, state transitions, cross-module, money, permissions) drive every flow through the UI and the API against a disposable database, read the rows, and report defects with reproduction steps. Every confirmed defect becomes a failing test committed to the suite, then the loop repairs it. Use before a pilot, after a long unattended run, when data looks wrong and nobody can say why, or when the suite is green and the product is not. Never runs against production.
+description: Exhaustive data testing of a system as built — QA testers who each own one dimension of the matrix (boundary, adversarial input, duplicate and replay, concurrency, state transitions, cross-module, money) drive every flow through the UI and the API against a disposable database, read the rows, and report defects with reproduction steps. Every confirmed defect becomes a failing test committed to the suite, then the loop repairs it. Use before a pilot, after a long unattended run, when data looks wrong and nobody can say why, or when the suite is green and the product is not. Never runs against production.
 ---
 
 # Data test
