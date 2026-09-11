@@ -53,7 +53,8 @@ const SHELL_TOOLS = new Set(['Bash', 'PowerShell', 'local_shell', 'shell', 'shel
 // Every file whose existence is a statement by the owner. The loop never writes any of them.
 const OWNER_ONLY = ['.flow/plan-confirmed', '.flow/allow-push', '.flow/plan-off',
   '.flow/cite-off', '.flow/tdd-off', '.flow/verify-off', '.flow/evidence-off',
-  '.flow/fanout-off', '.flow/uiux-confirmed', '.flow/uat-ceiling'];
+  '.flow/fanout-off', '.flow/uiux-confirmed', '.flow/blockers-off',
+  '.flow/uat-ceiling'];
 
 const norm = (s) => String(s).split(BACKSLASH).join('/');
 
@@ -240,7 +241,7 @@ const checkWrite = (targetPath, via) => {
   const planArt = join(root, '.flow', 'plan', 'index.html');
   if (!existsSync(planArt)) {
     deny(
-      'Flow plan gate: PLAN wrote a project skill but drew nothing - step 6 was skipped.' + NL + NL +
+      'Flow plan gate: PLAN wrote a project skill but drew nothing - step 7 was skipped.' + NL + NL +
       'The owner reviews pictures, not prose. PLAN publishes one artifact showing every' + NL +
       'process flow as a diagram, a grey wireframe of every screen a job lands on, each' + NL +
       'entity lifecycle, and the decisions - and writes that same page to:' + NL + NL +
@@ -250,6 +251,91 @@ const checkWrite = (targetPath, via) => {
       'Only the owner can suspend this (.flow/plan-off).' +
       (via ? NL + '(target: ' + norm(targetPath) + ', via ' + via + ')' : '')
     );
+  }
+
+  // ---- every knowable blocker is cleared before BUILD ----
+  // A blocker costs minutes at PLAN and a day mid-phase. Three classes: `decide` (only the
+  // owner can answer), `obtain` (a credential, a sandbox, a spec), and `prove` - an assumption
+  // the plan rests on that nobody has tested. The third is the one that ships broken products,
+  // because it does not feel like a blocker; it feels like confidence. "It mirrors OpenPlay"
+  // was a `prove` blocker nobody wrote down, and the gap surfaced after the build. So a
+  // resolved `prove` has to name a spike file that is on disk: the assumption had to be RUN.
+  if (process.env.FLOW_BLOCKERS_OFF !== '1' && !existsSync(join(root, '.flow', 'blockers-off'))) {
+    const reg = join(root, '.flow', 'plan', 'blockers.md');
+    if (!existsSync(reg)) {
+      deny(
+        'Flow plan gate: PLAN has no blocker register - .flow/plan/blockers.md is not there.' + NL + NL +
+        'Step 5 asks every expert what would stop BUILD in their domain, classifies each one' + NL +
+        '`decide`, `obtain` or `prove`, and clears it here rather than mid-phase. Write the' + NL +
+        'register even if the answer is none - the sweep has to be something that happened,' + NL +
+        'not something that was skipped quietly.' + NL + NL +
+        'Format: references/blockers.md in the plan skill.' + NL +
+        'Only the owner can suspend this (.flow/blockers-off).' +
+        (via ? NL + '(target: ' + norm(targetPath) + ', via ' + via + ')' : '')
+      );
+    }
+
+    let text = '';
+    try { text = readFileSync(reg, 'utf8'); } catch { text = ''; }
+    const rows = text.split(NL);
+    const start = rows.findIndex((l) => /^#{2,4}\s+blockers\b/i.test(l.trim()));
+    const bad = [];
+    if (start >= 0) {
+      let bullet = null;
+      const check = () => {
+        if (!bullet) return;
+        const line = bullet.replace(/\s+/g, ' ').trim();
+        bullet = null;
+        if (!/^[-*]\s*\[( |x)\]/i.test(line)) return;             // not a blocker row
+        const short = line.slice(0, 88);
+        const cls = /`?\b(decide|obtain|prove)\b`?/i.exec(line);
+        if (!cls) { bad.push([short, 'names no class - decide, obtain or prove']); return; }
+        const done = /^[-*]\s*\[x\]/i.test(line);
+        if (!done) {
+          // Deferring is allowed; deferring silently is not.
+          if (!/(does not block|not needed before build|after build|post-build|not a build blocker)/i.test(line)) {
+            bad.push([short, 'open, and does not say why it is not a BUILD blocker']);
+          }
+          return;
+        }
+        if (!/\bresolved\s*:/i.test(line)) {
+          bad.push([short, 'ticked, but does not say what resolved it']);
+          return;
+        }
+        if (/^prove$/i.test(cls[1])) {
+          const m = line.match(/((?:\.?[\w.@-]+\/)+[\w.@-]+)/);
+          if (!m) { bad.push([short, 'a resolved `prove` must name its spike file']); return; }
+          const rel = m[1].replace(/[),.]+$/, '');
+          if (!existsSync(join(root, rel))) {
+            bad.push([short, rel + ' is not on disk - the assumption was asserted, not run']);
+          }
+        }
+      };
+      for (let i = start + 1; i < rows.length; i++) {
+        const l = rows[i];
+        if (/^#{1,4}\s/.test(l)) break;
+        if (/^\s*[-*]\s/.test(l)) { check(); bullet = l; continue; }
+        if (bullet && /^\s+\S/.test(l)) { bullet += ' ' + l; continue; }
+        check();
+      }
+      check();
+    }
+
+    if (bad.length) {
+      deny(
+        'Flow plan gate: ' + bad.length + ' blocker' + (bad.length > 1 ? 's are' : ' is') +
+        ' not cleared in .flow/plan/blockers.md.' + NL + NL +
+        bad.map(([t, why]) => '  ' + t + NL + '    -> ' + why).join(NL) + NL + NL +
+        'A blocker costs minutes here and a day mid-phase. Clear it, or say on its line why it' + NL +
+        'does not block BUILD.' + NL + NL +
+        'A `prove` blocker is cleared by RUNNING something - enumerate what the thing you are' + NL +
+        'mirroring actually does, call the endpoint once, insert one awkward row - and naming' + NL +
+        'the write-up in .flow/plan/spikes/. Confidence is not evidence: "it mirrors OpenPlay"' + NL +
+        'was believed by everyone and the gap surfaced after the tournament was built.' + NL + NL +
+        'Format: references/blockers.md in the plan skill.' + NL +
+        'Bypass once: FLOW_BLOCKERS_OFF=1   Suspend for the project: .flow/blockers-off'
+      );
+    }
   }
 
   // The pictures, not just the page. "It produced an artifact" was satisfiable by a page with

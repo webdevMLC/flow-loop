@@ -128,7 +128,38 @@ assumptions that shape the product, and recording one silently is exactly how a 
 reaches twenty green phases of the wrong thing. If the owner is unavailable, PLAN stops with
 the questions ready.
 
-## Step 5 — write the project skill
+## Step 5 — the blockers, found and cleared
+
+Read `references/blockers.md`. **Ask every expert for blockers, not only gaps** — what would
+stop BUILD in their domain. Then classify each one and clear it here, because a blocker costs
+minutes now and a day mid-phase.
+
+| Class | What it is | Cleared by |
+|---|---|---|
+| **`decide`** | a question only the owner can answer | it joins the step 4 batch |
+| **`obtain`** | a credential, a sandbox, a spec, a dataset, an account | a person producing it |
+| **`prove`** | an assumption the plan rests on that nobody has tested | **a spike — running something** |
+
+**`prove` is the class that ships broken products**, because it does not feel like a blocker.
+It feels like confidence. *"It mirrors OpenPlay"* was a `prove` blocker nobody wrote down, and
+the gap surfaced after the tournament was built. **An assumption load-bearing enough that the
+plan would change if it were false is a blocker, however sure everyone is.**
+
+A spike is the smallest thing that answers yes or no — enumerate what X actually does, call the
+endpoint once, insert one awkward row — run on a disposable copy, **never in the project's
+source tree**, and written up in `.flow/plan/spikes/<id>-<slug>.md` with what changed in the
+plan because of it.
+
+The register is `.flow/plan/blockers.md`, and the plan gate reads it: every blocker carries a
+class, every resolved one says what settled it, **every resolved `prove` names a spike file
+that exists**, and an open blocker stops the confirmation unless its line says why it does not
+block BUILD.
+
+**This does not mean BUILD never stops.** Some blockers are only discoverable by building, and
+a stop to push, to spend money or to touch secrets is a safety boundary working. What it means
+is that no *knowable* blocker reaches BUILD unresolved, and no assumption goes untested.
+
+## Step 6 — write the project skill
 
 The durable artifact. It lives at **`.claude/skills/<project>/SKILL.md`** with
 `flow-project-skill: true` in its frontmatter — a real skill, auto-loaded by every session in
@@ -140,7 +171,7 @@ pass drives the flows it names; a session six weeks from now loads it before tou
 boundaries · which document decides which values · the milestones as jobs delivered ·
 decisions taken, with who took them · open questions, never assumptions.
 
-## Step 6 — draw it, and publish the plan as an artifact
+## Step 7 — draw it, and publish the plan as an artifact
 
 **The owner reviews pictures, not prose.** Read `references/artifact.md` and publish one
 artifact — or write `.flow/plan/index.html` where no artifact tool exists — that shows:
@@ -161,7 +192,7 @@ characters — because that is what the plan gate checks. Then put the artifact 
 message with one sentence: *open this, look at the flows and the screens, and if that is the
 product you want, run the command at the bottom.*
 
-## Step 7 — the owner confirms
+## Step 8 — the owner confirms
 
 **That is the gate.** PLAN is not done when the skill is written; it is done when the owner
 has looked at the flows and the screens and said yes — by creating `.flow/plan-confirmed` with

@@ -22,6 +22,8 @@ const hashOf = (dir, rel) => createHash('sha256')
   .update(readFileSync(join(dir, rel), 'utf8').split(CRLF).join(LF).trimEnd(), 'utf8')
   .digest('hex').slice(0, 12);
 
+const REG = '.flow/plan/blockers.md';
+const CLEAR = '## Blockers\n\n- [x] **B1** Sandbox credentials · `obtain` · resolved: owner supplied\n';
 const SHOT = '.flow/plan/screens/create-tournament.png';
 const SHOT2 = '.flow/plan/screens/create-tournament-mobile.png';
 // Not a real PNG; the gate reads the name and the byte length, never the pixels.
@@ -98,7 +100,7 @@ describe('the plan gate - no code until PLAN has run', () => {
 
 describe('the confirmation gate - no code until the owner said yes', () => {
   test('a skill with no confirmation is denied, and the message carries the exact command', () => {
-    const dir = fixture({ '.flow/STATE.md': STATE, '.claude/skills/acme/SKILL.md': SKILL, [ART]: PLAN, [SHOT]: PIXELS });
+    const dir = fixture({ '.flow/STATE.md': STATE, '.claude/skills/acme/SKILL.md': SKILL, [ART]: PLAN, [SHOT]: PIXELS, [REG]: CLEAR });
     const r = write(dir, 'src/ledger.ts');
     assert.equal(r.allowed, false);
     assert.match(r.reason, /not been confirmed by the owner/);
@@ -106,20 +108,20 @@ describe('the confirmation gate - no code until the owner said yes', () => {
   });
 
   test('the right hash allows the write', () => {
-    const dir = fixture({ '.flow/STATE.md': STATE, '.claude/skills/acme/SKILL.md': SKILL, [ART]: PLAN, [SHOT]: PIXELS });
+    const dir = fixture({ '.flow/STATE.md': STATE, '.claude/skills/acme/SKILL.md': SKILL, [ART]: PLAN, [SHOT]: PIXELS, [REG]: CLEAR });
     writeFileSync(join(dir, '.flow/plan-confirmed'), confirm(dir) + '\n');
     assert.equal(write(dir, 'src/ledger.ts').allowed, true);
   });
 
   test('a confirmation written by PowerShell (UTF-16 with BOM) still counts', () => {
-    const dir = fixture({ '.flow/STATE.md': STATE, '.claude/skills/acme/SKILL.md': SKILL, [ART]: PLAN, [SHOT]: PIXELS });
+    const dir = fixture({ '.flow/STATE.md': STATE, '.claude/skills/acme/SKILL.md': SKILL, [ART]: PLAN, [SHOT]: PIXELS, [REG]: CLEAR });
     const h = confirm(dir);
     writeFileSync(join(dir, '.flow/plan-confirmed'), Buffer.concat([Buffer.from([0xff, 0xfe]), Buffer.from(h + '\r\n', 'utf16le')]));
     assert.equal(write(dir, 'src/ledger.ts').allowed, true);
   });
 
   test('changing the skill after confirmation makes the confirmation stale', () => {
-    const dir = fixture({ '.flow/STATE.md': STATE, '.claude/skills/acme/SKILL.md': SKILL, [ART]: PLAN, [SHOT]: PIXELS });
+    const dir = fixture({ '.flow/STATE.md': STATE, '.claude/skills/acme/SKILL.md': SKILL, [ART]: PLAN, [SHOT]: PIXELS, [REG]: CLEAR });
     writeFileSync(join(dir, '.flow/plan-confirmed'), confirm(dir));
     writeFileSync(join(dir, '.claude/skills/acme/SKILL.md'), SKILL + '\n## A new section the owner has not seen\n');
     const r = write(dir, 'src/ledger.ts');
@@ -135,7 +137,7 @@ describe('the confirmation gate - no code until the owner said yes', () => {
   });
 
   test('a Windows path is handled', () => {
-    const dir = fixture({ '.flow/STATE.md': STATE, '.claude/skills/acme/SKILL.md': SKILL, [ART]: PLAN, [SHOT]: PIXELS });
+    const dir = fixture({ '.flow/STATE.md': STATE, '.claude/skills/acme/SKILL.md': SKILL, [ART]: PLAN, [SHOT]: PIXELS, [REG]: CLEAR });
     writeFileSync(join(dir, '.flow/plan-confirmed'), confirm(dir));
     const winPath = join(dir, 'src', 'ledger.ts').split('/').join(String.fromCharCode(92));
     const r = runHook(PLAN_GATE, { tool_name: 'Edit', tool_input: { file_path: winPath } });
@@ -151,7 +153,7 @@ describe('the UAT ceiling - judgement does not pile up unjudged', () => {
     return s;
   };
   const planned = (extra) => {
-    const dir = fixture({ '.flow/STATE.md': STATE, '.claude/skills/acme/SKILL.md': SKILL, [ART]: PLAN, [SHOT]: PIXELS, ...extra });
+    const dir = fixture({ '.flow/STATE.md': STATE, '.claude/skills/acme/SKILL.md': SKILL, [ART]: PLAN, [SHOT]: PIXELS, [REG]: CLEAR, ...extra });
     writeFileSync(join(dir, '.flow/plan-confirmed'), confirm(dir));
     return dir;
   };
@@ -235,7 +237,7 @@ describe('robustness', () => {
 
 describe('bypasses found by the v2 audit - each verified, each now closed', () => {
   const planned = (extra = {}) => {
-    const dir = fixture({ '.flow/STATE.md': STATE, '.claude/skills/acme/SKILL.md': SKILL, [ART]: PLAN, [SHOT]: PIXELS, ...extra });
+    const dir = fixture({ '.flow/STATE.md': STATE, '.claude/skills/acme/SKILL.md': SKILL, [ART]: PLAN, [SHOT]: PIXELS, [REG]: CLEAR, ...extra });
     writeFileSync(join(dir, '.flow/plan-confirmed'), confirm(dir));
     return dir;
   };
@@ -329,7 +331,7 @@ describe('NotebookEdit - found while explaining the limits', () => {
 });
 
 describe('the record cannot be deleted - rm -rf .flow disarmed four rules', () => {
-  const F = () => fixture({ '.flow/STATE.md': STATE, '.claude/skills/acme/SKILL.md': SKILL, [ART]: PLAN, [SHOT]: PIXELS });
+  const F = () => fixture({ '.flow/STATE.md': STATE, '.claude/skills/acme/SKILL.md': SKILL, [ART]: PLAN, [SHOT]: PIXELS, [REG]: CLEAR });
 
   test('the state file and the record directory are protected, in every spelling', () => {
     const dir = F();
@@ -380,17 +382,17 @@ describe('PLAN drew nothing - the owner confirmed a hash of prose', () => {
     const r = write(dir, 'src/ledger.ts');
     assert.equal(r.allowed, false);
     assert.match(r.reason, /drew nothing/);
-    assert.match(r.reason, /step 6 was skipped/);
+    assert.match(r.reason, /step 7 was skipped/);
     assert.match(r.reason, new RegExp('\\.flow/plan/index\\.html'));
   });
 
   test('the drawing alone is not enough - it still needs confirming', () => {
-    const dir = fixture({ '.flow/STATE.md': STATE, '.claude/skills/acme/SKILL.md': SKILL, [ART]: PLAN, [SHOT]: PIXELS });
+    const dir = fixture({ '.flow/STATE.md': STATE, '.claude/skills/acme/SKILL.md': SKILL, [ART]: PLAN, [SHOT]: PIXELS, [REG]: CLEAR });
     assert.equal(write(dir, 'src/ledger.ts').allowed, false);
   });
 
   test('the confirmation certifies the drawing too, so changing it goes stale', () => {
-    const dir = fixture({ '.flow/STATE.md': STATE, '.claude/skills/acme/SKILL.md': SKILL, [ART]: PLAN, [SHOT]: PIXELS });
+    const dir = fixture({ '.flow/STATE.md': STATE, '.claude/skills/acme/SKILL.md': SKILL, [ART]: PLAN, [SHOT]: PIXELS, [REG]: CLEAR });
     writeFileSync(join(dir, '.flow/plan-confirmed'), confirm(dir));
     assert.equal(write(dir, 'src/ledger.ts').allowed, true);
 
@@ -402,7 +404,7 @@ describe('PLAN drew nothing - the owner confirmed a hash of prose', () => {
   });
 
   test('a confirmation naming only the skill is refused', () => {
-    const dir = fixture({ '.flow/STATE.md': STATE, '.claude/skills/acme/SKILL.md': SKILL, [ART]: PLAN, [SHOT]: PIXELS });
+    const dir = fixture({ '.flow/STATE.md': STATE, '.claude/skills/acme/SKILL.md': SKILL, [ART]: PLAN, [SHOT]: PIXELS, [REG]: CLEAR });
     writeFileSync(join(dir, '.flow/plan-confirmed'), hashOf(dir, '.claude/skills/acme/SKILL.md'));
     assert.equal(write(dir, 'src/ledger.ts').allowed, false);
   });
@@ -424,7 +426,7 @@ describe('PLAN drew nothing - the owner confirmed a hash of prose', () => {
 
 
 describe('the plan has to show the product, not describe it', () => {
-  const base = { '.flow/STATE.md': STATE, '.claude/skills/acme/SKILL.md': SKILL, [ART]: PLAN };
+  const base = { '.flow/STATE.md': STATE, '.claude/skills/acme/SKILL.md': SKILL, [ART]: PLAN, [REG]: CLEAR };
 
   test('a page with no captured screen is denied', () => {
     const r = write(fixture(base), 'src/ledger.ts');
@@ -473,7 +475,7 @@ describe('the plan has to show the product, not describe it', () => {
 describe('a redesign is waiting for the owner - /flow:uiux cannot apply what nobody has seen', () => {
   // A confirmed plan, so only the redesign stands between the loop and source.
   const planned = () => {
-    const dir = fixture({ '.flow/STATE.md': STATE, '.claude/skills/acme/SKILL.md': SKILL, [ART]: PLAN, [SHOT]: PIXELS });
+    const dir = fixture({ '.flow/STATE.md': STATE, '.claude/skills/acme/SKILL.md': SKILL, [ART]: PLAN, [SHOT]: PIXELS, [REG]: CLEAR });
     writeFileSync(join(dir, '.flow/plan-confirmed'), confirm(dir));
     return dir;
   };
@@ -547,5 +549,104 @@ describe('a redesign is waiting for the owner - /flow:uiux cannot apply what nob
     const dir = planned();
     assert.equal(write(dir, AFTER).allowed, true);
     assert.equal(write(dir, '.flow/uiux/pending').allowed, true);
+  });
+});
+
+
+describe('blockers are cleared before BUILD, not discovered during it', () => {
+  const withReg = (body) => ({
+    '.flow/STATE.md': STATE, '.claude/skills/acme/SKILL.md': SKILL,
+    [ART]: PLAN, [SHOT]: PIXELS, [REG]: body,
+  });
+
+  test('no register at all is denied - the sweep has to have happened', () => {
+    const dir = fixture({ '.flow/STATE.md': STATE, '.claude/skills/acme/SKILL.md': SKILL, [ART]: PLAN, [SHOT]: PIXELS });
+    const r = write(dir, 'src/ledger.ts');
+    assert.equal(r.allowed, false);
+    assert.match(r.reason, /no blocker register/);
+  });
+
+  test('an empty register passes - no blockers found is an answer', () => {
+    const dir = fixture(withReg('## Blockers\n\nNone found.\n'));
+    writeFileSync(join(dir, '.flow/plan-confirmed'), confirm(dir));
+    assert.equal(write(dir, 'src/ledger.ts').allowed, true);
+  });
+
+  test('a blocker with no class is denied', () => {
+    const dir = fixture(withReg('## Blockers\n\n- [x] **B1** Something · resolved: somehow\n'));
+    const r = write(dir, 'src/ledger.ts');
+    assert.equal(r.allowed, false);
+    assert.match(r.reason, /names no class/);
+  });
+
+  test('an open blocker stops the plan unless it says why it does not block BUILD', () => {
+    const open = fixture(withReg('## Blockers\n\n- [ ] **B1** Which document sets the rate? · `decide`\n'));
+    const r = write(open, 'src/ledger.ts');
+    assert.equal(r.allowed, false);
+    assert.match(r.reason, /does not say why it is not a BUILD blocker/);
+
+    const deferred = fixture(withReg(
+      '## Blockers\n\n- [ ] **B1** Production account · `obtain` · open - not needed before BUILD\n'));
+    writeFileSync(join(deferred, '.flow/plan-confirmed'), confirm(deferred));
+    assert.equal(write(deferred, 'src/ledger.ts').allowed, true);
+  });
+
+  test('a ticked blocker that does not say what resolved it is denied', () => {
+    const dir = fixture(withReg('## Blockers\n\n- [x] **B1** Sandbox account · `obtain`\n'));
+    const r = write(dir, 'src/ledger.ts');
+    assert.equal(r.allowed, false);
+    assert.match(r.reason, /does not say what resolved it/);
+  });
+
+  // The one that matters: confidence is not evidence.
+  test('a resolved `prove` with no spike file is denied', () => {
+    const dir = fixture(withReg(
+      '## Blockers\n\n- [x] **B2** "It mirrors OpenPlay" · `prove` · resolved: it does, I checked\n'));
+    const r = write(dir, 'src/ledger.ts');
+    assert.equal(r.allowed, false);
+    assert.match(r.reason, /must name its spike file/);
+    assert.match(r.reason, /Confidence is not evidence/);
+  });
+
+  test('a resolved `prove` naming a spike that is not on disk is denied', () => {
+    const dir = fixture(withReg(
+      '## Blockers\n\n- [x] **B2** "It mirrors OpenPlay" · `prove` ·\n' +
+      '      resolved: .flow/plan/spikes/b2-openplay.md - it does not cover superseded-paid\n'));
+    const r = write(dir, 'src/ledger.ts');
+    assert.equal(r.allowed, false);
+    assert.match(r.reason, /is not on disk/);
+    assert.match(r.reason, /asserted, not run/);
+  });
+
+  test('a resolved `prove` whose spike exists passes', () => {
+    const dir = fixture({
+      ...withReg('## Blockers\n\n- [x] **B2** "It mirrors OpenPlay" · `prove` ·\n' +
+        '      resolved: .flow/plan/spikes/b2-openplay.md - it does not cover superseded-paid\n'),
+      '.flow/plan/spikes/b2-openplay.md': '# B2\nRan it. Two paths missing. D4 and D5 added.\n',
+    });
+    writeFileSync(join(dir, '.flow/plan-confirmed'), confirm(dir));
+    assert.equal(write(dir, 'src/ledger.ts').allowed, true);
+  });
+
+  test('`decide` and `obtain` need no spike - only `prove` does', () => {
+    const dir = fixture(withReg('## Blockers\n\n' +
+      '- [x] **B1** Who owns the ledger? · `decide` · resolved: the organiser, owner 2026-09-11\n' +
+      '- [x] **B3** Sandbox account · `obtain` · resolved: supplied, one call verified\n'));
+    writeFileSync(join(dir, '.flow/plan-confirmed'), confirm(dir));
+    assert.equal(write(dir, 'src/ledger.ts').allowed, true);
+  });
+
+  test('the escapes are the owner\'s', () => {
+    const body = withReg('## Blockers\n\n- [ ] **B1** unresolved · `decide`\n');
+    assert.equal(write(fixture(body), 'src/ledger.ts').allowed, false);
+    assert.equal(runHook(PLAN_GATE, {
+      tool_name: 'Write', tool_input: { file_path: join(fixture(body), 'src/ledger.ts') },
+    }, { FLOW_BLOCKERS_OFF: '1' }).allowed, false, 'the plan is still unconfirmed - but not for blockers');
+
+    const dir = fixture({ ...body, '.flow/blockers-off': '' });
+    writeFileSync(join(dir, '.flow/plan-confirmed'), confirm(dir));
+    assert.equal(write(dir, 'src/ledger.ts').allowed, true);
+    // and the loop cannot create that file
+    assert.equal(write(fixture(body), '.flow/blockers-off').allowed, false);
   });
 });

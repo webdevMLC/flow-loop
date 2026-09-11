@@ -104,7 +104,8 @@ describe('skill cross-references', () => {
 describe('the enforced-rule count is not a claim', () => {
   const read = (f) => readFileSync(join(ROOT, f), 'utf8');
   const WORDS = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight',
-    'nine', 'ten', 'eleven', 'twelve'];
+    'nine', 'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen',
+    'seventeen', 'eighteen', 'nineteen', 'twenty'];
 
   // The enforcement table is the one whose rows all start with a bold rule name and whose
   // header names the enforcement. Count its body rows.
@@ -126,6 +127,7 @@ describe('the enforced-rule count is not a claim', () => {
     const skill = read('skills/loop/SKILL.md');
     const m = /\bThe (\w+) above are not\b/.exec(skill);
     assert.ok(m, 'skills/loop/SKILL.md no longer says "The N above are not"');
+    assert.ok(WORDS[n], `WORDS has no word for ${n} - extend it`);
     assert.equal(m[1].toLowerCase(), WORDS[n], `the table has ${n} rules`);
 
     const readme = read('README.md');

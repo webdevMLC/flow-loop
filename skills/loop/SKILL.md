@@ -22,6 +22,7 @@ they deny the action, and no prose can talk past them:
 | **No code until the owner confirmed the plan** | denied until `.flow/plan-confirmed` holds the skill's hash. **The loop is denied from writing that file.** The owner does, after reading the flows |
 | **PLAN drew what you confirmed** | source writes are denied until `.flow/plan/index.html` exists, and `.flow/plan-confirmed` certifies **both** the skill and the drawing — redraw a screen and the confirmation goes stale |
 | **A redesign is applied only after the owner saw it** | while `.flow/uiux/pending` names a capture set the owner has not confirmed in `.flow/uiux-confirmed`, source writes are denied and the marker cannot be deleted — `/flow:uiux` shows the designed screens as images, before and after, and waits |
+| **Known blockers are cleared before BUILD** | source writes are denied while `.flow/plan/blockers.md` is missing, or holds a blocker with no class, an open one that does not say why it is not a BUILD blocker, or a resolved `prove` whose spike file is not on disk |
 | **Every acceptance criterion cites the plan** | `git commit` is denied if any criterion in the current phase lacks `from:` |
 | **Test-first on logic** | Write/Edit to a guarded source file with no covering test is denied |
 | **The state file keeps up** | `git commit` is denied if source changed and `STATE.md` did not, three commits running |
@@ -33,7 +34,7 @@ they deny the action, and no prose can talk past them:
 
 Everything else in this file and its references is **discipline** — followed because it is
 read, and it is written to be read at the moment it applies. Where a rule below is discipline,
-it says so. The twelve above are not.
+it says so. The thirteen above are not.
 
 **They constrain actions, not judgement.** A hook can stop a file being written. It cannot stop
 the *wrong* file being written: the citation gate checks that `from:` resolves to a real
@@ -115,7 +116,10 @@ owner before anything is built.** It puts the three-to-seven shape-changing deci
 and those stop and ask **even under a standing autonomous mode.** Then it writes the project
 skill, and the owner confirms it. The plan gate holds every source write until they have.
 
-It draws every flow, **designs every screen a job lands on and captures it as an image** —
+It sweeps every expert for **what would stop BUILD** and clears it here — a decision, a
+credential, or an assumption nobody has tested, which is cleared by **running a spike**, not by
+being confident. It draws every flow, **designs every screen a job lands on and captures it as
+an image** —
 in the project theme, with real content, not grey boxes — publishes them as an artifact,
 and the owner confirms from *that* — the picture that would have shown a tournament with
 nowhere to appear. Runs at a new project, an adoption, a milestone or module boundary — a
