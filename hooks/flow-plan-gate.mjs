@@ -54,7 +54,7 @@ const SHELL_TOOLS = new Set(['Bash', 'PowerShell', 'local_shell', 'shell', 'shel
 const OWNER_ONLY = ['.flow/plan-confirmed', '.flow/allow-push', '.flow/plan-off',
   '.flow/cite-off', '.flow/tdd-off', '.flow/verify-off', '.flow/evidence-off',
   '.flow/fanout-off', '.flow/uiux-confirmed', '.flow/blockers-off',
-  '.flow/uat-ceiling'];
+  '.flow/uat-trust', '.flow/uat-ceiling'];
 
 const norm = (s) => String(s).split(BACKSLASH).join('/');
 
@@ -148,14 +148,43 @@ const confirmedHash = (root, name = 'plan-confirmed') => {
   } catch { return null; }
 };
 
-const openUat = (root) => {
+// A `by person` entry carries a class. `judgement` - wording, a default, an empty state -
+// has a defensible professional answer, and the loop may give it when the owner has said so.
+// `owner` - a rate, a threshold, who may do what - never does. An unclassified entry reads as
+// `owner`: failing closed is the point, because a question nobody classed is not one the loop
+// gets to answer.
+const uatEntries = (root) => {
   const f = join(root, '.flow', 'UAT.md');
-  if (!existsSync(f)) return 0;
-  try {
-    return readFileSync(f, 'utf8').split(NL)
-      .filter((l) => /^###\s/.test(l) && /\bopen\s*$/i.test(l)).length;
-  } catch { return 0; }
+  if (!existsSync(f)) return [];
+  let text = '';
+  try { text = readFileSync(f, 'utf8'); } catch { return []; }
+  const out = [];
+  const lines = text.split(NL);
+  for (let i = 0; i < lines.length; i++) {
+    if (!/^###\s/.test(lines[i])) continue;
+    let body = '';
+    for (let k = i + 1; k < lines.length && !/^###\s/.test(lines[k]); k++) body += lines[k] + NL;
+    out.push({
+      head: lines[i].replace(/^###\s*/, '').trim(),
+      judgement: /`?\bjudgement\b`?/i.test(lines[i]),
+      open: /\bopen\s*$/i.test(lines[i]),
+      byAgent: /\*\*answered:?\*\*:?\s*agent\b/i.test(body) || /\banswered\s*:\s*agent\b/i.test(body),
+    });
+  }
+  return out;
 };
+
+// The ceiling exists so judgement does not pile up unjudged. Once the owner has delegated the
+// judgement class, those entries are not waiting on a person, so they stop counting.
+const openUat = (root) => {
+  const trusted = process.env.FLOW_UAT_TRUST === '1'
+    || existsSync(join(root, '.flow', 'uat-trust'));
+  return uatEntries(root).filter((e) => e.open && (!trusted || !e.judgement)).length;
+};
+
+// The safety property: the loop may never answer a question only the owner can answer.
+const uatSelfAnswered = (root) =>
+  uatEntries(root).filter((e) => e.byAgent && !e.judgement).map((e) => e.head);
 
 const uatCeiling = (root) => {
   const f = join(root, '.flow', 'uat-ceiling');
@@ -416,6 +445,24 @@ const checkWrite = (targetPath, via) => {
     );
   }
 
+  const selfAnswered = uatSelfAnswered(root);
+  if (selfAnswered.length) {
+    deny(
+      'Flow plan gate: ' + selfAnswered.length + ' `by person` question' +
+      (selfAnswered.length > 1 ? 's were' : ' was') + ' answered by the loop, and ' +
+      (selfAnswered.length > 1 ? 'they are' : 'it is') + ' not the loop\'s to answer.' + NL + NL +
+      selfAnswered.map((h) => '  ' + h.slice(0, 92)).join(NL) + NL + NL +
+      'Only a `judgement` entry may be answered by the loop - wording, a default, an empty' + NL +
+      'state, a convention: where a professional standard settles it and being wrong costs a' + NL +
+      'revision. An `owner` entry is a rate, a threshold, who may do what, a domain rule.' + NL +
+      'Being wrong there costs money or ships the wrong product, and no amount of best' + NL +
+      'practice produces the answer.' + NL + NL +
+      'An entry with no class reads as `owner`. If this one really is judgement, class it in' + NL +
+      'the heading and name the standard that settles it. Otherwise ask the owner.' + NL + NL +
+      'references/uat.md in the loop skill.'
+    );
+  }
+
   const open = openUat(root);
   const ceiling = uatCeiling(root);
   if (open > ceiling) {
@@ -423,7 +470,11 @@ const checkWrite = (targetPath, via) => {
       'Flow plan gate: ' + open + ' `by person` questions are open in .flow/UAT.md (ceiling ' + ceiling + ').' + NL + NL +
       'Judgement piling up unjudged is the same failure as tests nobody runs - every phase' + NL +
       'after this is built on questions nobody answered. Ask the owner to answer them; it is' + NL +
-      'usually ten minutes. Only they raise the ceiling (.flow/uat-ceiling).'
+      'usually ten minutes. Only they raise the ceiling (.flow/uat-ceiling).' + NL + NL +
+      'If these are wording-and-default questions rather than decisions only they can make,' + NL +
+      'class them judgement - the loop answers those against a named standard and records the' + NL +
+      'reasoning, so the owner can overturn it in a sentence. They delegate with' + NL +
+      '.flow/uat-trust, and autonomous mode already implies it. owner entries always wait.'
     );
   }
 };

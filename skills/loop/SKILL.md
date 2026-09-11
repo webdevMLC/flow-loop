@@ -28,13 +28,14 @@ they deny the action, and no prose can talk past them:
 | **The state file keeps up** | `git commit` is denied if source changed and `STATE.md` did not, three commits running |
 | **Never push** | `git push` is denied unless `.flow/allow-push` exists — another file the loop cannot create |
 | **Judgement does not pile up** | source writes are denied past 5 open `by person` entries in `.flow/UAT.md` |
+| **The loop never answers the owner’s questions** | a `by person` entry in `.flow/UAT.md` marked answered by the agent must be classed `` `judgement` `` — an `owner` entry, or one with no class, denies the write |
 | **A closed `by artifact` criterion has its artifact** | `git commit` is denied when a criterion ticked done and classed `by artifact` names a file that is not on disk — this is what makes SHIP’s data pass and the screen audit mechanical |
 | **Verification is tiered, not uniform** | a `Workflow` script that spawns a literal number of verifiers per finding is denied — BLOCKER up to 3 sequential, MAJOR 1, MINOR 0. Three measured runs spent 48, 61 and 155 agents ignoring the prose version of this rule |
 | **The record cannot be deleted** | `rm -rf .flow`, `rm .flow/STATE.md`, `git clean -fdx` and their PowerShell and `git rm` spellings are denied — deleting the record does not suspend the rules, it makes four of them fall silent |
 
 Everything else in this file and its references is **discipline** — followed because it is
 read, and it is written to be read at the moment it applies. Where a rule below is discipline,
-it says so. The thirteen above are not.
+it says so. The fourteen above are not.
 
 **They constrain actions, not judgement.** A hook can stop a file being written. It cannot stop
 the *wrong* file being written: the citation gate checks that `from:` resolves to a real
@@ -166,8 +167,10 @@ largest recurring cost in the loop. `references/review.md`.
 
 **Every acceptance criterion says how it will be proven** — `by test`, `by artifact`, or
 `by person`. Unmarked means `by test`, and that default is how a system passes every gate
-while being unusable. `by person` criteria get a prepared question in `.flow/UAT.md` the loop
-never answers itself. **If a phase claims a person will see something, one criterion names the
+while being unusable. `by person` criteria get a prepared question in `.flow/UAT.md`, each classed
+`judgement` or `owner`. **The loop answers the `judgement` ones** — wording, a default, an
+empty state — against a named standard, recording the reasoning so you can overturn it in a
+sentence; it never answers an `owner` one, whatever mode it is in. **If a phase claims a person will see something, one criterion names the
 screen**, and the capture at desktop and 375px is what closes it. `references/evidence.md`.
 
 ### SHIP — the data pass, then hand it over

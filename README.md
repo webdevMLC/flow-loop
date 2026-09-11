@@ -59,6 +59,7 @@ Write, Edit, Bash and PowerShell.
 | Mode | Turn it on | What it does |
 |---|---|---|
 | **Autonomous** | say "autonomous" / "keep going, don't ask", or `.flow/autonomous` | stops asking during a run; questions become recorded assumptions. Covers *building* only |
+| **Trust judgement** | `.flow/uat-trust`, or autonomous, which implies it | the loop answers the `judgement` questions in `.flow/UAT.md` itself — wording, defaults, empty states — against a named standard, and records the reasoning. `owner` questions still wait for you |
 | **Overnight** | `/loop /flow:loop continue from .flow/STATE.md — budget: …` | survives past one session. **Omit the interval** — self-paced can stop itself |
 | **Non-stop build** | say "keep building", or `.flow/nonstop` | **keeps going after the roadmap is empty.** [detail](#non-stop-build) |
 | **Local services** | `allow local services` inside `.flow/nonstop` | may start a throwaway Postgres etc. rather than declaring itself blocked |
@@ -87,7 +88,7 @@ written for you.
 | `tdd-exempt` | **switch** | one path fragment per line — code genuinely outside TDD |
 | `plan-confirmed` | **owner only** | the hash of the project skill you read and approved — the loop is denied from writing it |
 | `allow-push` | **owner only** | opens the push gate for a session — the loop is denied from writing it |
-| `plan-off` · `cite-off` · `tdd-off` · `verify-off` · `evidence-off` · `fanout-off` · `uiux-confirmed` · `blockers-off` · `uat-ceiling` | **owner only** | every escape hatch — the loop is denied from creating any of them, by any tool |
+| `plan-off` · `cite-off` · `tdd-off` · `verify-off` · `evidence-off` · `fanout-off` · `uiux-confirmed` · `blockers-off` · `uat-trust` · `uat-ceiling` | **owner only** | every escape hatch — the loop is denied from creating any of them, by any tool |
 | `UAT.md` | written | `by person` questions waiting for you |
 | `ULTRA-<date>.md` · `DATATEST-` · `SECURITY-` · `UIUX-` · `OPS-` | written | a sealed inspection, its findings and their status — the roadmap sweep picks up any still open |
 | `MANIFEST.md` · `ARCHIVE.md` | written | what each phase shipped; how to revert it |
@@ -132,6 +133,7 @@ deny the action, and no prose can talk past them:
 | **The state file keeps up** | `git commit` is denied if source changed and `STATE.md` did not, three commits running — `-a`, a pathspec and `--amend` included |
 | **Never push** | `git push` is denied unless `.flow/allow-push` exists — another file the loop cannot create. Catches `bash -c`, `git.exe`, `git -C`, `gh pr create`, and a dry-run chained to a real one |
 | **Judgement does not pile up** | source writes are denied past 5 open `by person` questions in `.flow/UAT.md` |
+| **The loop never answers your questions** | a `by person` entry it answered itself must be classed `` `judgement` `` — wording, a default, an empty state, where a professional standard settles it. An `owner` entry (a rate, a threshold, who may do what) or one with no class denies the write. Unclassified fails closed on purpose |
 | **A closed `by artifact` criterion has its artifact** | `git commit` is denied when a criterion ticked done and classed `by artifact` names a file that is not on disk. This is what makes SHIP’s data pass and the screen audit mechanical rather than hoped-for |
 | **Verification is tiered, not uniform** | a `Workflow` script that spawns a fixed number of skeptics per finding is refused, with the tiering table in the denial. The count has to be a function of the finding’s severity. This is the single largest recurring cost in CHECK, and prose did not hold it |
 | **The record cannot be deleted** | `rm -rf .flow`, `rm .flow/STATE.md`, a `git clean -fdx` that would take it, and the same in PowerShell or `git rm`, are all denied — and so is deleting the project skill. Removing the record used to disarm four rules at once, silently. Nothing suspends this one |
@@ -528,7 +530,7 @@ times before this was automated, and `autoUpdate: true` does not close the gap o
 
 # Honest limits
 
-- **Thirteen rules are hooks. Everything else is an instruction Claude follows.** The thirteen are
+- **Fourteen rules are hooks. Everything else is an instruction Claude follows.** The fourteen are
   listed above, and each one has tests in `test/` that a release will not ship without. Everything else in this README — the panel's
   decisions stopping under autonomous mode, re-testing a stale blocker, reading a build's
   warnings, enumerating a "mirrors X", the adversarial pass — is discipline. Some of it could

@@ -1,7 +1,7 @@
 {
   "name": "flow",
-  "version": "2.5.0",
-  "description": "One development loop - PLAN, FRAME, BUILD, CHECK, SHIP - replacing separate memory, planning, context, TDD and review frameworks with a single protocol, hard loop guards, and thirteen rules enforced by hooks rather than instructions.",
+  "version": "2.6.0",
+  "description": "One development loop - PLAN, FRAME, BUILD, CHECK, SHIP - replacing separate memory, planning, context, TDD and review frameworks with a single protocol, hard loop guards, and fourteen rules enforced by hooks rather than instructions.",
   "author": {
     "name": "Micho Calma",
     "url": "https://github.com/webdevMLC"
@@ -25,7 +25,7 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "Flow",
-    "shortDescription": "One development loop - PLAN, FRAME, BUILD, CHECK, SHIP - with thirteen rules enforced by hooks",
+    "shortDescription": "One development loop - PLAN, FRAME, BUILD, CHECK, SHIP - with fourteen rules enforced by hooks",
     "developerName": "Micho Calma",
     "category": "Productivity"
   }

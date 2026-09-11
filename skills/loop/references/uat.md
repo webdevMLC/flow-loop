@@ -16,10 +16,70 @@ Write `.flow/UAT.md` — one entry per open criterion, appended as phases ship. 
 comes back, that file is the whole agenda. A night of work produces a queue someone clears in
 ten minutes, not a run that halted at 2am waiting to be asked a question.
 
+## Two classes, and only one of them has to wait for you
+
+Not every `by person` question needs the owner. Treating them alike is what makes the queue
+feel like a tax: a question about the wording of an error message stops the build with the
+same force as a question about the commission rate, and only one of those is worth stopping
+for.
+
+**Every entry carries a class, in its heading.**
+
+| Class | What it is | Who answers |
+|---|---|---|
+| **`judgement`** | a competent practitioner's answer is defensible, and being wrong costs a revision: wording, an empty state, a default, a layout, a convention, an error message | **the loop may answer it** under autonomous or `.flow/uat-trust` |
+| **`owner`** | only the owner knows, and being wrong costs money, breaks a policy, or produces the wrong product: a rate, a threshold, who may do what, a domain rule, anything about how their business actually works | **only the owner, always** |
+
+**An unclassified entry is treated as `owner`.** Failing closed is the point: a question
+nobody classed is not a question the loop gets to answer.
+
+The test for which class: *if the owner saw the answer a month later, would they be surprised
+it had been decided without them?* Surprise means `owner`. "That seems reasonable" means
+`judgement`.
+
+Two real ones, side by side:
+
+- *"Would an associate in the field know what to do next from each of these four refusal
+  messages?"* → **`judgement`.** There is a professional standard for this — say what went
+  wrong, say what to do next, no jargon, no blame — and the answer is checkable against it.
+- *"Is the recruiter's override 5% or 7%?"* → **`owner`.** No amount of best practice
+  produces that number, and getting it wrong puts the wrong figure on every statement.
+
+## When the loop answers a `judgement` entry
+
+Under autonomous, or when the owner has written `.flow/uat-trust`, the loop answers the
+`judgement` entries rather than queueing them. Three rules:
+
+**Answer against a named standard, not a preference.** "These meet the error-message standard:
+each says what went wrong and what to do next, none blames the user, none uses jargon" is an
+answer. "Looks fine to me" is not, and it is the failure mode this whole file exists to stop.
+
+**Record it as a decision, with the reasoning**, so the owner can overturn it in one sentence
+six weeks later:
+
+```markdown
+### A11 — the refusal and guidance messages · Phase 1 · `judgement` · closed
+
+**Look at:** `.flow/evidence/1/sign-in-wrong-password-desktop.png`
+
+**Question:** would an associate know what to do next from each of these four messages?
+
+**Answered:** agent · 2026-09-11 · **yes**
+Against the standard: each names what went wrong, each says what to do next, none blames the
+user, none leaks whether the email exists. The suspended message routes to a real person
+("ask your manager or the programme admin"), which is the part most systems get wrong.
+**Overturn this** by editing the answer — the wording is four strings in `messages.ts`.
+```
+
+**Never answer an `owner` entry**, however obvious it looks, however long it has waited, and
+however clearly autonomous mode is on. The plan gate refuses a commit where an `owner` entry
+is marked answered by the agent — the same way PLAN's shape-changing decisions stop even
+under a standing autonomous directive.
+
 ## One entry per open criterion
 
 ```markdown
-### A6 — the empty pipeline state · Phase 12 · open
+### A6 — the empty pipeline state · Phase 12 · `judgement` · open
 
 **Look at:** http://localhost:3100/pipeline with no leads, or
 `.flow/evidence/12/pipeline-empty.png`
@@ -33,10 +93,10 @@ playbook?
 **Answer:**
 ```
 
-The parts that matter: **one specific question**, the **artifact or the exact route**, and
-what each answer implies. A question like "does the UI look good?" cannot be answered and
-should never be written — if that is the best question available, the criterion was too vague
-at FRAME and the fix belongs there.
+The parts that matter: **one specific question**, the **class**, the **artifact or the exact
+route**, and what each answer implies. A question like "does the UI look good?" cannot be
+answered and should never be written — if that is the best question available, the criterion
+was too vague at FRAME and the fix belongs there.
 
 ## Running the session
 

@@ -650,3 +650,77 @@ describe('blockers are cleared before BUILD, not discovered during it', () => {
     assert.equal(write(fixture(body), '.flow/blockers-off').allowed, false);
   });
 });
+
+
+describe('judgement is the loop\'s to answer; the owner\'s questions are not', () => {
+  const entry = (id, cls, state, body) =>
+    '### ' + id + ' - a question - Phase 1 - ' + (cls ? cls + ' - ' : '') + state + '\n\n' + (body || '') + '\n';
+  const planned = (uat, extra) => {
+    const dir = fixture({
+      '.flow/STATE.md': STATE, '.claude/skills/acme/SKILL.md': SKILL,
+      [ART]: PLAN, [SHOT]: PIXELS, [REG]: CLEAR, '.flow/UAT.md': '# UAT\n' + uat, ...extra,
+    });
+    writeFileSync(join(dir, '.flow/plan-confirmed'), confirm(dir));
+    return dir;
+  };
+
+  test('the loop may not answer an owner question', () => {
+    const dir = planned(entry('A1', 'owner', 'closed', '**Answered:** agent - it is 5%'));
+    const r = write(dir, 'src/ledger.ts');
+    assert.equal(r.allowed, false);
+    assert.match(r.reason, /not the loop's to answer/);
+    assert.match(r.reason, /A1/);
+  });
+
+  test('an unclassified question is read as the owner\'s - failing closed', () => {
+    const dir = planned(entry('A2', '', 'closed', '**Answered:** agent - looked fine'));
+    const r = write(dir, 'src/ledger.ts');
+    assert.equal(r.allowed, false);
+    assert.match(r.reason, /no class reads as/);
+  });
+
+  test('the loop may answer a judgement question', () => {
+    const dir = planned(entry('A3', '`judgement`', 'closed',
+      '**Answered:** agent - against the error-message standard: each says what to do next'));
+    assert.equal(write(dir, 'src/ledger.ts').allowed, true);
+  });
+
+  test('a person answering an owner question is always fine', () => {
+    const dir = planned(entry('A4', 'owner', 'closed', '**Answer:** 7%, confirmed by the owner'));
+    assert.equal(write(dir, 'src/ledger.ts').allowed, true);
+  });
+
+  describe('the ceiling counts what a person still has to answer', () => {
+    const six = (cls) => Array.from({ length: 6 }, (_, i) => entry('A' + i, cls, 'open')).join('');
+
+    test('six open owner questions still stop the build', () => {
+      const r = write(planned(six('owner')), 'src/ledger.ts');
+      assert.equal(r.allowed, false);
+      assert.match(r.reason, /by person. questions are open/);
+    });
+
+    test('six open judgement questions stop it too, until the owner delegates', () => {
+      assert.equal(write(planned(six('`judgement`')), 'src/ledger.ts').allowed, false);
+    });
+
+    test('.flow/uat-trust takes judgement entries off the count', () => {
+      const dir = planned(six('`judgement`'), { '.flow/uat-trust': '' });
+      assert.equal(write(dir, 'src/ledger.ts').allowed, true);
+    });
+
+    test('delegating judgement does not relax the owner ones', () => {
+      const dir = planned(six('owner'), { '.flow/uat-trust': '' });
+      assert.equal(write(dir, 'src/ledger.ts').allowed, false);
+    });
+
+    test('the ceiling message points at the delegation', () => {
+      const r = write(planned(six('owner')), 'src/ledger.ts');
+      assert.match(r.reason, /uat-trust/);
+    });
+
+    test('the loop cannot grant itself the delegation', () => {
+      assert.equal(write(planned(''), '.flow/uat-trust').allowed, false);
+      assert.equal(bash(planned(''), 'echo x > .flow/uat-trust').allowed, false);
+    });
+  });
+});
