@@ -26,9 +26,12 @@ cheapest stage is the one you never earn the right to skip.
 
 1. **Typecheck** — `tsc --noEmit` or the language equivalent.
 2. **Lint** — the project's configured linter.
-3. **The full suite.** Not `test_fast`, not the affected subset. `test_fast` is what BUILD
-   runs between tasks; CHECK runs everything, because the defect a fast suite misses is
-   exactly the one that reaches a user.
+3. **The tests that touch this phase**, plus `test_fast`. Not the whole suite — a full run
+   on every phase is the single largest recurring cost in the loop, and on a mature project
+   it re-proves the same thousands of assertions a dozen times a day to catch a regression
+   the affected set would have caught anyway. **The full suite runs at a milestone, and in
+   `/flow:ultra`.** If the project cannot select affected tests, run the suite it has and
+   say so — an unselectable suite is a finding for `/flow:ops`, not a reason to skip.
 4. **The build.** `next build`, `cargo build --release`, whatever produces the artifact.
    **Unit tests never catch a server/client boundary violation, a bad import, or a route
    config error.** One project ran two days of green commits on a build that had not been
@@ -122,7 +125,24 @@ failure mode where every component is correct and the system does not work.
 
 ## Stage 3 — the adversarial pass
 
-Only now, and only on green. Spawn these **in a single message** so they run concurrently. Use
+**This stage does not run on most phases.** It is the expensive half of CHECK, and running it
+every phase is how a project spends more on being told its code is fine than on writing it.
+Run it when the phase meets one of these, and inline the lenses otherwise:
+
+| Run the pass when | Why |
+|---|---|
+| the phase touches **money, auth, PII, or outside input** | `references/threat.md` already says this work is different |
+| the phase is the **last before a milestone** | the boundary is where a wrong thing becomes expensive |
+| stage 2 found something and you want the neighbourhood swept | a real finding is evidence of more |
+| the owner asks | their call, always |
+
+Otherwise: read the diff yourself against the criteria, record that you did, and go to the
+verdict. **Everything this stage would have done is what `/flow:ultra` is for** — it inspects
+the system as built rather than one phase's diff, it is cheaper per defect because it is not
+paid on every phase, and it repairs what it finds. Reach for it before a pilot, at a
+milestone, or when the suite is green and nobody is convinced.
+
+When it does run: spawn these **in a single message** so they run concurrently. Use
 Sonnet, or Haiku for a small diff — never Opus. Each gets the diff scope and the acceptance
 criteria from STATE.md, and returns findings only.
 

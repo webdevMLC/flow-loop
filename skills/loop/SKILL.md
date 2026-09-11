@@ -20,17 +20,19 @@ they deny the action, and no prose can talk past them:
 |---|---|
 | **No code until PLAN has produced a project skill** | Write/Edit to source is denied while `.flow/STATE.md` exists and no `.claude/skills/*/SKILL.md` carries `flow-project-skill: true` |
 | **No code until the owner confirmed the plan** | denied until `.flow/plan-confirmed` holds the skill's hash. **The loop is denied from writing that file.** The owner does, after reading the flows |
+| **PLAN drew what you confirmed** | source writes are denied until `.flow/plan/index.html` exists, and `.flow/plan-confirmed` certifies **both** the skill and the drawing — redraw a screen and the confirmation goes stale |
 | **Every acceptance criterion cites the plan** | `git commit` is denied if any criterion in the current phase lacks `from:` |
 | **Test-first on logic** | Write/Edit to a guarded source file with no covering test is denied |
 | **The state file keeps up** | `git commit` is denied if source changed and `STATE.md` did not, three commits running |
 | **Never push** | `git push` is denied unless `.flow/allow-push` exists — another file the loop cannot create |
 | **Judgement does not pile up** | source writes are denied past 5 open `by person` entries in `.flow/UAT.md` |
 | **A closed `by artifact` criterion has its artifact** | `git commit` is denied when a criterion ticked done and classed `by artifact` names a file that is not on disk — this is what makes SHIP’s data pass and the screen audit mechanical |
+| **Verification is tiered, not uniform** | a `Workflow` script that spawns a literal number of verifiers per finding is denied — BLOCKER up to 3 sequential, MAJOR 1, MINOR 0. Three measured runs spent 48, 61 and 155 agents ignoring the prose version of this rule |
 | **The record cannot be deleted** | `rm -rf .flow`, `rm .flow/STATE.md`, `git clean -fdx` and their PowerShell and `git rm` spellings are denied — deleting the record does not suspend the rules, it makes four of them fall silent |
 
 Everything else in this file and its references is **discipline** — followed because it is
 read, and it is written to be read at the moment it applies. Where a rule below is discipline,
-it says so. The nine above are not.
+it says so. The eleven above are not.
 
 **They constrain actions, not judgement.** A hook can stop a file being written. It cannot stop
 the *wrong* file being written: the citation gate checks that `from:` resolves to a real
@@ -93,7 +95,7 @@ PLAN  ────────────────────────�
 | **PLAN** | the project skill, confirmed by the owner | frontier, concurrent experts | once per project or milestone — **never per phase** |
 | **FRAME** | goal + cited criteria + task list in `.flow/STATE.md` | cheap / inline | 1 recall + 1 survey + 1 question batch |
 | **BUILD** | working code + tests | **frontier** | no research; assumptions already fixed |
-| **CHECK** | one verdict report | machine first, then cheap subagents | 5 gating stages, 1 targeted re-verify |
+| **CHECK** | one verdict report | machine first, then cheap subagents | 3 gating stages; the adversarial pass only when the phase earns it |
 | **SHIP** | commit + data pass + memory write | inline, then one disposable-DB run | 1 pass |
 
 Every task commit carries its own `.flow/STATE.md` update — the commit gate enforces it.
@@ -143,14 +145,18 @@ assumption; a *false* one does not. Re-frame a wrong task before writing its cod
 phase outright when a criterion rests on a false premise. Two re-frames in one phase means the
 frame was wrong — stop.
 
-### CHECK — five stages, each gating the next
+### CHECK — three stages on most phases, five when it matters
 
-Machine (build, full suite, every project gate — and **read what it prints**, exit code 0 is
-not clean output), contract (the authority re-read, not just the criteria), composition (is the
-new code reachable, called, read; **do the rows it writes hold the right values**; does last
-phase's green still hold; the screen audited if one was touched), adversarial (the lenses, plus
-one that falsifies the SHIP report's own claims), verdict. A phase ships only when all five
-pass. `references/review.md`.
+Machine (build, **the affected tests plus `test_fast` — not the whole suite**, every project
+gate, and **read what it prints**: exit code 0 is not clean output), contract (the authority
+re-read, not just the criteria), composition (is the new code reachable, called, read; **do the
+rows it writes hold the right values**; the screen audited if a criterion names one), verdict.
+
+**The adversarial pass and the full suite are not per-phase work.** They run when the phase
+touches money, auth, PII or outside input, at a milestone, or when stage 2 found something —
+and otherwise they belong to `/flow:ultra`, which inspects the system as built and repairs
+what it finds. A per-phase adversarial pass re-proves the same code every phase and is the
+largest recurring cost in the loop. `references/review.md`.
 
 **Every acceptance criterion says how it will be proven** — `by test`, `by artifact`, or
 `by person`. Unmarked means `by test`, and that default is how a system passes every gate
@@ -160,10 +166,12 @@ screen**, and the capture at desktop and 375px is what closes it. `references/ev
 
 ### SHIP — the data pass, then hand it over
 
-Before the commit that closes the phase: **drive the project skill's core flows end to end
-against a disposable database and read the rows.** Not this phase's writes — CHECK did that.
-The *product's* flows, as the skill names them, to prove this phase did not break the thing
-the owner is going to test. A failure sends the phase back to BUILD. `references/gates.md`.
+Before the commit that closes **a milestone** — not every phase: **drive the project skill's
+core flows end to end against a disposable database and read the rows.** Not this phase's
+writes; CHECK reads those every time. The *product's* flows, as the skill names them, to prove
+the milestone did not break the thing the owner is going to test. A failure sends the phase
+back to BUILD. On an ordinary phase this is one line: what this phase wrote, read back.
+`references/gates.md`.
 
 Then commit, the manifest entry, the release note if the phase produced a migration or config,
 the status line if the phase resolved an inspection finding, and memory. Committing locally is

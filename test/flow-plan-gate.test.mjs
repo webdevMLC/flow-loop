@@ -22,6 +22,10 @@ const hashOf = (dir, rel) => createHash('sha256')
   .update(readFileSync(join(dir, rel), 'utf8').split(CRLF).join(LF).trimEnd(), 'utf8')
   .digest('hex').slice(0, 12);
 
+const PLAN = '<h1>Acme plan</h1><p>the flows, and a wireframe of every screen</p>';
+const ART = '.flow/plan/index.html';
+// The confirmation certifies both the skill and the drawing the owner actually looked at.
+const confirm = (dir) => hashOf(dir, '.claude/skills/acme/SKILL.md') + '-' + hashOf(dir, ART);
 const SKILL = '---\nname: acme\ndescription: Specification for Acme\nflow-project-skill: true\n---\n# Acme\n';
 const STATE = '# Acme - Flow state\n## Now\n**Goal:** ship\n**Gate:** BUILD\n**Triage:** Full\n';
 
@@ -83,29 +87,29 @@ describe('the plan gate - no code until PLAN has run', () => {
 
 describe('the confirmation gate - no code until the owner said yes', () => {
   test('a skill with no confirmation is denied, and the message carries the exact command', () => {
-    const dir = fixture({ '.flow/STATE.md': STATE, '.claude/skills/acme/SKILL.md': SKILL });
+    const dir = fixture({ '.flow/STATE.md': STATE, '.claude/skills/acme/SKILL.md': SKILL, [ART]: PLAN });
     const r = write(dir, 'src/ledger.ts');
     assert.equal(r.allowed, false);
     assert.match(r.reason, /not been confirmed by the owner/);
-    assert.match(r.reason, new RegExp('echo ' + hashOf(dir, '.claude/skills/acme/SKILL.md') + ' > .flow/plan-confirmed'));
+    assert.match(r.reason, new RegExp('echo ' + confirm(dir) + ' > .flow/plan-confirmed'));
   });
 
   test('the right hash allows the write', () => {
-    const dir = fixture({ '.flow/STATE.md': STATE, '.claude/skills/acme/SKILL.md': SKILL });
-    writeFileSync(join(dir, '.flow/plan-confirmed'), hashOf(dir, '.claude/skills/acme/SKILL.md') + '\n');
+    const dir = fixture({ '.flow/STATE.md': STATE, '.claude/skills/acme/SKILL.md': SKILL, [ART]: PLAN });
+    writeFileSync(join(dir, '.flow/plan-confirmed'), confirm(dir) + '\n');
     assert.equal(write(dir, 'src/ledger.ts').allowed, true);
   });
 
   test('a confirmation written by PowerShell (UTF-16 with BOM) still counts', () => {
-    const dir = fixture({ '.flow/STATE.md': STATE, '.claude/skills/acme/SKILL.md': SKILL });
-    const h = hashOf(dir, '.claude/skills/acme/SKILL.md');
+    const dir = fixture({ '.flow/STATE.md': STATE, '.claude/skills/acme/SKILL.md': SKILL, [ART]: PLAN });
+    const h = confirm(dir);
     writeFileSync(join(dir, '.flow/plan-confirmed'), Buffer.concat([Buffer.from([0xff, 0xfe]), Buffer.from(h + '\r\n', 'utf16le')]));
     assert.equal(write(dir, 'src/ledger.ts').allowed, true);
   });
 
   test('changing the skill after confirmation makes the confirmation stale', () => {
-    const dir = fixture({ '.flow/STATE.md': STATE, '.claude/skills/acme/SKILL.md': SKILL });
-    writeFileSync(join(dir, '.flow/plan-confirmed'), hashOf(dir, '.claude/skills/acme/SKILL.md'));
+    const dir = fixture({ '.flow/STATE.md': STATE, '.claude/skills/acme/SKILL.md': SKILL, [ART]: PLAN });
+    writeFileSync(join(dir, '.flow/plan-confirmed'), confirm(dir));
     writeFileSync(join(dir, '.claude/skills/acme/SKILL.md'), SKILL + '\n## A new section the owner has not seen\n');
     const r = write(dir, 'src/ledger.ts');
     assert.equal(r.allowed, false);
@@ -120,8 +124,8 @@ describe('the confirmation gate - no code until the owner said yes', () => {
   });
 
   test('a Windows path is handled', () => {
-    const dir = fixture({ '.flow/STATE.md': STATE, '.claude/skills/acme/SKILL.md': SKILL });
-    writeFileSync(join(dir, '.flow/plan-confirmed'), hashOf(dir, '.claude/skills/acme/SKILL.md'));
+    const dir = fixture({ '.flow/STATE.md': STATE, '.claude/skills/acme/SKILL.md': SKILL, [ART]: PLAN });
+    writeFileSync(join(dir, '.flow/plan-confirmed'), confirm(dir));
     const winPath = join(dir, 'src', 'ledger.ts').split('/').join(String.fromCharCode(92));
     const r = runHook(PLAN_GATE, { tool_name: 'Edit', tool_input: { file_path: winPath } });
     assert.equal(r.allowed, true);
@@ -136,8 +140,8 @@ describe('the UAT ceiling - judgement does not pile up unjudged', () => {
     return s;
   };
   const planned = (extra) => {
-    const dir = fixture({ '.flow/STATE.md': STATE, '.claude/skills/acme/SKILL.md': SKILL, ...extra });
-    writeFileSync(join(dir, '.flow/plan-confirmed'), hashOf(dir, '.claude/skills/acme/SKILL.md'));
+    const dir = fixture({ '.flow/STATE.md': STATE, '.claude/skills/acme/SKILL.md': SKILL, [ART]: PLAN, ...extra });
+    writeFileSync(join(dir, '.flow/plan-confirmed'), confirm(dir));
     return dir;
   };
 
@@ -220,8 +224,8 @@ describe('robustness', () => {
 
 describe('bypasses found by the v2 audit - each verified, each now closed', () => {
   const planned = (extra = {}) => {
-    const dir = fixture({ '.flow/STATE.md': STATE, '.claude/skills/acme/SKILL.md': SKILL, ...extra });
-    writeFileSync(join(dir, '.flow/plan-confirmed'), hashOf(dir, '.claude/skills/acme/SKILL.md'));
+    const dir = fixture({ '.flow/STATE.md': STATE, '.claude/skills/acme/SKILL.md': SKILL, [ART]: PLAN, ...extra });
+    writeFileSync(join(dir, '.flow/plan-confirmed'), confirm(dir));
     return dir;
   };
   const shell = (dir, tool, command) => runHook(PLAN_GATE, { tool_name: tool, tool_input: { command, cwd: dir } });
@@ -314,7 +318,7 @@ describe('NotebookEdit - found while explaining the limits', () => {
 });
 
 describe('the record cannot be deleted - rm -rf .flow disarmed four rules', () => {
-  const F = () => fixture({ '.flow/STATE.md': STATE, '.claude/skills/acme/SKILL.md': SKILL });
+  const F = () => fixture({ '.flow/STATE.md': STATE, '.claude/skills/acme/SKILL.md': SKILL, [ART]: PLAN });
 
   test('the state file and the record directory are protected, in every spelling', () => {
     const dir = F();
@@ -355,5 +359,54 @@ describe('the record cannot be deleted - rm -rf .flow disarmed four rules', () =
                      'git commit -m "remove the rm flag"']) {
       assert.equal(bash(dir, c).allowed, true, c);
     }
+  });
+});
+
+
+describe('PLAN drew nothing - the owner confirmed a hash of prose', () => {
+  test('a project skill with no drawing is denied, and the message says where it goes', () => {
+    const dir = fixture({ '.flow/STATE.md': STATE, '.claude/skills/acme/SKILL.md': SKILL });
+    const r = write(dir, 'src/ledger.ts');
+    assert.equal(r.allowed, false);
+    assert.match(r.reason, /drew nothing/);
+    assert.match(r.reason, /step 6 was skipped/);
+    assert.match(r.reason, new RegExp('\\.flow/plan/index\\.html'));
+  });
+
+  test('the drawing alone is not enough - it still needs confirming', () => {
+    const dir = fixture({ '.flow/STATE.md': STATE, '.claude/skills/acme/SKILL.md': SKILL, [ART]: PLAN });
+    assert.equal(write(dir, 'src/ledger.ts').allowed, false);
+  });
+
+  test('the confirmation certifies the drawing too, so changing it goes stale', () => {
+    const dir = fixture({ '.flow/STATE.md': STATE, '.claude/skills/acme/SKILL.md': SKILL, [ART]: PLAN });
+    writeFileSync(join(dir, '.flow/plan-confirmed'), confirm(dir));
+    assert.equal(write(dir, 'src/ledger.ts').allowed, true);
+
+    // Redraw a screen after the owner said yes: what they approved is no longer what is there.
+    writeFileSync(join(dir, ART), PLAN + '<p>a screen nobody has seen</p>');
+    const r = write(dir, 'src/ledger.ts');
+    assert.equal(r.allowed, false);
+    assert.match(r.reason, /plan artifact changed/);
+  });
+
+  test('a confirmation naming only the skill is refused', () => {
+    const dir = fixture({ '.flow/STATE.md': STATE, '.claude/skills/acme/SKILL.md': SKILL, [ART]: PLAN });
+    writeFileSync(join(dir, '.flow/plan-confirmed'), hashOf(dir, '.claude/skills/acme/SKILL.md'));
+    assert.equal(write(dir, 'src/ledger.ts').allowed, false);
+  });
+
+  test('the loop cannot draw its own approval - the artifact is not owner-only, the confirmation is', () => {
+    const dir = fixture({ '.flow/STATE.md': STATE, '.claude/skills/acme/SKILL.md': SKILL });
+    // PLAN writes the drawing itself; that must stay possible.
+    assert.equal(write(dir, '.flow/plan/index.html').allowed, true);
+    // The confirmation never is.
+    assert.equal(write(dir, '.flow/plan-confirmed').allowed, false);
+  });
+
+  test('.flow/fanout-off is the owner\'s too', () => {
+    const dir = fixture();
+    assert.equal(write(dir, '.flow/fanout-off').allowed, false);
+    assert.equal(bash(dir, 'echo x > .flow/fanout-off').allowed, false);
   });
 });

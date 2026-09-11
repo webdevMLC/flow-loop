@@ -5,6 +5,13 @@ description: A deep, on-demand inspection of a system as built — not of a diff
 
 # Ultra
 
+**CHECK stopped doing this on every phase, deliberately.** The per-phase loop runs the machine
+pass on the affected tests, checks that the new code is reachable and that the rows it writes
+hold the right values, and stops. The full suite, the adversarial lenses over the system as a
+whole, and the product's complete flows are not per-phase work — they re-prove the same code a
+dozen times a week and that cost is what makes a loop feel slow. They live here, where they are
+paid once, against the system as built, at the moment someone is about to trust it.
+
 CHECK looks at a diff. This looks at a system.
 
 It exists because of a specific, repeated failure: a project passed every gate it owned — 156

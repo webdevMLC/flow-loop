@@ -393,12 +393,20 @@ rescope — that is the user's call.
 
 ## SHIP
 
-### The data pass — the product's flows, not this phase's diff
+### The data pass — at a milestone, the product's flows
 
-CHECK's composition stage drove *this phase's* writes and read the rows back. This is
-different: **drive the process flows the project skill names — the core jobs, end to end —
-against a disposable database, and read the rows.** The question is not "did this phase's
-code work" but "does the product the owner is about to test still work after it."
+CHECK's composition stage drove *this phase's* writes and read the rows back, and on an
+ordinary phase that is the whole data story: say in one line what this phase wrote and what
+you read.
+
+**At a milestone — and before a pilot, a demo, or anything the owner will touch — do the full
+pass:** drive the process flows the project skill names, the core jobs end to end, against a
+disposable database, and read the rows. The question stops being "did this phase's code work"
+and becomes "does the product the owner is about to test still work after all of it."
+
+Driving every core flow on every phase re-proves the same paths a dozen times a week and is
+one of the costs that made the loop feel slow. The milestone is where it pays, because the
+milestone is where someone looks.
 
 - The flows come from the skill's `## The process flows` section. Every flow it lists; the
   skill is the authority on what "core" means.
@@ -410,7 +418,10 @@ code work" but "does the product the owner is about to test still work after it.
 
 **A failure here sends the phase back to BUILD.** It does not ship. This is the gate that
 would have caught an associate's first tap producing a board that says "no leads yet" over a
-claim that succeeded — with 209 green tests, because the tests mocked the API client.
+claim that succeeded — with 209 green tests, because the tests mocked the API client. That
+project never reached a milestone with this pass armed, which is exactly why the per-phase
+line above is not optional: **one write, read back, every phase.** The milestone pass is the
+wider net, not the only one.
 
 Say what was driven and what was read. A data pass that reports "passed" with no flows named
 is the substitution this stage exists to prevent.

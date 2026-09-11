@@ -46,7 +46,7 @@ Write, Edit, Bash and PowerShell.
 |---|---|---|
 | **`/flow:plan`** | five experts on the intent, the flows drawn, the screens wireframed, the project skill written — **you confirm from the pictures** | a new project, an adoption, a milestone, or "this is not what I wanted" · [detail](#flowloop) |
 | **`/flow:loop`** | the loop — FRAME, BUILD, CHECK, SHIP, against the plan | all normal work · [detail](#flowloop) |
-| **`/flow:ultra`** | inspects the running system, then repairs what it finds | before a pilot; when the suite is green and you are not convinced · [detail](#flowultra) |
+| **`/flow:ultra`** | inspects the running system, then repairs what it finds — **and owns the full suite, the adversarial lenses and the whole-product data pass that CHECK no longer runs every phase** | before a pilot; at a milestone; when the suite is green and you are not convinced · [detail](#flowultra) |
 | **`/flow:theme`** | applies a theme **and rebuilds the components** | screens that look dated, or were built ad hoc · [detail](#flowtheme) |
 | **`/flow:guide`** | writes the user guide from the running system | it is going to real users · [detail](#flowguide) |
 | **`/flow:datatest`** | seven QA testers drive every flow, leave a failing test per defect | data looks wrong; before a pilot; the suite is green and the product is not |
@@ -87,7 +87,7 @@ written for you.
 | `tdd-exempt` | **switch** | one path fragment per line — code genuinely outside TDD |
 | `plan-confirmed` | **owner only** | the hash of the project skill you read and approved — the loop is denied from writing it |
 | `allow-push` | **owner only** | opens the push gate for a session — the loop is denied from writing it |
-| `plan-off` · `cite-off` · `tdd-off` · `verify-off` · `evidence-off` · `uat-ceiling` | **owner only** | every escape hatch — the loop is denied from creating any of them, by any tool |
+| `plan-off` · `cite-off` · `tdd-off` · `verify-off` · `evidence-off` · `fanout-off` · `uat-ceiling` | **owner only** | every escape hatch — the loop is denied from creating any of them, by any tool |
 | `UAT.md` | written | `by person` questions waiting for you |
 | `ULTRA-<date>.md` · `DATATEST-` · `SECURITY-` · `UIUX-` · `OPS-` | written | a sealed inspection, its findings and their status — the roadmap sweep picks up any still open |
 | `MANIFEST.md` · `ARCHIVE.md` | written | what each phase shipped; how to revert it |
@@ -124,12 +124,14 @@ deny the action, and no prose can talk past them:
 |---|---|
 | **No code until PLAN has produced a project skill** | a write to source is denied while the project has `.flow/` and no `.claude/skills/*/SKILL.md` carries `flow-project-skill: true` — including writes via a heredoc, `sed -i`, `tee`, `cp` or `Set-Content` |
 | **No code until you confirmed the plan** | denied until `.flow/plan-confirmed` holds the skill's hash. **The loop is denied from writing that file.** You do, after reading the flows — the gate prints the exact command |
+| **PLAN drew what you confirmed** | a write to source is denied until `.flow/plan/index.html` exists — the flows, and a wireframe of every screen a job lands on. The confirmation is the hash of **both** that page and the skill, so what you approved is the pictures you actually looked at |
 | **Every acceptance criterion cites the plan** | `git commit` is denied if any criterion in the current phase lacks `from:` |
 | **Test-first on logic** | a guarded source file with no covering test is denied |
 | **The state file keeps up** | `git commit` is denied if source changed and `STATE.md` did not, three commits running — `-a`, a pathspec and `--amend` included |
 | **Never push** | `git push` is denied unless `.flow/allow-push` exists — another file the loop cannot create. Catches `bash -c`, `git.exe`, `git -C`, `gh pr create`, and a dry-run chained to a real one |
 | **Judgement does not pile up** | source writes are denied past 5 open `by person` questions in `.flow/UAT.md` |
 | **A closed `by artifact` criterion has its artifact** | `git commit` is denied when a criterion ticked done and classed `by artifact` names a file that is not on disk. This is what makes SHIP’s data pass and the screen audit mechanical rather than hoped-for |
+| **Verification is tiered, not uniform** | a `Workflow` script that spawns a fixed number of skeptics per finding is refused, with the tiering table in the denial. The count has to be a function of the finding’s severity. This is the single largest recurring cost in CHECK, and prose did not hold it |
 | **The record cannot be deleted** | `rm -rf .flow`, `rm .flow/STATE.md`, a `git clean -fdx` that would take it, and the same in PowerShell or `git rm`, are all denied — and so is deleting the project skill. Removing the record used to disarm four rules at once, silently. Nothing suspends this one |
 
 Everything else is discipline — written to be read at the moment it applies, and honest about
@@ -522,7 +524,7 @@ times before this was automated, and `autoUpdate: true` does not close the gap o
 
 # Honest limits
 
-- **Nine rules are hooks. Everything else is an instruction Claude follows.** The nine are
+- **Eleven rules are hooks. Everything else is an instruction Claude follows.** The eleven are
   listed above, and each one has tests in `test/` that a release will not ship without. Everything else in this README — the panel's
   decisions stopping under autonomous mode, re-testing a stale blocker, reading a build's
   warnings, enumerating a "mirrors X", the adversarial pass — is discipline. Some of it could

@@ -53,7 +53,7 @@ const SHELL_TOOLS = new Set(['Bash', 'PowerShell', 'local_shell', 'shell', 'shel
 // Every file whose existence is a statement by the owner. The loop never writes any of them.
 const OWNER_ONLY = ['.flow/plan-confirmed', '.flow/allow-push', '.flow/plan-off',
   '.flow/cite-off', '.flow/tdd-off', '.flow/verify-off', '.flow/evidence-off',
-  '.flow/uat-ceiling'];
+  '.flow/fanout-off', '.flow/uat-ceiling'];
 
 const norm = (s) => String(s).split(BACKSLASH).join('/');
 
@@ -200,18 +200,42 @@ const checkWrite = (targetPath, via) => {
     );
   }
 
+  // ---- PLAN must have drawn something, and the confirmation certifies the drawing ----
+  // Step 6 of the plan skill publishes the flows and every screen as an artifact. It was
+  // prose, and the confirmation certified a sha256 of a MARKDOWN FILE - so a run that wrote
+  // a good skill and skipped the drawing passed every gate, and the owner confirmed a plan
+  // having seen no picture of it. That is the failure this whole stage exists to prevent:
+  // nobody had drawn the screen the job lands on.
+  const planArt = join(root, '.flow', 'plan', 'index.html');
+  if (!existsSync(planArt)) {
+    deny(
+      'Flow plan gate: PLAN wrote a project skill but drew nothing - step 6 was skipped.' + NL + NL +
+      'The owner reviews pictures, not prose. PLAN publishes one artifact showing every' + NL +
+      'process flow as a diagram, a grey wireframe of every screen a job lands on, each' + NL +
+      'entity lifecycle, and the decisions - and writes that same page to:' + NL + NL +
+      '    .flow/plan/index.html' + NL + NL +
+      'Write it there, publish it, and give the owner the link. A skill nobody could see' + NL +
+      'the shape of is the plan that shipped a tournament with nowhere to appear.' + NL + NL +
+      'Only the owner can suspend this (.flow/plan-off).' +
+      (via ? NL + '(target: ' + norm(targetPath) + ', via ' + via + ')' : '')
+    );
+  }
+
   const want = skillHash(skill.path);
+  const drawn = skillHash(planArt);
   const have = confirmedHash(root);
-  if (want && (!have || !have.includes(want))) {
+  if (want && (!have || !have.includes(want) || (drawn && !have.includes(drawn)))) {
     deny(
       'Flow plan gate: ' + (have
-        ? 'the project skill changed after the owner confirmed it, so the confirmation is stale.'
+        ? (have.includes(want)
+            ? 'the plan artifact changed after the owner confirmed it, so the confirmation is stale.'
+            : 'the project skill changed after the owner confirmed it, so the confirmation is stale.')
         : 'the project skill has not been confirmed by the owner.') + NL + NL +
-      'Ask them to read ' + skill.rel + ' - the flows and the jobs - and, if it is the' + NL +
-      'product they want, run:' + NL + NL +
-      '    echo ' + want + ' > .flow/plan-confirmed' + NL + NL +
-      'The loop never writes that file. If they correct the skill instead, the hash changes' + NL +
-      'and they confirm the corrected version.' +
+      'Ask them to open .flow/plan/index.html - the flows and the screens they will get -' + NL +
+      'and, if that is the product they want, run:' + NL + NL +
+      '    echo ' + want + '-' + drawn + ' > .flow/plan-confirmed' + NL + NL +
+      'The loop never writes that file. The confirmation covers both the skill and the' + NL +
+      'drawing, so correcting either one changes it and they confirm again.' +
       (have ? NL + NL + 'If nothing was meant to change, check what edited the skill: writing into it' + NL +
         '(a confirmation date, a correction) invalidates the confirmation by design.' : '')
     );

@@ -36,6 +36,17 @@
             "statusMessage": "Flow commit gate"
           }
         ]
+      },
+      {
+        "matcher": "Workflow",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${PLUGIN_ROOT}/hooks/flow-workflow-gate.mjs\"",
+            "timeout": 10,
+            "statusMessage": "Flow workflow gate"
+          }
+        ]
       }
     ]
   }

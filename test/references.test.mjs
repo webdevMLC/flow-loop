@@ -138,7 +138,10 @@ describe('the enforced-rule count is not a claim', () => {
     // A row promising something no hook implements is defect class C - a rule promised in
     // one file and implemented in none. The weak but real check: each row must name a
     // control file, a tool or a command the hooks actually mention.
-    const hooks = ['flow-plan-gate.mjs', 'flow-tdd-gate.mjs', 'flow-commit-gate.mjs']
+    // Every hook, read from disk - naming them here is how this check goes stale the
+    // first time a tenth rule ships.
+    const hooks = readdirSync(join(ROOT, 'hooks'))
+      .filter((f) => f.slice(-4) === '.mjs')
       .map((f) => readFileSync(join(ROOT, 'hooks', f), 'utf8')).join('\n');
     const table = read('skills/loop/SKILL.md').split(/\r?\n/)
       .filter((l) => /^\|\s*\*\*/.test(l));
