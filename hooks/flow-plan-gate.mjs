@@ -229,6 +229,62 @@ const uiuxConfirmed = (root, pending) => {
   return Boolean(have && have.includes(pending.hash));
 };
 
+// ---------- "READY" has to be earned before it can be written ----------
+// The one word the owner acts on. Everything else in this gate protects the build; this
+// protects the sentence at the end of it, which is the only part most owners read. The
+// mechanical checks are the ones a file can settle: an unticked criterion, an owner question
+// still open, an assessment that never ran. The rest stays judgement, and the verdict names
+// its evidence so a person can check it.
+const writeContent = () => {
+  const c = ti.content ?? ti.new_string ?? ti.text ?? null;
+  return typeof c === 'string' ? c : null;
+};
+const ASSESSMENTS = ['ULTRA', 'DATATEST', 'SECURITY', 'OPS'];
+const readyClaim = (root, text) => {
+  // Only the verdict heading counts, and it is UPPERCASE by format. Case-insensitive
+  // matched the file's own title - `# Ready? - Project - date` - so every verdict,
+  // including NOT READY and UNKNOWN, was read as a readiness claim.
+  if (!/^#{2,3}\s+READY\b/m.test(text)) return [];
+  const flow = join(root, '.flow');
+  const fails = [];
+
+  // 3 - an unticked criterion anywhere, current or archived
+  const unticked = [];
+  for (const f of ['STATE.md', 'ARCHIVE.md']) {
+    let s = '';
+    try { s = readFileSync(join(flow, f), 'utf8'); } catch { continue; }
+    const start = s.split(NL).findIndex((l) => /^#{2,4}\s+(acceptance\s+)?criteria\b/i.test(l.trim()));
+    if (start < 0) continue;
+    const lines = s.split(NL);
+    for (let i = start + 1; i < lines.length; i++) {
+      if (/^#{1,2}\s/.test(lines[i])) break;
+      const m = /^\s*[-*]\s*\[ \]\s*\*\*([A-Za-z0-9.-]+)\*\*/.exec(lines[i]);
+      if (m) unticked.push(m[1]);
+    }
+  }
+  if (unticked.length) {
+    fails.push('check 3: ' + unticked.length + ' criteria are still open (' +
+      unticked.slice(0, 6).join(', ') + (unticked.length > 6 ? ', ...' : '') + ')');
+  }
+
+  // 4 - a question only the owner can answer, still open
+  const waiting = uatEntries(root).filter((e) => e.open && !e.judgement);
+  if (waiting.length) {
+    fails.push('check 4: ' + waiting.length + ' `owner` question' + (waiting.length > 1 ? 's are' : ' is') +
+      ' still open in .flow/UAT.md (' + waiting[0].head.slice(0, 54) + (waiting.length > 1 ? ', ...' : '') + ')');
+  }
+
+  // 6 - an assessment that never ran is UNKNOWN, and UNKNOWN is not READY
+  let names = [];
+  try { names = readdirSync(flow); } catch { names = []; }
+  const missing = ASSESSMENTS.filter((a) => !names.some((f) => f.toUpperCase().startsWith(a + '-')));
+  if (missing.length) {
+    fails.push('check 6: no report from ' + missing.map((m) => '/flow:' + m.toLowerCase()).join(', ') +
+      ' - never-run is UNKNOWN, not clear');
+  }
+  return fails;
+};
+
 const checkWrite = (targetPath, via) => {
   if (isOwnerOnly(targetPath)) {
     deny(
@@ -239,6 +295,26 @@ const checkWrite = (targetPath, via) => {
       (via ? NL + '(seen in a shell command: ' + via + ')' : '')
     );
   }
+  // ---- a READY verdict must be earned ----
+  if (/\.flow\/ready\.md$/i.test(norm(targetPath).toLowerCase())) {
+    const body = writeContent();
+    const vroot = findRoot(targetPath);
+    const fails = (body === null || !vroot) ? [] : readyClaim(vroot, body);
+    if (fails.length) {
+      deny(
+        'Flow plan gate: this says READY, and ' + fails.length + ' check' +
+        (fails.length > 1 ? 's do' : ' does') + ' not hold.' + NL + NL +
+        fails.map((f) => '  ' + f).join(NL) + NL + NL +
+        'READY is the one word the owner acts on. Spent on a project with open criteria, an' + NL +
+        'unanswered question or an assessment nobody ran, it is worth nothing afterwards - and' + NL +
+        'they go back to checking by hand, which is where they started.' + NL + NL +
+        'Write NOT READY with these in order, or UNKNOWN where something was never checked.' + NL +
+        'A NOT READY with four items is more useful than a READY with four footnotes.' + NL + NL +
+        'references/verdict.md in the ready skill.'
+      );
+    }
+  }
+
   if (!isSource(targetPath)) return;
 
   const root = findRoot(targetPath);

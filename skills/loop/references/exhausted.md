@@ -33,7 +33,8 @@ not open anything not named here. The whole sweep should cost less than a single
 6. **Any sealed inspection report — every finding marked `open` or `blocked`, across all of
    them.** `.flow/ULTRA-*.md` (`/flow:ultra`), `.flow/DATATEST-*.md` (`/flow:datatest`),
    `.flow/SECURITY-*.md` (`/flow:security`), `.flow/UIUX-*.md` (`/flow:uiux`), `.flow/OPS-*.md`
-   (`/flow:ops`). An inspection
+   (`/flow:ops`). A missing report is itself a candidate: `/flow:ready` counts never-run as
+   UNKNOWN, and UNKNOWN is not finished. An inspection
    ran and wrote down what is wrong with concrete failures — and for datatest and security a
    failing test is already committed, so the suite is red until it closes. Those are the
    best-specified candidates that will ever reach this sweep, each one an acceptance criterion
@@ -110,7 +111,11 @@ can make in ten seconds.
 **Whether you continue is the budget's call, not the sweep's:**
 
 - Budget was **"until the roadmap is exhausted"** → the roadmap is exhausted. Report and
-  stop. The sweep changes what the final report says, not whether it is final.
+  **Then run `/flow:ready` and end on its verdict**, not on "the roadmap is exhausted".
+  Those two sentences sound alike and mean different things: one says nothing was queued,
+  the other says whether the product can be deployed, and only the second answers what the
+  owner wants to know. The sweep changes what the final report says, not whether it is
+  final.
 - Budget was **broader** — "until there is nothing left to do", "keep going until it is
   finished", "work through the backlog" → take the highest-value **unblocked** candidate,
   frame it as a phase, record it in the roadmap so the next wake can see it, and continue.

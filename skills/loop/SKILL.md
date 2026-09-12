@@ -249,6 +249,7 @@ Repeated work, not model choice, is what burns the budget.
 | CHECK, when the phase writes anything persistent | `references/dataflow.md` |
 | Undoing a shipped phase | `references/reverse.md` |
 | A milestone or roadmap boundary | `references/milestone.md` |
+| The roadmap ran dry, or the owner asks whether it is finished | **`/flow:ready`** |
 | Before a pilot, or nobody can say who runs this at 2am | **`/flow:ops`** |
 | `.flow/UAT.md` has open entries and the user is back | `references/uat.md` |
 | The roadmap has no next phase, or FRAME asks what the last phase left open | `references/exhausted.md` |
@@ -370,6 +371,14 @@ All five — `ultra`, `datatest`, `uiux`, `security`, `ops` — seal a report fi
 through the loop afterwards, on by default; "report only" stops at the report. All run against
 a disposable environment, never production, and none of them deploys.
 
+`/flow:ready` is the odd one out: it repairs nothing and reports on all of them.
+
+**`/flow:ready`** answers the question the loop never answers: **is this finished?** Seven
+checks computed from evidence on disk — the plan confirmed and its flows driven, the roadmap
+empty, every criterion closed by the evidence its class demands, nothing waiting on you, the
+four assessments run and clean, and someone other than the author able to run it. Writes
+`.flow/READY.md` and says **READY**, **NOT READY** with the exact list, or **UNKNOWN** where
+something was never checked. The loop reaches it by itself when the roadmap runs dry.
 ## Scope
 
 Use Flow for real project work. Skip it for a question, a scratch script, or an explanation.

@@ -724,3 +724,103 @@ describe('judgement is the loop\'s to answer; the owner\'s questions are not', (
     });
   });
 });
+
+
+describe('READY has to be earned before it can be written', () => {
+  const REPORTS = {
+    '.flow/ULTRA-2026-09-12.md': '# ultra\n', '.flow/DATATEST-2026-09-12.md': '# datatest\n',
+    '.flow/SECURITY-2026-09-12.md': '# security\n', '.flow/OPS-2026-09-12.md': '# ops\n',
+  };
+  const CLOSED = '# S\n## Now\n### Acceptance criteria\n- [x] **A1** done · `by test` · from: The jobs\n';
+  const OPEN = '# S\n## Now\n### Acceptance criteria\n- [x] **A1** done · `by test` · from: The jobs\n'
+    + '- [ ] **A14** the statement export · `by artifact` · from: The jobs\n';
+
+  // The verdict is written by the loop, so the project has to be otherwise buildable.
+  const proj = (state, extra) => {
+    const dir = fixture({
+      '.flow/STATE.md': state, '.claude/skills/acme/SKILL.md': SKILL,
+      [ART]: PLAN, [SHOT]: PIXELS, [REG]: CLEAR, ...REPORTS, ...extra,
+    });
+    writeFileSync(join(dir, '.flow/plan-confirmed'), confirm(dir));
+    return dir;
+  };
+  const verdict = (dir, body) =>
+    runHook(PLAN_GATE, { tool_name: 'Write', tool_input: { file_path: join(dir, '.flow/READY.md'), content: body } });
+
+  test('READY with everything closed is allowed', () => {
+    assert.equal(verdict(proj(CLOSED), '# Ready?\n\n## READY\n\nall checks pass\n').allowed, true);
+  });
+
+  test('READY with an open criterion is refused, and it names the criterion', () => {
+    const r = verdict(proj(OPEN), '# Ready?\n\n## READY\n\nall checks pass\n');
+    assert.equal(r.allowed, false);
+    assert.match(r.reason, /check 3/);
+    assert.match(r.reason, /A14/);
+  });
+
+  test('READY with an owner question still open is refused', () => {
+    const dir = proj(CLOSED, { '.flow/UAT.md': '# UAT\n### A9 - the rate - Phase 2 - owner - open\n' });
+    const r = verdict(dir, '## READY\n');
+    assert.equal(r.allowed, false);
+    assert.match(r.reason, /check 4/);
+  });
+
+  test('a judgement question the loop answered does not block READY', () => {
+    const dir = proj(CLOSED, { '.flow/UAT.md': '# UAT\n### A9 - wording - Phase 2 - `judgement` - open\n' });
+    assert.equal(verdict(dir, '## READY\n').allowed, true);
+  });
+
+  test('an assessment that never ran is UNKNOWN, not a pass', () => {
+    const dir = fixture({
+      '.flow/STATE.md': CLOSED, '.claude/skills/acme/SKILL.md': SKILL,
+      [ART]: PLAN, [SHOT]: PIXELS, [REG]: CLEAR,
+      '.flow/ULTRA-2026-09-12.md': '# ultra\n',            // the other three never ran
+    });
+    writeFileSync(join(dir, '.flow/plan-confirmed'), confirm(dir));
+    const r = verdict(dir, '## READY\n');
+    assert.equal(r.allowed, false);
+    assert.match(r.reason, /check 6/);
+    assert.match(r.reason, /flow:ops/);
+    assert.match(r.reason, /UNKNOWN, not clear/);
+  });
+
+  test('NOT READY is always writable - that is the honest verdict', () => {
+    assert.equal(verdict(proj(OPEN), '# Ready?\n\n## NOT READY - 3 open\n').allowed, true);
+  });
+
+  test('UNKNOWN is always writable too', () => {
+    assert.equal(verdict(proj(OPEN), '# Ready?\n\n## UNKNOWN\n\nthe restore was never tested\n').allowed, true);
+  });
+
+  test('the word only counts as the verdict, not quoted in the body', () => {
+    const body = '## NOT READY - 1 open\n\nIt cannot say READY until /flow:ops has run.\n';
+    assert.equal(verdict(proj(OPEN), body).allowed, true);
+  });
+
+  test('an archived phase with an open criterion still blocks READY', () => {
+    const dir = proj(CLOSED, { '.flow/ARCHIVE.md': '# Archive\n## Phase 6\n### Acceptance criteria\n- [ ] **A15** the export · `by artifact` · from: The jobs\n' });
+    const r = verdict(dir, '## READY\n');
+    assert.equal(r.allowed, false);
+    assert.match(r.reason, /A15/);
+  });
+});
+
+
+describe("the verdict word is the heading, not any mention of it", () => {
+  const dir = () => fixture({
+    '.flow/STATE.md': '# S\n## Now\n### Acceptance criteria\n- [ ] **A14** open\n',
+    '.flow/ULTRA-1.md': 'x', '.flow/DATATEST-1.md': 'x', '.flow/SECURITY-1.md': 'x', '.flow/OPS-1.md': 'x',
+  });
+  const verdict = (d, body) =>
+    runHook(PLAN_GATE, { tool_name: 'Write', tool_input: { file_path: join(d, '.flow/READY.md'), content: body } });
+
+  // The format opens with "# Ready? - Project - date". Matched case-insensitively, that title
+  // read as a readiness claim, so every honest NOT READY was refused.
+  test("the file's own title does not count as a claim", () => {
+    assert.equal(verdict(dir(), '# Ready? - Acme - 2026-09-12\n\n## NOT READY - 1 open\n').allowed, true);
+  });
+
+  test('a level-2 READY heading does count', () => {
+    assert.equal(verdict(dir(), '# Ready? - Acme\n\n## READY\n').allowed, false);
+  });
+});

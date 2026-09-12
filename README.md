@@ -53,6 +53,7 @@ Write, Edit, Bash and PowerShell.
 | **`/flow:uiux`** | a design architect redesigns the screens — **designed and captured as images, before and after, and you confirm before anything is applied** | screens look dated or amateur; "make it modern" |
 | **`/flow:security`** | six specialists attack the running system and prove each hole | before exposing it to real users or the internet |
 | **`/flow:ops`** | runbook, health checks, alerts, a proven rollback and restore, a load limit | before a pilot; when nobody can answer "who runs this at 2am" |
+| **`/flow:ready`** | **is it finished?** seven checks from evidence — READY, NOT READY with the list, or UNKNOWN | when the roadmap looks empty, or you cannot tell whether it is done |
 
 ## Running it unattended
 

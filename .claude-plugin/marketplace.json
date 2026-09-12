@@ -6,14 +6,14 @@
   },
   "metadata": {
     "description": "Claude Code plugins by Micho Calma",
-    "version": "2.6.0"
+    "version": "2.8.0"
   },
   "plugins": [
     {
       "name": "flow",
       "source": "./",
       "description": "One development loop - PLAN, FRAME, BUILD, CHECK, SHIP - with fourteen rules enforced by hooks rather than instructions.",
-      "version": "2.6.0",
+      "version": "2.8.0",
       "author": {
         "name": "Micho Calma"
       },
@@ -26,7 +26,8 @@
         "security",
         "enforcement",
         "operations",
-        "observability"
+        "observability",
+        "readiness"
       ]
     }
   ]
