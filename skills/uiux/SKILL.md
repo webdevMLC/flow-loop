@@ -14,6 +14,7 @@ something that never stepped back to look at all of them together.
 | Stage | Asks | Writes |
 |---|---|---|
 | **1 Capture** | what does every screen actually look like, in every state? | captures only |
+| **1.5 Machine** | contrast, target sizes, focus, alt, labels, overflow — computed, not judged | numbers |
 | **2 Critique** | six specialists — what is wrong, against what standard, and why does it matter to the person using it? | nothing |
 | **3 Redesign** | what should each screen become — designed, captured as images, before/after, as an artifact the owner reviews | the artifact, and `.flow/uiux/pending` |
 | **4 Apply** | through the loop, one phase per screen group; the visual layer to `/flow:theme` | code |
@@ -53,13 +54,41 @@ Every screen, every state, both widths, from a seeded demo account — the same 
 PNG, never production data. Record the navigation as a tree and the count of steps for the
 three commonest jobs. This is the evidence the critique cites.
 
+## Stage 1.5 — The machine pass
+
+Before a single specialist is spawned: compute what is computable. Contrast ratios for every
+text-on-background pairing, rendered target sizes on the mobile capture, `outline: none`
+without a replacement, images with no alt, controls with no label, tables that overflow at
+375px. These are facts, they are cheap, and they are the findings most often asserted wrongly
+in both directions.
+
+Everything this pass settles is removed from the critique's scope, with the numbers attached.
+The specialists then spend their budget on what a machine cannot read.
+
 ## Stage 2 — Critique
 
 
-**Model tier: the six critics are frontier, the architect's verdict pass are cheap.** Finding what every gate missed is
-open-ended and rewards the better model; checking a stated claim against the code is bounded,
-and the model that had to find the thing is not the model needed to confirm it. "The model
-tier" in the ultra skill carries the split, and it applies here unchanged.
+### The tier is per lens, and two of them are not a model's job
+
+"Six specialists on the frontier model" is the expensive, wrong answer. Half of what these
+lenses check is **arithmetic**, and a model reading a PNG to estimate a contrast ratio is not
+merely costly — it is *less reliable* than four lines of code. Run the machine pass first:
+
+| Lens | Tier | Why |
+|---|---|---|
+| **Accessibility** | **machine** | contrast ratios, 44px targets, `outline: none`, missing alt and labels, sideways tables — all computed from the DOM and the capture. Judge nothing that can be measured |
+| **States and feedback** | **machine, then cheap** | whether the empty and error states exist is a fact; whether they say the right thing is a cheap read |
+| **Content and copy** | **cheap** | bounded against a writing standard, the same shape as a `judgement` UAT entry |
+| **Interaction design** | **cheap** | the failing conditions are listed; this is checking against a list |
+| **Information architecture** | **frontier** | *"can a person find what they need without being told"* is open-ended, and no list settles it |
+| **Visual hierarchy** | **frontier** | reading a rendered screen and saying where the eye lands is exactly where the better model pays |
+
+So: **two machine, two cheap, two frontier** — not six frontier. And the two machine ones get
+*better*, not just cheaper: this project has already had reviewers assert contrast failures
+that a script had to settle, and the script found real AA failures the readers had missed.
+
+The architect's verdict over all six findings is **frontier** — it is the one genuinely
+synthetic step, turning forty findings into the three or four causes behind them.
 
 Read `references/critique.md`. Spawn the six specialists **in one message** — information
 architecture, interaction design, visual hierarchy, states and feedback, accessibility,

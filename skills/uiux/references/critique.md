@@ -61,6 +61,12 @@ do it wrong, or give up. **MINOR** — friction.
 
 ## Accessibility — can everyone use it, and does it survive a bright field?
 
+**Measure these; do not judge them.** Every condition in this lens is computable from the DOM
+and the capture, and a model estimating a contrast ratio from a PNG is less reliable than the
+arithmetic. Compute the ratios, read the rendered box sizes, grep the CSS, parse the markup —
+then report the numbers. A finding here carries the measured value ("3.1:1 on the secondary
+label, needs 4.5:1"), never an impression.
+
 - **Contrast below 4.5:1 on any text**, measured from the capture. MAJOR; BLOCKER on a field
   app used outdoors.
 - **Touch targets under 44px** on a mobile surface. MAJOR.
