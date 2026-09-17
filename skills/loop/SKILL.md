@@ -101,6 +101,12 @@ PLAN  ────────────────────────�
 | **CHECK** | one verdict report | machine first, then cheap subagents | 3 gating stages; the adversarial pass only when the phase earns it |
 | **SHIP** | commit + data pass + memory write | inline, then one disposable-DB run | 1 pass |
 
+The assessment commands are not in the per-phase loop and tier differently: **finding is
+frontier, refuting is cheap.** `/flow:ultra`'s lenses and `/flow:datatest`'s testers look for
+what every gate missed and earn the better model; the refuters that check what they found do
+not. See "The model tier" in the ultra skill. **Nothing enforces this** — it is the one part of
+the routing a hook cannot see, so it is advice, and it was measured being ignored.
+
 Every task commit carries its own `.flow/STATE.md` update — the commit gate enforces it.
 **No code is written outside BUILD. No research is done inside BUILD.**
 

@@ -154,3 +154,40 @@ describe('the enforced-rule count is not a claim', () => {
     assert.deepEqual(orphan.map((r) => r.slice(0, 60)), []);
   });
 });
+
+
+// A skill that tells the reader to spawn agents, and says nothing about which model, gets the
+// frontier one for everything - measured: twelve frontier lenses on one ultra run, six on
+// another, because nothing in scope said otherwise and "the deep pass" reads like a reason to
+// spend. The rule has to sit in the file that is open when the agents are spawned.
+describe('a skill that spawns agents names a model tier', () => {
+  const read = (f) => readFileSync(join(ROOT, f), 'utf8');
+  const SPAWNS = /\bspawn the\b|\bspawn these\b|\bspawn them\b|\bspawn the specialists\b/i;
+  const TIER = /model tier|frontier|\bSonnet\b|\bHaiku\b|\bOpus\b/i;
+
+  test('every skill that says "spawn the ..." also says which tier', () => {
+    const silent = [];
+    for (const d of readdirSync(SKILLS, { withFileTypes: true })) {
+      if (!d.isDirectory()) continue;
+      const skill = `skills/${d.name}/SKILL.md`;
+      if (!HAVE.has(skill)) continue;
+      const text = read(skill);
+      if (SPAWNS.test(text) && !TIER.test(text)) silent.push(skill);
+    }
+    assert.deepEqual(silent, []);
+  });
+
+  test('the ultra skill carries the split the others point at', () => {
+    const text = read('skills/ultra/SKILL.md');
+    assert.match(text, /## The model tier/);
+    assert.match(text, /frontier/);
+    assert.match(text, /cheap/);
+  });
+
+  test('CHECK and ultra do not contradict each other on refuters', () => {
+    // CHECK says never Opus for its lenses; ultra used to say nothing, so its refuters ran
+    // frontier. Both files must now name the same rule for the same work.
+    assert.match(read('skills/loop/references/review.md'), /flow:ultra/);
+    assert.match(read('skills/ultra/references/adversary.md'), /never the frontier model/i);
+  });
+});

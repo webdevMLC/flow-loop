@@ -258,6 +258,11 @@ Never spend the same on every finding — that costs as much to check a typo as 
 | **MAJOR** | 1 | Worth a second opinion, not a panel |
 | **MINOR** | 0 — report it | If it is wrong the reader loses five seconds |
 
+**This governs `/flow:ultra`'s adversarial pass too** — same work, one level up, and it had
+no tier of its own until it was measured running twelve frontier lenses on one project. Its
+*finders* are frontier by design, because they are looking for what every gate here missed;
+its *refuters* follow this table. "The model tier" in the ultra skill carries the split.
+
 Uniform verification is the failure mode to avoid. Thirty-two findings at two skeptics each
 is sixty-four agents, of which the twenty spent on minor findings could not have paid off
 under any outcome — a minor gates nothing, so being wrong about one costs nothing.

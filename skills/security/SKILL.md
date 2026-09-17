@@ -65,6 +65,12 @@ where does money move. The map is what the specialists divide.
 
 ## Stage 2 — Attack
 
+
+**Model tier: the six specialists are frontier, the reproducers in stage 3 are cheap.** Finding what every gate missed is
+open-ended and rewards the better model; checking a stated claim against the code is bounded,
+and the model that had to find the thing is not the model needed to confirm it. "The model
+tier" in the ultra skill carries the split, and it applies here unchanged.
+
 Read `references/attackers.md`. Spawn the specialists **in one message**, each owning one
 class and attacking the running instance. They return proven holes with the exact request or
 input that demonstrates each. The access-control specialist and the business-logic specialist

@@ -56,6 +56,12 @@ map is what the testers divide; a tester without a map wanders.
 
 ## Stage 2 — Test
 
+
+**Model tier: the seven testers are frontier, the falsifiers in stage 3 are cheap.** Finding what every gate missed is
+open-ended and rewards the better model; checking a stated claim against the code is bounded,
+and the model that had to find the thing is not the model needed to confirm it. "The model
+tier" in the ultra skill carries the split, and it applies here unchanged.
+
 Read `references/testers.md`. Spawn the testers **in a single message** so they run
 concurrently, each owning one dimension and driving every flow through it. They return
 defects with reproduction steps and the query that shows the wrong row — never opinions,

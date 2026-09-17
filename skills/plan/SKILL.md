@@ -60,6 +60,16 @@ first — with the owner.
 
 ## Step 2 — the experts
 
+**Model tier: frontier, every one of them.** This is the stage that decides whether the
+criteria are for the right product, it runs once per project, and being wrong here is not a
+revision — it is the twenty green phases that built the wrong thing. The loop's routing table
+has said frontier since it was written, and a measured run had all five experts on the cheap
+tier anyway, because the table sits in the loop skill and this is the file open when they are
+spawned. Pass the model explicitly.
+
+**The one exception is refuting**, not finding: if a lens's claim needs checking against the
+code, that is bounded work and goes cheap — "The model tier" in the ultra skill has the split.
+
 Spawn them **in a single message** so they run concurrently, the same shape as CHECK's
 adversarial pass but pointed at the intent rather than a diff. Each gets the intent record,
 the owner's inputs, any authority documents, and — in existing mode — the code. **Each returns

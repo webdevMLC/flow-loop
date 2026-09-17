@@ -28,6 +28,36 @@ So this command asks three questions a diff review cannot:
 | **3 Adversary** | what is wrong with the code, judged by independent readers? | model-heavy |
 | **4 Repair** | fix what was found, through the loop | the rest |
 
+
+## The model tier — spend on finding, economise on confirming
+
+This skill said nothing about model tier for a long time, and the absence had a cost: measured
+across real runs, every lens ran on the frontier model — twelve of them on one project, six on
+another — because nothing in scope said otherwise and "this is the deep pass" reads like a
+reason to spend. Meanwhile CHECK's lenses, doing substantially the same work one level down,
+carry an explicit *"never Opus"*. Same work, opposite answers, decided by which file happened
+to be open.
+
+The split that holds up:
+
+| Work | Tier | Why |
+|---|---|---|
+| **Stage 1 Reality** | cheap / inline | running the documented start and reading what it prints is not a reasoning problem |
+| **Stage 2 Data** | **frontier** | deriving what a row *should* hold from the authority, then noticing that it does not, is the hardest judgement in the command |
+| **Stage 3, finding** | **frontier** | the lenses are looking for what every other gate missed, in a codebase nobody has mapped. Depth is the entire product here |
+| **Stage 3, refuting** | cheap, and **tiered** | the claim and its evidence are both in the prompt. BLOCKER up to 3 sequential, MAJOR 1, MINOR 0 — `references/adversary.md` |
+| **Stage 4 Repair** | the loop's own tiers | it is BUILD and CHECK, and they already have tiers |
+
+**The asymmetry is the point.** Finding something nobody has found is open-ended and rewards
+the better model. Deciding whether a stated claim survives contact with the code is bounded —
+the finding names the file, the line and the failure — and a cheaper reader does it about as
+well for a fraction of the cost. A frontier model spent confirming what a frontier model
+already said is the single most expensive thing this command can do.
+
+**Never fan out frontier refuters.** A fixed number of them per finding is refused by the
+workflow gate if the pass is escalated to a script, and it is the same mistake run by hand:
+three frontier agents arguing about a MINOR cost more than the defect.
+
 **Stages 1–3 gate each other**: a system that does not start has nothing to say about its data.
 Stage 4 is different — it gates on the *report* rather than on a clean result, and it runs
 precisely because the earlier stages found something.

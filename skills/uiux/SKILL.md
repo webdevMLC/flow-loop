@@ -55,6 +55,12 @@ three commonest jobs. This is the evidence the critique cites.
 
 ## Stage 2 — Critique
 
+
+**Model tier: the six critics are frontier, the architect's verdict pass are cheap.** Finding what every gate missed is
+open-ended and rewards the better model; checking a stated claim against the code is bounded,
+and the model that had to find the thing is not the model needed to confirm it. "The model
+tier" in the ultra skill carries the split, and it applies here unchanged.
+
 Read `references/critique.md`. Spawn the six specialists **in one message** — information
 architecture, interaction design, visual hierarchy, states and feedback, accessibility,
 content and copy — each judging every capture against their lens's failing conditions and

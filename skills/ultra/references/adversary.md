@@ -39,6 +39,11 @@ tiering anything; they remove findings from the tier entirely.
 MAJOR one; a MINOR none — if a minor is wrong the reader loses five seconds, and paying three agents to argue about
 it is the waste this note exists to prevent.
 
+**Refuters are cheap, and the lenses that found the defect were not.** Sonnet, or Haiku on a
+small finding — never the frontier model. The claim, the file, the line and the evidence are
+all in the prompt; this is a bounded question, and the model that had to *find* the thing is
+not the model needed to check it. See "The model tier" in the ultra skill.
+
 "Up to three" is sequential, stopping on the first refutation — does the code say what the
 finding claims, is it already prevented elsewhere, can the failing input be built. Stop on a
 *refutation*, never on how confident a verifier sounded: a confidently-wrong skeptic reports
