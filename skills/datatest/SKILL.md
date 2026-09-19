@@ -57,10 +57,33 @@ map is what the testers divide; a tester without a map wanders.
 ## Stage 2 — Test
 
 
-**Model tier: the seven testers are frontier, the falsifiers in stage 3 are cheap.** Finding what every gate missed is
-open-ended and rewards the better model; checking a stated claim against the code is bounded,
-and the model that had to find the thing is not the model needed to confirm it. "The model
-tier" in the ultra skill carries the split, and it applies here unchanged.
+### The tier is per tester, and most of this is a harness, not an agent
+
+"Seven testers on the frontier model" is the expensive, wrong answer. Look at what they do:
+five of the seven **drive** — every input to its edge, every write twice, two actors at once,
+every lifecycle edge, a write here and a read there. That is execution and comparison, and
+the case list is **generated from the schema and the lifecycle**, not reasoned out. A frontier
+agent clicking through a matrix a script could drive is the most expensive way to run a loop.
+
+| Tester | Tier | Why |
+|---|---|---|
+| **Boundary** | **harness** | the edges come from the column types and constraints; generate the cases, drive them, diff the rows |
+| **Duplicate and replay** | **harness** | send it twice, compare — there is no judgement in it |
+| **Concurrency** | **harness** | two writers on one row, genuinely at once; the hard part is the setup, not the thinking |
+| **State machine** | **harness** | the edges are enumerable from the lifecycle the project skill names |
+| **Adversarial input** | **frontier** | *valid to the form and wrong for the domain* cannot be generated — it needs to know what the domain means |
+| **Cross-module** | **frontier** | deciding what *should* have changed elsewhere is the invariant nobody wrote down |
+| **Money** | **frontier** | re-deriving every number by hand from the authority is the hardest judgement here, and the one that costs most when wrong |
+
+So **four harness, three frontier** — not seven frontier. And the harness half gets *better*:
+a generated matrix does not get bored at case 200, and a script diffing rows does not
+misread one.
+
+**Stage 3 falsification is cheap.** The claim, the steps and the query are all in the prompt.
+
+**Build the harness once, keep it.** Stage 4 commits a failing test per defect anyway; the
+drivers those tests use are the same drivers. A second run of `/flow:datatest` on the same
+project should be mostly re-execution, and cost a fraction of the first.
 
 Read `references/testers.md`. Spawn the testers **in a single message** so they run
 concurrently, each owning one dimension and driving every flow through it. They return
