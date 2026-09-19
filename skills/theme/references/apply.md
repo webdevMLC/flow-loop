@@ -7,6 +7,14 @@ screens, so CHECK fires `references/uiaudit.md` **in the loop skill** and the cr
 **The before-captures were taken at the end of stage 1. If they are not on disk, stop.** Step 1
 below destroys the only thing they could have recorded.
 
+## Show the set, not one screen
+
+After applying, capture every screen the theme touched and assemble one board -
+`.flow/theme/<date>/screens/overview.png`, every screen in a device frame, numbered, before
+and after. `references/contactsheet.md` **in the plan skill** has the composition. A theme is
+the one change whose whole point is consistency, and consistency is invisible one screen at a
+time.
+
 ## Size it first
 
 The survey's hard-coded count decides the shape of the work, and the user agreed to that shape

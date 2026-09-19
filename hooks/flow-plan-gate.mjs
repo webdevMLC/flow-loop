@@ -239,6 +239,12 @@ const writeContent = () => {
   const c = ti.content ?? ti.new_string ?? ti.text ?? null;
   return typeof c === 'string' ? c : null;
 };
+// A product is judged as a set, not a screen at a time: twenty screens reviewed one by one
+// all look fine, and the four different empty states only show up on one board. Required once
+// there are enough screens for the question to mean anything.
+const OVERVIEW = /^overview\.(png|jpe?g|webp|avif)$/i;
+const SHEET_FROM = 3;
+
 const ASSESSMENTS = ['ULTRA', 'DATATEST', 'SECURITY', 'OPS'];
 const readyClaim = (root, text) => {
   // Only the verdict heading counts, and it is UPPERCASE by format. Case-insensitive
@@ -453,6 +459,20 @@ const checkWrite = (targetPath, via) => {
       return readdirSync(SCREENS).filter((f) => /\.(png|jpe?g|webp|avif)$/i.test(f)).sort();
     } catch { return []; }
   })();
+  if (shots.length >= SHEET_FROM && !shots.some((f) => OVERVIEW.test(f))) {
+    deny(
+      'Flow plan gate: ' + shots.length + ' screens are drawn, and there is no board showing them' + NL +
+      'together - no .flow/plan/screens/overview.png.' + NL + NL +
+      'Every screen in a device frame, numbered and captioned, ordered by the journey rather' + NL +
+      'than the menu, on one image. It is what the owner looks at first, and it answers what' + NL +
+      'no single capture can: do these screens belong to the same product? Reviewed one at a' + NL +
+      'time they all look fine; on one board the four different empty states are obvious in a' + NL +
+      'second.' + NL + NL +
+      'Assemble it from the captures that are already there - never redrawn, so it cannot show' + NL +
+      'a screen the plan does not deliver. references/contactsheet.md in the plan skill.' + NL + NL +
+      'Only the owner can suspend this (.flow/plan-off).'
+    );
+  }
   if (!shots.length) {
     deny(
       'Flow plan gate: the plan has no picture of the product - no image in .flow/plan/screens/.' + NL + NL +
@@ -507,6 +527,17 @@ const checkWrite = (targetPath, via) => {
         'desktop and 375px, beside the capture of what is there now. The owner decides from' + NL +
         'those pictures whether to rebuild the screens. Produce them, then ask.' + NL + NL +
         'Only the owner can suspend this (.flow/plan-off).'
+      );
+    }
+    if (pending.shots.length >= SHEET_FROM && !pending.shots.some((f) => OVERVIEW.test(f))) {
+      deny(
+        'Flow plan gate: the redesign has ' + pending.shots.length + ' screens and no board showing them' + NL +
+        'together - no overview.png in .flow/uiux/' + pending.dir + '/screens/.' + NL + NL +
+        'Two-up: what is there now beside what it becomes, every screen, numbered. A redesign' + NL +
+        'reviewed screen by screen gets approved screen by screen; on one board the owner can' + NL +
+        'tell in a look whether the product still feels like theirs, which is the question' + NL +
+        'they are actually being asked.' + NL + NL +
+        'references/contactsheet.md in the plan skill.'
       );
     }
     deny(

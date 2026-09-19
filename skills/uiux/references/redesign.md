@@ -33,6 +33,16 @@ it, and **capture a PNG**. Each screen:
   person's experience that changes. Not "cleaner" or "more modern": *"the organiser now sees
   the tournament they created without leaving the form (resolves IA-3, ST-1)"*
 
+### And a board of all of them, before and after
+
+`overview.png` in the same directory: every screen in a device frame, **two-up — what is
+there now beside what it becomes**, numbered and captioned. The composition is
+`references/contactsheet.md` **in the plan skill**; the only difference is the two-up cell.
+
+This is the image that carries the decision. A redesign reviewed screen by screen gets
+approved screen by screen; seen as a board, an owner can tell in one look whether the product
+still feels like theirs — which is the question they are actually being asked.
+
 **Then write `.flow/uiux/pending`** containing the `<date>` directory name. From that moment
 the plan gate denies every source write until the owner has looked at the captures and
 confirmed them — the confirm command is printed at the bottom of the artifact, the same way

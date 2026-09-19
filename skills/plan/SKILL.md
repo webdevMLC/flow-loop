@@ -188,7 +188,12 @@ artifact — or write `.flow/plan/index.html` where no artifact tool exists — 
 
 - **every process flow as a diagram**, the same flows as step 3, drawn
 - **a designed picture of every screen a job lands on** — the theme applied, real components,
-  real content, **captured as a PNG into `.flow/plan/screens/`** at desktop and 375px. Not a
+  real content, **captured as a PNG into `.flow/plan/screens/`** at desktop and 375px
+- **one contact sheet — every screen in device frames on a single numbered board**,
+  `.flow/plan/screens/overview.png`. It is the image the owner looks at first, and it answers
+  what no single capture can: do these screens belong to the same product? Twenty screens
+  reviewed one at a time all look fine; seen together, the four different empty states are
+  obvious in a second. `references/contactsheet.md`. Not a
   wireframe — the owner judges the product from these, and grey boxes are not a product. This
   is the picture that would have shown a tournament with nowhere to appear after it was
   created, and the obsolete-looking screens nobody saw until after they were built

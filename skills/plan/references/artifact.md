@@ -67,6 +67,14 @@ in `.flow/PROJECT.md` — use it — or choose from the seven in `references/the
 theme skill** and say which, in one line, as a decision the owner can overturn. Getting this
 wrong is cheap here and expensive after forty screens are built.
 
+### And one board with all of them on it
+
+Individually captured screens are for reading detail. **The contact sheet is for judging the
+product**: every screen in a device frame, numbered, captioned, ordered by the journey rather
+than the menu, on one image — `overview.png`, beside the captures. Read
+`references/contactsheet.md` for the composition. It embeds the same PNGs; it never redraws
+them, so it cannot show a screen the plan does not deliver.
+
 ### Then capture them
 
 Write each screen as a standalone HTML file under `.flow/plan/screens/`, styled with the

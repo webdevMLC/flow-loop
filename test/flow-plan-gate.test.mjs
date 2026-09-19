@@ -824,3 +824,61 @@ describe("the verdict word is the heading, not any mention of it", () => {
     assert.equal(verdict(dir(), '# Ready? - Acme\n\n## READY\n').allowed, false);
   });
 });
+
+
+describe('a product is judged as a set - the contact sheet', () => {
+  const screens = (n, withBoard) => {
+    const files = {};
+    for (let i = 0; i < n; i++) files['.flow/plan/screens/s' + i + '.png'] = PIXELS;
+    if (withBoard) files['.flow/plan/screens/overview.png'] = PIXELS;
+    return files;
+  };
+  const proj = (n, withBoard) => fixture({
+    '.flow/STATE.md': STATE, '.claude/skills/acme/SKILL.md': SKILL,
+    [ART]: PLAN, [REG]: CLEAR, ...screens(n, withBoard),
+  });
+
+  test('three or more screens with no board is denied, and says why', () => {
+    const r = write(proj(3, false), 'src/ledger.ts');
+    assert.equal(r.allowed, false);
+    assert.match(r.reason, /no board showing them/);
+    assert.match(r.reason, /belong to the same product/);
+  });
+
+  test('one or two screens do not need one - the question means nothing yet', () => {
+    const r = write(proj(2, false), 'src/ledger.ts');
+    assert.equal(r.allowed, false);
+    assert.doesNotMatch(r.reason, /no board showing them/);   // denied for confirmation, not the board
+  });
+
+  test('the board satisfies it', () => {
+    const dir = proj(4, true);
+    writeFileSync(join(dir, '.flow/plan-confirmed'), confirm(dir));
+    assert.equal(write(dir, 'src/ledger.ts').allowed, true);
+  });
+
+  test('the confirmation covers the board, so redrawing it goes stale', () => {
+    const dir = proj(4, true);
+    writeFileSync(join(dir, '.flow/plan-confirmed'), confirm(dir));
+    assert.equal(write(dir, 'src/ledger.ts').allowed, true);
+    writeFileSync(join(dir, '.flow/plan/screens/overview.png'), PIXELS + ' - reordered');
+    assert.equal(write(dir, 'src/ledger.ts').allowed, false);
+  });
+
+  test('a redesign with three screens and no board is denied too', () => {
+    const dir = proj(4, true);
+    writeFileSync(join(dir, '.flow/plan-confirmed'), confirm(dir));
+    mkdirSync(join(dir, '.flow/uiux/2026-09-19/screens'), { recursive: true });
+    for (const n of ['a', 'b', 'c']) writeFileSync(join(dir, '.flow/uiux/2026-09-19/screens/' + n + '.png'), PIXELS);
+    writeFileSync(join(dir, '.flow/uiux/pending'), '2026-09-19');
+    const r = write(dir, 'src/ledger.ts');
+    assert.equal(r.allowed, false);
+    assert.match(r.reason, /no board showing them/);
+    assert.match(r.reason, /Two-up/);
+  });
+
+  test('PLAN can write the board itself', () => {
+    assert.equal(write(proj(3, false), '.flow/plan/screens/overview.png').allowed, true);
+    assert.equal(write(proj(3, false), '.flow/plan/screens/overview.html').allowed, true);
+  });
+});
