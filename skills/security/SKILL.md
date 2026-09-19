@@ -66,10 +66,24 @@ where does money move. The map is what the specialists divide.
 ## Stage 2 — Attack
 
 
-**Model tier: the six specialists are frontier, the reproducers in stage 3 are cheap.** Finding what every gate missed is
-open-ended and rewards the better model; checking a stated claim against the code is bounded,
-and the model that had to find the thing is not the model needed to confirm it. "The model
-tier" in the ultra skill carries the split, and it applies here unchanged.
+### The tier is per specialist, and the scanners go first
+
+This skill already says a scanner's output is not a finding. That is about **reachability** —
+a flagged dependency no code path can trigger is a MINOR, not the headline. It is not a reason
+to have a frontier agent do a scanner's job. Run the tools, then spend the thinking on whether
+what they found can actually be reached.
+
+| Specialist | Tier | Why |
+|---|---|---|
+| **Secrets and configuration** | **tools** | `git log -S`, grep the built bundle, diff the shipped env. Facts, and a model reading a repo for secrets misses what a scan catches |
+| **Supply chain** | **tools, then cheap** | the advisory list is a command; deciding whether a path reaches the vulnerable call is a short read |
+| **Injection** | **harness, then cheap** | a payload set driven at every input crossing is a script; the judgement is which crossings exist |
+| **Auth and session** | **cheap** | forging, replaying and expiring a token are bounded checks against a stated scheme |
+| **Access control** | **frontier** | *who should be allowed to reach this* is domain knowledge, and IDOR on a tenant boundary is the hole scanners never find |
+| **Business logic and money** | **frontier** | the commission earned twice, the refund that does not reverse the ledger. This skill already says the best real bugs live here — this is where the budget belongs |
+
+**Two frontier, not six.** Stage 3 reproduction is cheap: the exploit steps are in the prompt,
+and the instance is reseeded — running them is execution.
 
 Read `references/attackers.md`. Spawn the specialists **in one message**, each owning one
 class and attacking the running instance. They return proven holes with the exact request or
