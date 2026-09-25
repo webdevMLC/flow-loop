@@ -54,7 +54,7 @@ const SHELL_TOOLS = new Set(['Bash', 'PowerShell', 'local_shell', 'shell', 'shel
 const OWNER_ONLY = ['.flow/plan-confirmed', '.flow/allow-push', '.flow/plan-off',
   '.flow/cite-off', '.flow/tdd-off', '.flow/verify-off', '.flow/evidence-off',
   '.flow/fanout-off', '.flow/uiux-confirmed', '.flow/blockers-off',
-  '.flow/uat-trust', '.flow/uat-ceiling'];
+  '.flow/uat-trust', '.flow/triage-off', '.flow/uat-ceiling'];
 
 const norm = (s) => String(s).split(BACKSLASH).join('/');
 

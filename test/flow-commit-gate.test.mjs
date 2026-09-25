@@ -393,3 +393,67 @@ describe('the evidence gate - a ticked by-artifact criterion has its artifact', 
     assert.equal(v.allowed, true);
   });
 });
+
+
+describe('a finding being real does not make it a phase', () => {
+  const goal = (text) => '# S\n## Now\n**Goal:** ' + text + '\n**Gate:** BUILD\n';
+  const REPORT = [
+    '# Checkpoint 33',
+    '- **C33-A** the empty state says "No data" - MINOR',
+    '- **C33-B** a label is title case - MINOR',
+    '- **C33-C** the period total is wrong by one centavo - MAJOR',
+    '- **C33-D** an admin of one company can create in another - BLOCKER',
+    '',
+  ].join('\n');
+
+  const proj = (goalText, extra) => {
+    const dir = gitFixture({
+      '.flow/STATE.md': goal(goalText), '.flow/CHECKPOINT-33.md': REPORT,
+      'src/a.ts': 'export const a = 1;\n', ...extra,
+    });
+    // The state gate runs first, so the phase's own state update is staged with it.
+    gitAdd(dir, 'src/a.ts', '.flow/STATE.md');
+    return dir;
+  };
+
+  test('a phase framed from MINORs only is refused, and names them', () => {
+    const r = commitVerdict(proj('fix C33-A and C33-B'), 'git commit -m "fix: the labels"');
+    assert.equal(r.allowed, false);
+    assert.match(r.reason, /framed from MINOR findings only/);
+    assert.match(r.reason, /C33-A \(MINOR\)/);
+    assert.match(r.reason, /C33-B \(MINOR\)/);
+  });
+
+  test('one MAJOR among them is enough - the phase stands', () => {
+    const r = commitVerdict(proj('fix C33-A and C33-C'), 'git commit -m "fix: the total"');
+    assert.doesNotMatch(r.reason || '', /framed from MINOR findings only/);
+  });
+
+  test('a BLOCKER is never batched', () => {
+    const r = commitVerdict(proj('close C33-D'), 'git commit -m "fix: cross-company"');
+    assert.doesNotMatch(r.reason || '', /framed from MINOR findings only/);
+  });
+
+  test('a phase that cites no finding is not this gate\'s business', () => {
+    const r = commitVerdict(proj('build the statement export'), 'git commit -m "feat: export"');
+    assert.doesNotMatch(r.reason || '', /framed from MINOR findings only/);
+  });
+
+  test('an id nothing resolves stays silent rather than guessing', () => {
+    const r = commitVerdict(proj('fix Z99-Q'), 'git commit -m "fix: something"');
+    assert.doesNotMatch(r.reason || '', /framed from MINOR findings only/);
+  });
+
+  test('the denial says where they go and what was never MINOR', () => {
+    const r = commitVerdict(proj('fix C33-A'), 'git commit -m "fix: label"');
+    assert.match(r.reason, new RegExp('\\.flow/MINORS\\.md'));
+    assert.match(r.reason, /money, auth, permission, tenancy/);
+  });
+
+  test('the escapes are there, and the project one is owner-only elsewhere', () => {
+    const dir = proj('fix C33-A');
+    assert.equal(commitVerdict(dir, 'git commit -m "x"', { FLOW_TRIAGE_OFF: '1' }).allowed, true);
+    const off = proj('fix C33-A', { '.flow/triage-off': '' });
+    assert.equal(commitVerdict(off, 'git commit -m "x"').allowed, true);
+  });
+});

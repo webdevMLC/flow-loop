@@ -201,6 +201,72 @@ if (projectSkill && existsSync(join(root, '.flow', 'STATE.md'))
   }
 }
 
+// ---------- a phase framed from MINOR findings only ----------
+// Measured: a payroll project ran 217 commits in 48 days, 25 of which added capability; the
+// last ten in a row were repairs tagged C31/C32/C33/R4-A/R4-B/R4-C, each fix reviewed by the
+// next checkpoint, which produced more findings. A second project had 133 of 138 roadmap
+// entries originate in a checkpoint. Neither loop was malfunctioning - agents asked to find
+// defects find defects, and nothing decided which ones were worth stopping for.
+//
+// A MINOR is recorded in .flow/MINORS.md with its evidence and swept as one batch at the
+// milestone. It does not get its own phase, its own CHECK, and its own place in the next
+// review's surface. Nothing is dropped; the register is read by /flow:ready.
+const FINDING_ID = /\b([A-Z]{1,6}-?\d{1,3}(?:-[A-Z])?)\b/g;
+const SEVERITY = /\b(BLOCKER|MAJOR|MINOR|NOTE)\b/i;
+
+const minorOnlyPhase = () => {
+  let state = '';
+  try { state = readFileSync(join(root, '.flow', 'STATE.md'), 'utf8'); } catch { return null; }
+  const goal = /^\*\*Goal:\*\*([\s\S]*?)(?:\n\*\*|\n#{2,3}\s)/m.exec(state);
+  if (!goal) return null;
+  const ids = [...new Set([...goal[1].matchAll(FINDING_ID)].map((m) => m[1]))];
+  if (!ids.length) return null;                    // not framed from findings at all
+
+  let corpus = '';
+  try {
+    for (const f of readdirSync(join(root, '.flow'))) {
+      if (!/^(ULTRA|DATATEST|SECURITY|UIUX|OPS|CHECKPOINT|MINORS)[-.]/i.test(f)) continue;
+      corpus += readFileSync(join(root, '.flow', f), 'utf8') + NL;
+    }
+  } catch { return null; }
+  if (!corpus) return null;
+
+  const seen = [];
+  for (const id of ids) {
+    const esc = id.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const line = new RegExp('^.*\\b' + esc + '\\b.*$', 'mi').exec(corpus);
+    if (!line) continue;
+    const m = SEVERITY.exec(line[0]);
+    if (m) seen.push([id, m[1].toUpperCase()]);
+  }
+  if (!seen.length) return null;                   // nothing resolved: this gate says nothing
+  if (seen.some(([, s]) => s === 'BLOCKER' || s === 'MAJOR')) return null;
+  return seen.map(([id, s]) => id + ' (' + s + ')');
+};
+
+if (!explicitBypass && process.env.FLOW_TRIAGE_OFF !== '1'
+    && !existsSync(join(root, '.flow', 'triage-off'))) {
+  const only = minorOnlyPhase();
+  if (only && only.length) {
+    deny(
+      'Flow triage gate: this phase was framed from MINOR findings only.' + NL + NL +
+      only.map((s) => '  ' + s).join(NL) + NL + NL +
+      'A finding being real does not make it a phase. A MINOR is recorded in .flow/MINORS.md' + NL +
+      'with its evidence and swept as one batch at the milestone - it does not get its own' + NL +
+      'phase, its own CHECK, and its own place in the next review to find again.' + NL + NL +
+      'This is what stops the review stage feeding the build stage. Measured on a real' + NL +
+      'project: 217 commits in 48 days, 25 of which added capability, the last ten in a row' + NL +
+      'repairs tagged with the checkpoint that found them.' + NL + NL +
+      'Append these to .flow/MINORS.md and frame something that moves.' + NL + NL +
+      'If any of them touches money, auth, permission, tenancy, or data that is wrong in the' + NL +
+      'database, it was never MINOR: correct the severity in its own report and say why.' + NL +
+      '"It is only one field" is the sentence that precedes most of those.' + NL + NL +
+      'references/triage.md in the loop skill.' + NL +
+      'Bypass once: FLOW_TRIAGE_OFF=1   Suspend for the project: .flow/triage-off'
+    );
+  }
+}
+
 // ---------- a ticked `by artifact` criterion must have its artifact ----------
 // The eighth rule, and the one that catches "closed by assertion". A criterion marked done
 // and classed `by artifact` names a file a person can open; if that file is not on disk,

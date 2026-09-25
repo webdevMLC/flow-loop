@@ -156,7 +156,14 @@ criteria from STATE.md, and returns findings only.
 Skip a checker whose domain the diff does not touch. A CSS change needs no performance oracle.
 If the diff is <=3 files or <=200 lines, **do not spawn** (guard 5) — run the lenses inline.
 
-### What comes back is findings — do not reflexively verify them
+### What comes back is findings — do not reflexively verify them, and do not queue them all
+
+**Severity decides what a finding becomes**, not just how hard it is checked: BLOCKER a phase
+now, MAJOR a phase this milestone, MINOR recorded and swept in a batch, NOTE recorded. A phase
+framed from MINORs alone is refused at the commit. `references/triage.md` — read it before
+turning a report into a roadmap, because the alternative is measured: 217 commits in 48 days
+of which 25 added capability.
+
 
 **Read "Verify only when reading will not do" below before spawning a single skeptic.** The
 default is to report the findings, not to debate them, and the tiering there is BLOCKER up to
