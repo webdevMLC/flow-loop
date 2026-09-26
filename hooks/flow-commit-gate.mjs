@@ -267,6 +267,76 @@ if (!explicitBypass && process.env.FLOW_TRIAGE_OFF !== '1'
   }
 }
 
+// ---------- a screen criterion names the drawing it must match ----------
+// Measured, and it cost a rebuild. PLAN drew 61 screens for a hotel product and wrote a
+// 359-line project skill that mentioned a screen file ONCE. FRAME then wrote criteria that
+// said "follows the drawing" - as a phrase, not a path. CHECK spawned 27 agents; seventeen
+// mentioned screens, thirteen mentioned rebuilding, and NOT ONE was given a plan screen to
+// compare against. So a redirect to the old screen produced a real capture, satisfied
+// `by artifact`, and passed a reviewer who had never seen what it was supposed to look like.
+// Every gate green; the screens were not rebuilt.
+//
+// The drawings existed. They had no address. This gives them one.
+const planScreens = (root) => {
+  try {
+    const d = join(root, '.flow', 'plan', 'screens');
+    return readdirSync(d).filter((f) => /\.(png|jpe?g|webp|avif)$/i.test(f));
+  } catch { return []; }
+};
+
+if (!explicitBypass && process.env.FLOW_MATCH_OFF !== '1'
+    && !existsSync(join(root, '.flow', 'match-off'))) {
+  const drawings = planScreens(root);
+  if (drawings.length) {
+    let state = '';
+    try { state = readFileSync(join(root, '.flow', 'STATE.md'), 'utf8'); } catch { state = ''; }
+    const lines = state.split(NL);
+    const start = lines.findIndex((l) => /^#{2,4}\s+(acceptance\s+)?criteria\b/i.test(l.trim()));
+    const unbound = [];
+    if (start >= 0) {
+      let bullet = null;
+      const check = () => {
+        if (!bullet) return;
+        const text = bullet.replace(/\s+/g, ' ').trim();
+        bullet = null;
+        if (!/^[-*]\s*\[[ x]\]/i.test(text)) return;
+        if (!/`?by artifact`?/i.test(text)) return;
+        // only criteria that are about a screen
+        if (!/\b(screen|drawing|page|view|panel|dialog|shell|follows the)\b/i.test(text)) return;
+        if (/\bmatches:\s*\S/i.test(text)) return;                 // already bound
+        unbound.push(text.slice(0, 92));
+      };
+      for (let i = start + 1; i < lines.length; i++) {
+        const l = lines[i];
+        if (/^#{1,4}\s/.test(l)) break;
+        if (/^\s*[-*]\s/.test(l)) { check(); bullet = l; continue; }
+        if (bullet && /^\s+\S/.test(l)) { bullet += ' ' + l; continue; }
+        check();
+      }
+      check();
+    }
+    if (unbound.length) {
+      deny(
+        'Flow match gate: ' + unbound.length + ' screen criteria do not name the drawing they' + NL +
+        'must match, and ' + drawings.length + ' drawings are sitting in .flow/plan/screens/.' + NL + NL +
+        unbound.map((u) => '  ' + u).join(NL) + NL + NL +
+        'End each one with the drawing it is built to:' + NL + NL +
+        '    - [ ] **F1** Bookings follows the drawing - `by artifact`' + NL +
+        '          .flow/evidence/12/bookings.png' + NL +
+        '          matches: .flow/plan/screens/f1-bookings.png' + NL +
+        '          from: The places' + NL + NL +
+        '"Follows the drawing" with no path is a description, and a redirect to the old screen' + NL +
+        'satisfies a description. This is measured: on one project PLAN drew 61 screens, 27' + NL +
+        'review agents ran, and not one was handed a drawing - so every screen passed and none' + NL +
+        'was rebuilt.' + NL + NL +
+        'CHECK opens both images side by side. Without the path there is nothing to open.' + NL + NL +
+        'references/evidence.md in the loop skill.' + NL +
+        'Bypass once: FLOW_MATCH_OFF=1   Suspend for the project: .flow/match-off'
+      );
+    }
+  }
+}
+
 // ---------- a ticked `by artifact` criterion must have its artifact ----------
 // The eighth rule, and the one that catches "closed by assertion". A criterion marked done
 // and classed `by artifact` names a file a person can open; if that file is not on disk,

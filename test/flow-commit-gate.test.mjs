@@ -457,3 +457,76 @@ describe('a finding being real does not make it a phase', () => {
     assert.equal(commitVerdict(off, 'git commit -m "x"').allowed, true);
   });
 });
+
+// PLAN drew 61 screens for a hotel product. FRAME wrote "follows the drawing" - a phrase, not a
+// path. 27 review agents ran and not one was handed a drawing, so a redirect to the old screen
+// produced a real capture, satisfied by-artifact, and passed. Every gate green; nothing rebuilt.
+describe('the match gate - a screen criterion names the drawing it was built to', () => {
+  const DRAWN = {
+    '.flow/plan/screens/f1-bookings.png': 'PNG',
+    '.flow/plan/screens/f2-rooms.png': 'PNG',
+  };
+
+  const withCriteria = (crit, extra = {}) => {
+    const state = '# s\n\n## Now\n**Gate:** BUILD\n\n### Acceptance criteria\n' + crit + '\n\n### Tasks\n- [ ] T1\n';
+    const d = gitFixture({ '.flow/PROJECT.md': PASSING, '.flow/STATE.md': state, 'src/thing.ts': SRC, ...extra });
+    execSync('git add -A && git commit -q -m "initial"', { cwd: d, stdio: 'ignore' });
+    writeFileSync(join(d, 'src', 'thing.ts'), SRC + 'export const y = 2;\n');
+    writeFileSync(join(d, '.flow', 'STATE.md'), state + '\n- [ ] T2\n');
+    gitAdd(d, 'src/thing.ts', '.flow/STATE.md');
+    return d;
+  };
+
+  const drawn = (crit, extra = {}) => withCriteria(crit, { ...DRAWN, ...extra });
+
+  const LOOSE = '- [ ] **F1** Bookings follows the drawing \u00b7 `by artifact` \u00b7 .flow/evidence/12/b.png \u00b7 from: The places';
+  const BOUND = LOOSE + ' \u00b7 matches: .flow/plan/screens/f1-bookings.png';
+
+  test('"follows the drawing" with no path is refused', () => {
+    const v = commitVerdict(drawn(LOOSE), 'git commit -m "feat: bookings"');
+    assert.equal(v.allowed, false);
+    assert.match(v.reason, /do not name the drawing/);
+    assert.match(v.reason, /matches:/);
+  });
+
+  test('the denial carries the measurement, not just the rule', () => {
+    const v = commitVerdict(drawn(LOOSE), 'git commit -m "feat: bookings"');
+    assert.match(v.reason, /61 screens/);
+    assert.match(v.reason, /not one was handed a drawing/);
+    assert.match(v.reason, /references\/evidence\.md/);
+  });
+
+  test('it counts the loose criteria and the drawings going unused', () => {
+    const second = '\n- [ ] **F2** the Rooms screen lists rooms \u00b7 `by artifact` \u00b7 .flow/evidence/12/r.png \u00b7 from: The places';
+    const v = commitVerdict(drawn(LOOSE + second), 'git commit -m "feat: two"');
+    assert.match(v.reason, /2 screen criteria/);
+    assert.match(v.reason, /2 drawings/);
+  });
+
+  test('a matches: path satisfies it', () => {
+    assert.equal(commitVerdict(drawn(BOUND), 'git commit -m "feat: bookings"').allowed, true);
+  });
+
+  test('a criterion that is not about a screen is left alone', () => {
+    const ledger = '- [ ] **A1** the ledger balances \u00b7 `by artifact` \u00b7 .flow/evidence/12/ledger.txt \u00b7 from: Money';
+    assert.equal(commitVerdict(drawn(ledger), 'git commit -m "feat: ledger"').allowed, true);
+  });
+
+  test('a by-test criterion is left alone - a test is not a comparison', () => {
+    const rows = '- [ ] **F2** the bookings screen lists rows \u00b7 `by test` \u00b7 from: The places';
+    assert.equal(commitVerdict(drawn(rows), 'git commit -m "feat: rows"').allowed, true);
+  });
+
+  test('with no drawings on disk nothing is asked for', () => {
+    assert.equal(commitVerdict(withCriteria(LOOSE), 'git commit -m "x"').allowed, true);
+  });
+
+  test('the escapes are the owner-only kind', () => {
+    assert.equal(commitVerdict(drawn(LOOSE), 'git commit -m "x"', { FLOW_MATCH_OFF: '1' }).allowed, true);
+    assert.equal(commitVerdict(drawn(LOOSE, { '.flow/match-off': '' }), 'git commit -m "x"').allowed, true);
+  });
+
+  test('--no-verify still gets past it', () => {
+    assert.equal(commitVerdict(drawn(LOOSE), 'git commit --no-verify -m "x"').allowed, true);
+  });
+});

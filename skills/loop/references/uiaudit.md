@@ -1,5 +1,20 @@
 # Auditing a screen
 
+## Open the drawing first
+
+**If the criterion carries `matches: <path>`, open that image before the built one, and put
+them side by side.** The audit is a comparison, not an inspection: does the built screen show
+what the drawing showed, or does it show something that merely works?
+
+Measured, on a hotel product: PLAN drew **61 screens**, then wrote a 359-line project skill
+that mentioned a screen file **once**. FRAME cited that skill and wrote *"Bookings follows the
+drawing"* — a phrase, not a path. CHECK ran **27 review agents and not one was handed a
+drawing**. A redirect to the old screen produced a real capture, satisfied `by artifact`, and
+passed. Every gate green; the screens were never rebuilt, and the owner paid for a rebuild.
+
+A screen that routes to a pre-existing component instead of the one drawn is **not a pass with
+a note** — it is the criterion unmet. Say which drawing, which capture, and what differs.
+
 Runs inside CHECK, automatically, on any phase that touched a user surface. Not a skill
 someone remembers to invoke — a gate that fires because the diff contains a screen.
 

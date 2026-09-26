@@ -55,7 +55,7 @@ const OWNER_ONLY = ['.flow/plan-confirmed', '.flow/allow-push', '.flow/plan-off'
   '.flow/cite-off', '.flow/tdd-off', '.flow/verify-off', '.flow/evidence-off',
   '.flow/fanout-off', '.flow/uiux-confirmed', '.flow/blockers-off',
   '.flow/uat-trust', '.flow/triage-off', '.flow/harness-off',
-  '.flow/uat-ceiling'];
+  '.flow/uat-ceiling', '.flow/match-off'];
 
 const norm = (s) => String(s).split(BACKSLASH).join('/');
 

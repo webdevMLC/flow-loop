@@ -171,6 +171,27 @@ is that no *knowable* blocker reaches BUILD unresolved, and no assumption goes u
 
 ## Step 6 — write the project skill
 
+### Every screen gets an address, or the drawings are decoration
+
+**The section listing the places names each screen's file.** This is the one line in PLAN that
+decides whether the drawings are a contract or a gallery:
+
+```markdown
+**Bookings** — `screens/f1-bookings.png`, `screens/f1-bookings-mobile.png`
+The front desk's list. Tabs with counts, New booking, search, the table.
+Reached from the desk shell; a job lands here after a booking is created.
+```
+
+Measured, on a hotel product: PLAN drew **61 screens**, then wrote a 359-line project skill
+that mentioned a screen file **once**. FRAME cited that skill and wrote *"Bookings follows the
+drawing"* — a phrase, not a path. CHECK ran **27 review agents and not one was handed a
+drawing**. A redirect to the old screen produced a real capture, satisfied `by artifact`, and
+passed. Every gate green; the screens were never rebuilt, and the owner paid for a rebuild.
+
+**A drawing with no filename in the skill cannot be cited, cannot be opened, and cannot be
+matched.** The commit gate refuses a screen criterion that names no drawing — so a skill that
+does not name them stops the next phase, which is the right place for it to stop.
+
 The durable artifact. It lives at **`.claude/skills/<project>/SKILL.md`** with
 `flow-project-skill: true` in its frontmatter — a real skill, auto-loaded by every session in
 that repository, invokable by name. FRAME audits it; BUILD is checked against it; SHIP's data
@@ -187,6 +208,8 @@ decisions taken, with who took them · open questions, never assumptions.
 artifact — or write `.flow/plan/index.html` where no artifact tool exists — that shows:
 
 - **every process flow as a diagram**, the same flows as step 3, drawn
+- **every screen numbered and named**, `<id>-<slug>.png`, and **that filename written into the
+  project skill beside the place it shows** — a drawing nothing cites is a picture nobody opens
 - **a designed picture of every screen a job lands on** — the theme applied, real components,
   real content, **captured as a PNG into `.flow/plan/screens/`** at desktop and 375px
 - **one contact sheet — every screen in device frames on a single numbered board**,

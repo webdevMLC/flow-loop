@@ -48,6 +48,30 @@ whatever the project and host actually provide — a browser tool, Playwright, `
 file, the host's own preview. **If nothing can produce it, the criterion is `by person`, not
 `by test`.** Silently downgrading to a unit test is the failure this file exists to prevent.
 
+### A screen criterion names the drawing as well as the capture
+
+When `.flow/plan/screens/` holds drawings, **a `by artifact` criterion about a screen carries
+both paths** — what was built and what it was built to:
+
+```markdown
+- [x] **F1** Bookings follows the drawing · `by artifact` ·
+      .flow/evidence/12/bookings.png ·
+      matches: .flow/plan/screens/f1-bookings.png ·
+      from: The places
+```
+
+The commit gate refuses a screen criterion with no `matches:`. **CHECK opens both images side
+by side**, and the criterion closes on what a person sees in that comparison — not on the route
+resolving.
+
+This exists because of one measured failure: 61 drawings, criteria that said "follows the
+drawing" without a path, 27 review agents, none given a drawing, and a rebuild that turned out
+to be redirects to the old screens. The evidence was in two folders and nothing put them
+together.
+
+Escape, for a screen with no drawing — one added after PLAN, or a project with no plan screens
+at all: `FLOW_MATCH_OFF=1` once, or `.flow/match-off` for the project. Both owner files.
+
 ### The path goes in the criterion, and a hook checks it
 
 **Write the artifact's path into the criterion itself**, so closing it is checkable:
