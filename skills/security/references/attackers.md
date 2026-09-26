@@ -5,6 +5,14 @@ They are told to break in and prove it, not to describe how one might. A special
 proven holes with the exact request that demonstrates each; an unproven hunch goes in the
 "suspected, not reproduced" section, never mixed with the proven ones.
 
+## None of this is frontier work
+
+Attacking is testing. Stages 1 to 4 run cheap, start to finish; the frontier model appears in
+stage 5, the repair, which is the loop's BUILD. What compensates is mechanical: the attack set
+is **generated** from the recon map rather than imagined, so coverage comes from enumeration.
+**Anything you cannot devise an attack for is reported as an unexamined surface**, by name —
+silence and safety look identical afterwards.
+
 ## What every specialist gets
 
 - the recon map and their slice of it

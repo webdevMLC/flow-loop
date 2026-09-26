@@ -62,7 +62,11 @@ const root = findRoot(typeof ti.cwd === 'string' ? ti.cwd : (input?.cwd || proce
 if (!root) ok();
 if (existsSync(join(root, '.flow', 'harness-off'))) ok();
 
-const RUNS = [join(root, 'scratchpad', 'datatest'), join(root, 'scratchpad', 'ultra-data')];
+// Every command that drives a system under test repeatedly. Security was missing from this
+// list when the gate shipped, which is the command that repeats most: an IDOR sweep is every
+// endpoint times every tenant times every id.
+const RUNS = ['datatest', 'ultra-data', 'security', 'uiux']
+  .map((d) => join(root, 'scratchpad', d));
 const run = RUNS.find((d) => existsSync(d));
 if (!run) ok();                                   // no data run in progress: not our business
 
