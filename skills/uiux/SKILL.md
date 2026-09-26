@@ -68,38 +68,30 @@ The specialists then spend their budget on what a machine cannot read.
 ## Stage 2 — Critique
 
 
-### The tier is per lens, and two of them are not a model's job
+### Critiquing is checking; designing is making
 
-"Six specialists on the frontier model" is the expensive, wrong answer. Half of what these
-lenses check is **arithmetic**, and a model reading a PNG to estimate a contrast ratio is not
-merely costly — it is *less reliable* than four lines of code. Run the machine pass first:
+**The model you make something with is not the model you check it with.** A critique is checking — it judges screens that already exist against conditions that
+are already written down. A redesign is making — it is the thing the owner will approve and
+the loop will build.
 
-| Lens | Tier | Why |
-|---|---|---|
-| **Accessibility** | **machine** | contrast ratios, 44px targets, `outline: none`, missing alt and labels, sideways tables — all computed from the DOM and the capture. Judge nothing that can be measured |
-| **States and feedback** | **machine, then cheap** | whether the empty and error states exist is a fact; whether they say the right thing is a cheap read |
-| **Content and copy** | **cheap** | bounded against a writing standard, the same shape as a `judgement` UAT entry |
-| **Interaction design** | **cheap** | the failing conditions are listed; this is checking against a list |
-| **Information architecture** | **frontier** | *"can a person find what they need without being told"* is open-ended, and no list settles it |
-| **Visual hierarchy** | **frontier** | reading a rendered screen and saying where the eye lands is exactly where the better model pays |
+| Work | Tier |
+|---|---|
+| **Stage 1 Capture** | **cheap**, and the capture is a script |
+| **Stage 1.5 Machine** | **no model** — contrast ratios, 44px targets, `outline: none`, missing alt, overflow. Measured, never judged |
+| **Stage 2 Critique**, all six lenses | **cheap** — each lens has written failing conditions, and checking against a list is not frontier work |
+| **The architect's verdict** | **cheap** — grouping forty findings into four causes reads what the lenses already wrote |
+| **Stage 3 Redesign** | **frontier** — the screens you are asked to approve are the deliverable |
+| **Stage 4 Apply** | **frontier**, because it is the loop's BUILD |
 
-So: **two machine, two cheap, two frontier** — not six frontier. And the two machine ones get
-*better*, not just cheaper: this project has already had reviewers assert contrast failures
-that a script had to settle, and the script found real AA failures the readers had missed.
+"Six specialists on the frontier model" was the first answer and it was wrong twice over: half
+of what they check is arithmetic, and the other half is a list. **A model reading a PNG to
+estimate a contrast ratio is not merely costly — it is less reliable than four lines of code**,
+which this project has already proved once, when a script had to settle contrast claims the
+readers got wrong in both directions.
 
-The architect's verdict over all six findings is **frontier** — it is the one genuinely
-synthetic step, turning forty findings into the three or four causes behind them.
-
-Read `references/critique.md`. Spawn the six specialists **in one message** — information
-architecture, interaction design, visual hierarchy, states and feedback, accessibility,
-content and copy — each judging every capture against their lens's failing conditions and
-returning findings in CHECK's severities: BLOCKER if a person cannot complete the job, MAJOR
-if they will do it wrong or give up, MINOR if it is friction. Each finding names the screen,
-the capture, what is wrong, and what a person experiences because of it.
-
-Then the design architect reads all six and writes the **verdict**: the three to five
-structural problems that generate most of the findings. A product with forty findings usually
-has four causes.
+**If a lens cannot judge cheaply, that is a finding.** A screen nobody can critique without the
+best model available is a screen whose job nobody has written down — say so, rather than buying
+a bigger reader.
 
 ## Stage 3 — Redesign
 

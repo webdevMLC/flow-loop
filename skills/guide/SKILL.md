@@ -104,6 +104,29 @@ wrong language is not repairable by editing.
 | **Devices** | desktop · mobile · both | ask — it sets the capture width **and density, both fixed at `walk.md` §0 and not changeable later** |
 | **Access** | credentials for every role, and the disposable environment to use | ask — there is no later slot |
 
+## The model tier — the walk is cheap, the writing is the product
+
+This skill said nothing about tier, and silence is how a command ends up running everything on
+the best model available. **The model you make something with is not the model you check it with.** Making is BUILD, a repair, a guide someone reads. Checking is
+testing, attacking, reviewing, driving.
+
+| Work | Tier |
+|---|---|
+| **Stage 1, the walk** — driving the seeded system, capturing every screen | **cheap**, and the capture itself is a script |
+| **Cropping, sizing, the PDF pass, the contents page** | **mechanical** — no model |
+| **The writing** | **frontier** — this is the deliverable, read by people who have read nothing else |
+| **Translation into a second language** | **frontier** — a guide translated badly is worse than one not translated |
+| **Checking each step against its capture** | **cheap** — does the instruction match the screen beside it |
+
+**The writing is the exception that proves the rule.** Everywhere else the frontier model is
+reserved for repairs, because testing and checking are not reasoning work. Here the *product
+itself* is prose a stranger has to follow on their first day, so writing it is making, not
+checking — and it earns the better model for the same reason BUILD does.
+
+**What does not earn it:** walking the system, taking the screenshots, laying out the page,
+checking a step against its capture. That is most of the work by time and almost none of it by
+judgement.
+
 ## The four stages
 
 **1. Walk** — `references/walk.md`. Sign in as each role, do the real jobs end to end, break

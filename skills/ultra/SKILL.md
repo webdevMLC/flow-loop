@@ -29,34 +29,33 @@ So this command asks three questions a diff review cannot:
 | **4 Repair** | fix what was found, through the loop | the rest |
 
 
-## The model tier — spend on finding, economise on confirming
+## The model tier — inspecting is cheap, repairing is not
 
-This skill said nothing about model tier for a long time, and the absence had a cost: measured
-across real runs, every lens ran on the frontier model — twelve of them on one project, six on
-another — because nothing in scope said otherwise and "this is the deep pass" reads like a
-reason to spend. Meanwhile CHECK's lenses, doing substantially the same work one level down,
-carry an explicit *"never Opus"*. Same work, opposite answers, decided by which file happened
-to be open.
+One rule across this plugin: **the model you make something with is not the model you check it
+with.** Making is BUILD, PLAN, a repair, a guide someone reads. Checking is testing, attacking,
+reviewing, refuting, driving. Inspection is checking, and this whole command is inspection
+until stage 4.
 
-The split that holds up:
+| Stage | Tier |
+|---|---|
+| **1 Reality** | **cheap** — running the documented start and reading what it prints |
+| **2 Data** | **cheap**, and the driving is a script: one oracle, drive it, read what differed |
+| **3 Adversary** | **cheap** — both the lenses and the refuters |
+| **4 Repair** | **frontier** — it is the loop's BUILD, which is frontier already |
 
-| Work | Tier | Why |
-|---|---|---|
-| **Stage 1 Reality** | cheap / inline | running the documented start and reading what it prints is not a reasoning problem |
-| **Stage 2 Data** | **frontier** | deriving what a row *should* hold from the authority, then noticing that it does not, is the hardest judgement in the command |
-| **Stage 3, finding** | **frontier** | the lenses are looking for what every other gate missed, in a codebase nobody has mapped. Depth is the entire product here |
-| **Stage 3, refuting** | cheap, and **tiered** | the claim and its evidence are both in the prompt. BLOCKER up to 3 sequential, MAJOR 1, MINOR 0 — `references/adversary.md` |
-| **Stage 4 Repair** | the loop's own tiers | it is BUILD and CHECK, and they already have tiers |
+This took three passes to get right. The first said nothing at all, and silence measured
+**twelve frontier lenses on one project and six on another**, because "the deep pass" reads
+like a reason to spend. The second kept frontier for finding and made only refuting cheap. The
+third kept it for stage 2, which is the same work `/flow:datatest` runs cheap — so this file
+and `references/data.md` gave opposite instructions for one stage. That contradiction is what
+this version removes.
 
-**The asymmetry is the point.** Finding something nobody has found is open-ended and rewards
-the better model. Deciding whether a stated claim survives contact with the code is bounded —
-the finding names the file, the line and the failure — and a cheaper reader does it about as
-well for a fraction of the cost. A frontier model spent confirming what a frontier model
-already said is the single most expensive thing this command can do.
+**Never fan out frontier refuters.** A fixed number per finding is refused by the workflow
+gate if this pass is escalated to a script, and it is the same mistake run by hand.
 
-**Never fan out frontier refuters.** A fixed number of them per finding is refused by the
-workflow gate if the pass is escalated to a script, and it is the same mistake run by hand:
-three frontier agents arguing about a MINOR cost more than the defect.
+**And if a lens cannot do its job cheaply, that is a finding.** A defect class nobody can
+state without the best model available is a part of the system nobody understands — report it
+by name as unexamined, rather than quietly buying a bigger reader.
 
 **Stages 1–3 gate each other**: a system that does not start has nothing to say about its data.
 Stage 4 is different — it gates on the *report* rather than on a clean result, and it runs

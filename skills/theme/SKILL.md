@@ -63,6 +63,22 @@ A "before" captured afterwards is a fabrication sitting in the evidence director
 about writing artifacts to a path and returning one line is suspended here. A report answered
 without being opened is the same as no report.
 
+## The model tier — surveying is cheap, rebuilding is not
+
+**The model you make something with is not the model you check it with.** This skill had no tier at all, which defaults it to whatever the session is running.
+
+| Stage | Tier |
+|---|---|
+| **1 Survey** | **cheap**, and much of it is `grep` — which files carry colour, which components exist, what a theme would break |
+| **2 Conflict** | **cheap** — reading the survey against the design standard is a comparison |
+| **3 Tokens** | **mechanical** — the seven themes ship their values; applying them is substitution, not design |
+| **4 Components** | **frontier** — this is code the product runs, so it is the loop's BUILD |
+| **The captures and the contact sheet** | **no model** — render and screenshot |
+
+**Choosing which theme is not a tier question at all** — the owner chooses, or the project's
+design standard already did. Nothing here invents a palette, so nothing here needs a model that
+could.
+
 ## Stage 1 — Survey
 
 Read `references/survey.md`. It reads the project as built: styling layer, tokens or their

@@ -36,6 +36,13 @@ ends with what the owner would run, and the owner runs it.
 the owner has not said; default to **a pilot with real users and real data**, which is the bar
 most of these checks are set at, and say which bar was used in the verdict.
 
+## The model tier
+
+**Cheap.** Every check is a file read, a count, or a flow driven with the rows read back. The
+verdict is arithmetic over evidence — that is the whole point of the command. A readiness
+verdict that needed the best model available to reach would not be evidence, it would be an
+opinion with a large bill.
+
 ## The checks
 
 Read `references/checks.md`. Each one is computed, not judged, and each carries its evidence:

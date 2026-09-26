@@ -103,11 +103,27 @@ PLAN  ────────────────────────�
 | **CHECK** | one verdict report | machine first, then cheap subagents | 3 gating stages; the adversarial pass only when the phase earns it |
 | **SHIP** | commit + data pass + memory write | inline, then one disposable-DB run | 1 pass |
 
-The assessment commands are not in the per-phase loop and tier differently: **finding is
-frontier, refuting is cheap.** `/flow:ultra`'s lenses and `/flow:datatest`'s testers look for
-what every gate missed and earn the better model; the refuters that check what they found do
-not. See "The model tier" in the ultra skill. **Nothing enforces this** — it is the one part of
-the routing a hook cannot see, so it is advice, and it was measured being ignored.
+**One rule decides the tier everywhere: the model you make something with is not the model you
+check it with.** Making is PLAN, BUILD, a repair, the screens `/flow:uiux` asks you to approve,
+the guide a stranger reads. Checking is testing, attacking, reviewing, refuting, driving,
+surveying. Making earns the frontier model. Checking does not, and most of checking is not
+model work at all — contrast ratios, boundary matrices, payload sets and `git log -S` are
+arithmetic, and a script does them better than a reader.
+
+So the assessment commands — `ultra`, `datatest`, `security`, `uiux`, `theme` — run **cheap
+until they start repairing**, and the repair is the loop's BUILD, which is frontier already.
+Each names its own split where its agents are spawned.
+
+**Nothing enforces this** — it is the one part of the routing a hook cannot see, so it is
+advice, and it was measured being ignored: twelve frontier lenses on one ultra run, sixteen on
+a datatest that made 1,106 shell calls to run 171 queries. What *is* enforced is the shape:
+the workflow gate refuses a fixed fan-out of verifiers, and the harness gate refuses hand-
+driving past thirty cases with no script.
+
+**And if something cannot be checked cheaply, that is a finding.** A defect class nobody can
+state, a screen nobody can critique, an attack nobody can devise without the best model
+available — each of those is a part of the system nobody understands. Report it by name as
+unexamined rather than quietly buying a bigger reader.
 
 Every task commit carries its own `.flow/STATE.md` update — the commit gate enforces it.
 **No code is written outside BUILD. No research is done inside BUILD.**

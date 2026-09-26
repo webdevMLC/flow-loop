@@ -42,6 +42,16 @@ the evidence gate will refuse the commit otherwise.
 **Never touch production.** Every rehearsal is on a disposable copy. The one thing an
 operability pass must not do is cause the outage it was preparing for.
 
+## The model tier
+
+**Cheap throughout.** Following a runbook, performing a rollback, restoring a backup and
+reading the rows back, driving load — this command's work is *doing*, and doing is not
+reasoning. The repairs it hands to the loop are BUILD, which is frontier there.
+
+The writing that matters here — the runbook procedures — is checked by following them, not by
+being written well. A procedure a cheap model wrote and a person successfully followed beats a
+beautiful one nobody has tried.
+
 ## Stage 1 — Inventory
 
 Read `references/inventory.md`. What runs: processes, jobs, workers, schedulers, external

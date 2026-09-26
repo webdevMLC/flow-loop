@@ -188,6 +188,7 @@ describe('a skill that spawns agents names a model tier', () => {
     // CHECK says never Opus for its lenses; ultra used to say nothing, so its refuters ran
     // frontier. Both files must now name the same rule for the same work.
     assert.match(read('skills/loop/references/review.md'), /flow:ultra/);
-    assert.match(read('skills/ultra/references/adversary.md'), /never the frontier model/i);
+    // The rule got stronger: nothing in ultra's stages 1-3 is frontier, refuters included.
+    assert.match(read('skills/ultra/references/adversary.md'), /so were the lenses|nothing in stages 1/i);
   });
 });
