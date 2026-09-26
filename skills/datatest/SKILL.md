@@ -57,29 +57,43 @@ map is what the testers divide; a tester without a map wanders.
 ## Stage 2 — Test
 
 
-### The tier is per tester, and most of this is a harness, not an agent
+### Tier by the kind of work, not by the dimension
 
-"Seven testers on the frontier model" is the expensive, wrong answer. Look at what they do:
-five of the seven **drive** — every input to its edge, every write twice, two actors at once,
-every lifecycle edge, a write here and a read there. That is execution and comparison, and
-the case list is **generated from the schema and the lifecycle**, not reasoned out. A frontier
-agent clicking through a matrix a script could drive is the most expensive way to run a loop.
+The first cut of this rule split the testers — four harness, three frontier. That was still the
+wrong axis. **Every dimension does the same three things, and only two of them need a model:**
 
-| Tester | Tier | Why |
+| Step | What it is | Tier |
 |---|---|---|
-| **Boundary** | **harness** | the edges come from the column types and constraints; generate the cases, drive them, diff the rows |
-| **Duplicate and replay** | **harness** | send it twice, compare — there is no judgement in it |
-| **Concurrency** | **harness** | two writers on one row, genuinely at once; the hard part is the setup, not the thinking |
-| **State machine** | **harness** | the edges are enumerable from the lifecycle the project skill names |
-| **Adversarial input** | **frontier** | *valid to the form and wrong for the domain* cannot be generated — it needs to know what the domain means |
-| **Cross-module** | **frontier** | deciding what *should* have changed elsewhere is the invariant nobody wrote down |
-| **Money** | **frontier** | re-deriving every number by hand from the authority is the hardest judgement here, and the one that costs most when wrong |
+| **1. Build the oracle** | decide what *should* be true: the expected row after this flow, the invariant that must hold elsewhere, the money formula re-derived from the authority | **frontier**, once per flow |
+| **2. Drive and compare** | run the cases, read the rows, diff against the oracle | **a script.** No model in the loop at all |
+| **3. Judge a failure** | what does this difference mean, is it a defect, how severe | **frontier**, and only on the rows that failed |
 
-So **four harness, three frontier** — not seven frontier. And the harness half gets *better*:
-a generated matrix does not get bored at case 200, and a script diffing rows does not
-misread one.
+Deciding a payroll total should be ₱15,432.10 is the hard part. Running the query that returns
+₱15,001.00 and noticing they differ is `!==`.
 
-**Stage 3 falsification is cheap.** The claim, the steps and the query are all in the prompt.
+**Measured on a real run, before this rule:** sixteen frontier subagents made **1,106 shell
+calls, 171 of which touched the database**. The busiest made 168 tool calls over 49 minutes -
+about 17 seconds a turn, all of it the model composing a 286-character script to run a query
+whose expected answer it had already worked out. The database answered in milliseconds. The
+testing was not slow; the turn-taking was.
+
+So the shape is:
+
+1. **One frontier pass builds the oracle** for the whole matrix - every flow, every dimension,
+   written to `scratchpad/datatest/oracle.json`: the case, the drive, the expected rows.
+2. **One script drives it**, written once, run over the whole matrix, appending every
+   difference to the dimension files. It does not get bored at case 200 and it does not
+   misread a row.
+3. **A frontier pass reads only the differences** and decides which are defects.
+
+Three model turns per dimension where there were a hundred and fifty. **If a tester is making
+one shell call per test case, it is doing step 2 by hand and the run is paying frontier rates
+to type SQL.**
+
+**The exception that stays interactive:** a case whose *next* step depends on what the last one
+returned - walking a state machine into a corner, or following a concurrency race. Those are
+genuinely turn-by-turn. They are a minority of any matrix, and naming them as the exception is
+how you notice when everything has quietly become one.
 
 **Build the harness once, keep it.** Stage 4 commits a failing test per defect anyway; the
 drivers those tests use are the same drivers. A second run of `/flow:datatest` on the same

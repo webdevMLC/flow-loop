@@ -2,6 +2,12 @@
 
 The bulk of the inspection, and the part no gate in the loop performs.
 
+**One oracle, one script, then judgement.** Decide what each flow should leave in the
+database, write it down, drive the whole set with a script, and spend the model only on the
+rows that came back different. A stage making one shell call per case is paying frontier rates
+to type SQL - measured at 1,106 calls on a sibling command, 171 of which touched the database,
+at about 17 seconds a turn. "Tier by the kind of work" in the datatest skill.
+
 The rule the whole stage rests on: **a response is not a record.** A `200`, a success message,
 a redirect, an integration test asserting on a response body — none of them is evidence that
 anything was written, written once, written correctly, or still correct after the next request.

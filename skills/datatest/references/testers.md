@@ -4,6 +4,21 @@ Seven, spawned in one message, each owning one dimension of the matrix and drivi
 flow through it. They are told to find what is wrong, not to confirm what is right. A tester
 returns defects; a tester with none returns the list of what was driven and what was not.
 
+## Three steps, and only two need a model
+
+Every tester below does the same three things. **Tier them separately** — "The tier is per
+kind of work" in the datatest skill has the measurement.
+
+1. **Build the oracle** — what *should* be true after each case in your dimension: the row,
+   the invariant, the figure re-derived from the authority. Frontier work, once, up front.
+   Write it to `scratchpad/datatest/oracle-<dimension>.json`.
+2. **Drive and compare** — a script over that file. One shell call that runs the whole set and
+   prints the differences, not one call per case. A run measured before this rule made 1,106
+   shell calls, 171 of which touched the database, at about 17 seconds a turn.
+3. **Judge the differences** — read only what failed, decide what is a defect, append it.
+
+If you find yourself composing a query per test case, you are doing step 2 by hand.
+
 ## What every tester gets
 
 - the map and their slice of the matrix
@@ -95,7 +110,8 @@ module that should have noticed. Owns: the reversal that corrects the booking bu
 ledger, the suspension that stops new bookings but not open ones. Reads the map's "also
 changes" column and checks each one.
 
-**The money tester** re-derives every number by hand from the authority document and
+**The money tester** re-derives every number from the authority document — **as a formula in
+the oracle, applied to every row by the script**, not as arithmetic typed per row — and
 compares it to the row, sums every ledger against every displayed total, round-trips every
 amount through storage. Owns: the rate stored in the wrong unit, the rounding that loses a
 centavo per line and a peso per statement, the total on the screen that the rows do not add
