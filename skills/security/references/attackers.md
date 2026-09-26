@@ -17,6 +17,12 @@ proven holes with the exact request that demonstrates each; an unproven hunch go
 
 ## What every specialist returns
 
+**Append each proven hole the moment it is proven**, to
+`scratchpad/security/<class>.md`, opened before you attack anything. Never one report at the
+end: a run interrupted before the write-up loses every hole it found, which has happened —
+seven testers on a sibling command drove for a day and wrote nothing. If it dies at 70%, 70%
+of the value should be on disk.
+
 ```markdown
 ### S3 — any associate reads any partner's bank details · BLOCKER
 

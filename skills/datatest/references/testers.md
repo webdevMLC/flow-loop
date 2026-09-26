@@ -14,6 +14,37 @@ returns defects; a tester with none returns the list of what was driven and what
   call to a repository function.
 - the instruction that a `200` is a claim, and the row is the evidence
 
+## Append each defect as you confirm it — never one report at the end
+
+**Write the entry the moment the query comes back wrong.** Open
+`scratchpad/datatest/<dimension>.md` at the start, append each defect as its own block, and
+keep driving. Do not hold findings in your head and write them up at the end.
+
+This is not tidiness. Measured on a real payroll project: seven testers drove a 44-flow matrix
+against a live disposable database for most of a day, produced 1–2 MB of transcript each, and
+**wrote zero reports** — the run was interrupted before any of them reached its write-up, and
+every defect they had found went with it. Stage 1's map survived because it was on disk. Their
+findings did not, because they were not.
+
+The loop already applies this rule to itself: one commit per completed task, never a single
+dump at the end, *"because a run that ends unexpectedly leaves work that looks unfinished and
+gets redone."* A tester is a run that ends unexpectedly more often than most.
+
+So:
+
+- **First write, before driving anything:** the file, with the dimension, the employee or
+  fixture you own, and the environment you were given. That file existing is how the parent
+  knows you started.
+- **Then one append per confirmed defect**, in the format below. A defect is confirmed when
+  the query has come back wrong — not when you suspect it.
+- **A running note of what you have driven**, appended as you go: the flows covered, the
+  flows that could not be reached and why. **A tester who finds nothing must still leave a
+  file** saying what was driven; silence and thoroughness look identical afterwards.
+- **Nothing is rewritten at the end.** The final act is a one-line summary at the top of your
+  own file, not a fresh document.
+
+If the run dies at 70%, 70% of the value is on disk. That is the whole point.
+
 ## What every tester returns
 
 Defects only, each one:

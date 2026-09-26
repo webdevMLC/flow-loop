@@ -1,5 +1,10 @@
 # The critique — six lenses, each with failing conditions
 
+**Append findings as you confirm them**, to `scratchpad/uiux/<lens>.md`, opened before you
+look at anything. A lens that holds its findings until the end loses them all if the run is
+interrupted, and a lens that finds nothing must still leave a file saying what it examined.
+
+
 A lens with no failing condition produces prose. Each lens below is a list of things that,
 when true of a capture, are findings — with a severity rule and the person's experience
 named. Every specialist judges every capture; the architect synthesises.

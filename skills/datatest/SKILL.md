@@ -85,11 +85,36 @@ misread one.
 drivers those tests use are the same drivers. A second run of `/flow:datatest` on the same
 project should be mostly re-execution, and cost a fraction of the first.
 
-Read `references/testers.md`. Spawn the testers **in a single message** so they run
+Read `references/testers.md`. **Each tester opens its own `scratchpad/datatest/<dimension>.md`
+before driving anything and appends every defect as it confirms it** - never one report at the
+end, so an interrupted run keeps what it found. Spawn the testers **in a single message** so they run
 concurrently, each owning one dimension and driving every flow through it. They return
 defects with reproduction steps and the query that shows the wrong row — never opinions,
 never "consider". The boundary tester and the concurrency tester will find different things
 in the same flow; that is why there are seven and not one.
+
+## Resuming a run that died
+
+Long runs die — a context limit, a restart, an owner interrupting. **Check for the work before
+redoing it**, because stage 1 is the expensive half and it is already on disk:
+
+| Present | Then |
+|---|---|
+| `scratchpad/write-paths.json`, `table-index.md`, `datatest-matrix.md` | **stage 1 is done.** Re-read them; do not re-map. Say in the report they came from the earlier run and on what date |
+| `scratchpad/datatest/<dimension>.md` with entries | that dimension is **partly driven.** Read its running note, continue from the flows it has not covered, keep appending to the same file |
+| a dimension file that exists but is empty | it started and died before confirming anything — drive it from the top |
+| no file for a dimension | it never started |
+
+A measured case: seven testers drove a 44-flow matrix for most of a day against a live
+disposable database, the run was interrupted, and **zero reports existed afterwards** — the
+map survived because it was written to disk, and hours of driving did not because it was not.
+The fix is in `references/testers.md` (append as you confirm); this is the other half, so the
+next run does not pay for the same ground twice.
+
+**Re-check the environment before continuing**, not after: the disposable database and the app
+must still be up, on the ports the brief named, with the baseline the testers were forbidden to
+change still intact. If any of that is gone, the partial findings stay valid as *findings* but
+their reproduction steps need re-running — say so rather than trusting them.
 
 ## Stage 3 — Falsify
 
