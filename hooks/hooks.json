@@ -34,6 +34,12 @@
             "if": "Bash(git commit *)",
             "timeout": 120,
             "statusMessage": "Flow commit gate"
+          },
+          {
+            "type": "command",
+            "command": "node \"${PLUGIN_ROOT}/hooks/flow-harness-gate.mjs\"",
+            "timeout": 10,
+            "statusMessage": "Flow harness gate"
           }
         ]
       },

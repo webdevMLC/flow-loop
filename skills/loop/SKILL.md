@@ -29,6 +29,7 @@ they deny the action, and no prose can talk past them:
 | **Never push** | `git push` is denied unless `.flow/allow-push` exists — another file the loop cannot create |
 | **Judgement does not pile up** | source writes are denied past 5 open `by person` entries in `.flow/UAT.md` |
 | **A MINOR finding does not become a phase** | `git commit` is denied when the phase’s goal cites only MINOR or NOTE findings — they go to `.flow/MINORS.md` and are swept in one batch at the milestone, so the review stage stops feeding the build stage |
+| **Driving is not turn-taking work** | during a data run, a shell command that drives a case is denied past 30 when no driver script exists in the run’s scratchpad — build the oracle, drive it with a script, judge only what differed |
 | **The loop never answers the owner’s questions** | a `by person` entry in `.flow/UAT.md` marked answered by the agent must be classed `` `judgement` `` — an `owner` entry, or one with no class, denies the write |
 | **A closed `by artifact` criterion has its artifact** | `git commit` is denied when a criterion ticked done and classed `by artifact` names a file that is not on disk — this is what makes SHIP’s data pass and the screen audit mechanical |
 | **Verification is tiered, not uniform** | a `Workflow` script that spawns a literal number of verifiers per finding is denied — BLOCKER up to 3 sequential, MAJOR 1, MINOR 0. Three measured runs spent 48, 61 and 155 agents ignoring the prose version of this rule |
@@ -36,7 +37,7 @@ they deny the action, and no prose can talk past them:
 
 Everything else in this file and its references is **discipline** — followed because it is
 read, and it is written to be read at the moment it applies. Where a rule below is discipline,
-it says so. The fifteen above are not.
+it says so. The sixteen above are not.
 
 **They constrain actions, not judgement.** A hook can stop a file being written. It cannot stop
 the *wrong* file being written: the citation gate checks that `from:` resolves to a real
