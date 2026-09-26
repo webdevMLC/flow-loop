@@ -4,13 +4,14 @@ Seven, spawned in one message, each owning one dimension of the matrix and drivi
 flow through it. They are told to find what is wrong, not to confirm what is right. A tester
 returns defects; a tester with none returns the list of what was driven and what was not.
 
-## Three steps, and only two need a model
+## Three steps, none of them frontier
 
-Every tester below does the same three things. **Tier them separately** — "The tier is per
-kind of work" in the datatest skill has the measurement.
+Every tester below does the same three things. **None of them is frontier work** — "No frontier model anywhere in this command except the
+repair" in the datatest skill has the measurement. The frontier model enters at stage 5, the
+repair, and nowhere before it.
 
 1. **Build the oracle** — what *should* be true after each case in your dimension: the row,
-   the invariant, the figure re-derived from the authority. Frontier work, once, up front.
+   the invariant, the figure re-derived from the authority. Cheap tier, once, up front.
    Write it to `scratchpad/datatest/oracle-<dimension>.json`.
 2. **Drive and compare** — a script over that file. One shell call that runs the whole set and
    prints the differences, not one call per case. A run measured before this rule made 1,106

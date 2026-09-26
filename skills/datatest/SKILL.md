@@ -57,43 +57,49 @@ map is what the testers divide; a tester without a map wanders.
 ## Stage 2 — Test
 
 
-### Tier by the kind of work, not by the dimension
+### No frontier model anywhere in this command except the repair
 
-The first cut of this rule split the testers — four harness, three frontier. That was still the
-wrong axis. **Every dimension does the same three things, and only two of them need a model:**
+**Testing is not reasoning work.** Stages 1 to 4 — map, test, falsify, persist — run on the
+cheap tier, start to finish. The frontier model appears once, in stage 5, and stage 5 is BUILD
+under another name.
 
-| Step | What it is | Tier |
-|---|---|---|
-| **1. Build the oracle** | decide what *should* be true: the expected row after this flow, the invariant that must hold elsewhere, the money formula re-derived from the authority | **frontier**, once per flow |
-| **2. Drive and compare** | run the cases, read the rows, diff against the oracle | **a script.** No model in the loop at all |
-| **3. Judge a failure** | what does this difference mean, is it a defect, how severe | **frontier**, and only on the rows that failed |
+| Stage | Tier |
+|---|---|
+| 1 Map — write paths, models, the matrix | **cheap** |
+| 2 Test — oracle, drive, compare | **cheap**, and the driving is a script with no model at all |
+| 3 Falsify — reproduce from the steps | **cheap** |
+| 4 Persist — a failing test per defect | **cheap** |
+| **5 Repair** | **frontier** — it is the loop's BUILD, which is frontier already |
 
-Deciding a payroll total should be ₱15,432.10 is the hard part. Running the query that returns
-₱15,001.00 and noticing they differ is `!==`.
+This took three attempts to get right, and the owner said it plainly each time. First cut: all
+seven testers frontier. Second: four harness, three frontier. Third: frontier for the oracle.
+All three were the same mistake in different clothes — **deciding that some part of checking
+whether a row is correct requires the best model available.** It does not. Knowing a payroll
+total should be ₱15,432.10 is reading the rule and applying it. Noticing the row says
+₱15,001.00 is `!==`. Neither is the hard part; the hard part is deciding what to change, and
+that is stage 5.
 
-**Measured on a real run, before this rule:** sixteen frontier subagents made **1,106 shell
-calls, 171 of which touched the database**. The busiest made 168 tool calls over 49 minutes -
-about 17 seconds a turn, all of it the model composing a 286-character script to run a query
-whose expected answer it had already worked out. The database answered in milliseconds. The
-testing was not slow; the turn-taking was.
+**What the run measured before any of this:** sixteen frontier subagents, **1,106 shell calls,
+171 of which touched the database**, the busiest making 168 tool calls over 49 minutes — about
+17 seconds a turn composing a 286-character script, the longest 4,355 characters typed inline,
+to run a query whose expected answer it had already worked out. The database answered in
+milliseconds.
 
-So the shape is:
+So the shape:
 
-1. **One frontier pass builds the oracle** for the whole matrix - every flow, every dimension,
-   written to `scratchpad/datatest/oracle.json`: the case, the drive, the expected rows.
-2. **One script drives it**, written once, run over the whole matrix, appending every
-   difference to the dimension files. It does not get bored at case 200 and it does not
-   misread a row.
-3. **A frontier pass reads only the differences** and decides which are defects.
+1. **A cheap pass builds the oracle** for the whole matrix into
+   `scratchpad/datatest/oracle-<dimension>.json`: the case, the drive, the expected rows.
+2. **A script drives it** and appends every difference to the dimension files. No model.
+3. **A cheap pass reads the differences** and writes the findings.
+4. **Stage 5 repairs them at frontier**, through the loop, where the thinking actually is.
 
-Three model turns per dimension where there were a hundred and fifty. **If a tester is making
-one shell call per test case, it is doing step 2 by hand and the run is paying frontier rates
-to type SQL.**
+**If something in stages 1–4 genuinely needs more than the cheap tier, that is a finding, not
+a reason to upgrade.** Say so in the report — an expectation nobody can state cheaply is an
+authority nobody has written down, and that belongs in front of the owner.
 
-**The exception that stays interactive:** a case whose *next* step depends on what the last one
-returned - walking a state machine into a corner, or following a concurrency race. Those are
-genuinely turn-by-turn. They are a minority of any matrix, and naming them as the exception is
-how you notice when everything has quietly become one.
+**The exception that stays interactive** — a case whose next step depends on what the last one
+returned, a state machine walked into a corner, a concurrency race — is still cheap. It is
+turn-by-turn, not clever.
 
 **Build the harness once, keep it.** Stage 4 commits a failing test per defect anyway; the
 drivers those tests use are the same drivers. A second run of `/flow:datatest` on the same
