@@ -106,6 +106,13 @@ The shape-changing decisions — a navigation restructured, a screen merged or s
 moved to a different role — go to the owner as one question batch, and stop even under
 autonomous mode.
 
+
+**Before the findings, compare this run to the last one.** every screen captured that was captured last time, every lens reporting, and
+the findings each lens closed still closed — `references/coverage.md` **in the loop skill** has the table and the three things that must
+be accounted for. Fewer findings than last time is a claim that needs its reason: "the code
+improved" is provable because the old tests are still green; "we looked less hard" looks
+identical from the outside, and a run that cannot say which it was has not finished.
+
 ## Stage 4 — Apply
 
 Through the loop, one phase per screen group, each framed against the redesign artifact and

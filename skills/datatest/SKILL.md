@@ -153,6 +153,13 @@ is red until it is fixed.
 
 The TDD gate allows this: a new test file is always writable.
 
+
+**Before the findings, compare this run to the last one.** every previously persisted test still present and green, every dimension
+reporting, and a matrix that did not shrink — `references/coverage.md` **in the loop skill** has the table and the three things that must
+be accounted for. Fewer findings than last time is a claim that needs its reason: "the code
+improved" is provable because the old tests are still green; "we looked less hard" looks
+identical from the outside, and a run that cannot say which it was has not finished.
+
 ## Stage 5 — Repair
 
 The report is `.flow/DATATEST-<date>.md`, sealed before anything is fixed, findings most

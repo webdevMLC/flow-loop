@@ -61,6 +61,13 @@ by name as unexamined, rather than quietly buying a bigger reader.
 Stage 4 is different — it gates on the *report* rather than on a clean result, and it runs
 precisely because the earlier stages found something.
 
+
+**Before the findings, compare this run to the last one.** the same flows driven, the same lenses reporting, and every finding the last
+run repaired still repaired — `references/coverage.md` **in the loop skill** has the table and the three things that must
+be accounted for. Fewer findings than last time is a claim that needs its reason: "the code
+improved" is provable because the old tests are still green; "we looked less hard" looks
+identical from the outside, and a run that cannot say which it was has not finished.
+
 ## It does not fix *during* the inspection — then it fixes
 
 **Nothing is repaired while stages 1–3 run.** An inspection that fixes as it goes starts

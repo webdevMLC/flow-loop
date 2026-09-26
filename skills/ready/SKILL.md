@@ -54,7 +54,7 @@ Read `references/checks.md`. Each one is computed, not judged, and each carries 
 | 3 | **Every criterion is closed by the evidence its class demands** | no `- [ ]` in any phase's criteria; every `by artifact` file on disk |
 | 4 | **Nothing is waiting on the owner** | no open `owner` entry in `.flow/UAT.md` |
 | 5 | **The product's flows work end to end** | a data pass over the project skill's core jobs, rows read |
-| 6 | **The assessments have run, and nothing is open** | `.flow/ULTRA-*`, `DATATEST-*`, `SECURITY-*`, `UIUX-*`, `OPS-*` — each present, each with no open BLOCKER |
+| 6 | **The assessments have run, nothing is open, and none got weaker** | `.flow/ULTRA-*`, `DATATEST-*`, `SECURITY-*`, `UIUX-*`, `OPS-*` — each present, each with no open BLOCKER · and each carries its comparison against the previous run — `references/coverage.md` **in the loop skill**. One that found less and cannot say why is UNKNOWN, not clear |
 | 7 | **Someone other than the author can run it** | the runbook was followed, a rollback was performed, a backup was restored and the rows read, the load limit is known |
 
 Checks 6 and 7 are where most projects are not ready and do not know it. A project can have

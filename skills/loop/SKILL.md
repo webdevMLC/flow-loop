@@ -120,6 +120,28 @@ a datatest that made 1,106 shell calls to run 171 queries. What *is* enforced is
 the workflow gate refuses a fixed fan-out of verifiers, and the harness gate refuses hand-
 driving past thirty cases with no script.
 
+### When frontier is badly needed — and it sometimes is
+
+Cheap is the default, not a ban. Three conditions earn the better model, and a claim has to
+meet one of them by name:
+
+1. **It is making, not checking.** PLAN, BUILD, a repair, the screens an owner approves, the
+   prose a stranger follows on their first day. The deliverable itself.
+2. **Being wrong is irreversible or expensive.** Money that moves, a breach, a plan that
+   misdirects forty phases. Not "important" — *unrecoverable*.
+3. **The cheap tier said it could not.** An unexamined surface, reported by name, is exactly
+   the signal to spend — once, on that, with the result folded back into the matrix so the
+   cheap tier can find it next time.
+
+**What does not earn it**, because each was measured losing: "this is the deep pass", "this
+matters a lot", "to be safe", or a stage that has always run that way. Twelve frontier lenses
+on one ultra run and sixteen frontier testers making 1,106 shell calls were all justified by
+sentences of that shape.
+
+**One expensive pass at a milestone** is the insurance, and it is cheap because it is rare:
+run the assessment at frontier once, diff it against the cheap run, and let the difference be
+measured rather than argued. `references/coverage.md`.
+
 **And if something cannot be checked cheaply, that is a finding.** A defect class nobody can
 state, a screen nobody can critique, an attack nobody can devise without the best model
 available — each of those is a part of the system nobody understands. Report it by name as
@@ -274,6 +296,7 @@ Repeated work, not model choice, is what burns the budget.
 | Undoing a shipped phase | `references/reverse.md` |
 | A milestone or roadmap boundary | `references/milestone.md` |
 | A review returned findings, and you are deciding what to build next | `references/triage.md` |
+| Writing an assessment report, or one found less than last time | `references/coverage.md` |
 | The roadmap ran dry, or the owner asks whether it is finished | **`/flow:ready`** |
 | Before a pilot, or nobody can say who runs this at 2am | **`/flow:ops`** |
 | `.flow/UAT.md` has open entries and the user is back | `references/uat.md` |
